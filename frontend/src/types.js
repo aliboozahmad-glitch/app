@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
 /**
- * @typedef {"established"|"population_estimate"|"statistical_estimate"|"uncertain_estimate"|"population_statistic"} CertaintyTier
+ * @typedef {"established"|"population_estimate"|"statistical_estimate"|"uncertain_estimate"|"population_statistic"|"traditional_belief"} CertaintyTier
  * @typedef {{ key: string, kind: "phenotype"|"genotype"|"blood_type"|"measurement"|"qualitative", group: string,
  *   label: string, group_label: string, probability: (number|null), fraction: (string|null),
  *   range?: number[], range_fraction?: string[], value?: number, unit?: string }} Outcome
@@ -15,7 +15,7 @@ import PropTypes from "prop-types";
  * @typedef {{ id: string, analysis_type: string, created_at: string, request: Object, result: LocalizedResult }} Analysis
  */
 
-export const TIERS = ["established", "population_estimate", "statistical_estimate", "uncertain_estimate", "population_statistic"];
+export const TIERS = ["established", "population_estimate", "statistical_estimate", "uncertain_estimate", "population_statistic", "traditional_belief"];
 
 export const outcomeShape = PropTypes.shape({
   key: PropTypes.string.isRequired,

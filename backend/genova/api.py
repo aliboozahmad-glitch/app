@@ -1,3 +1,5 @@
+import asyncio
+from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 
 from bson import ObjectId
@@ -11,11 +13,25 @@ from .auth import IN_ENV, RANK, ROLES, current_member, effective_role, require_r
 from .db import db
 from .genetics.data_loader import disease_list, load_diseases, load_references
 from .i18n import localize_result, t
-from .models import AnalysisDoc, BloodTypeIn, CarrierIn, HeightIn, Lang, MendelianIn, PigmentIn, RoleIn, SexRatioIn
+from .models import (
+    AnalysisDoc,
+    BloodTypeIn,
+    CarrierIn,
+    FamilyPatternIn,
+    HeightIn,
+    Lang,
+    MendelianIn,
+    PigmentIn,
+    RoleIn,
+    SexRatioIn,
+)
 from .ratelimit import analysis_limiter
+from .traditional import family_pattern_analysis
 
 router = APIRouter(prefix="/api")
 DEDUPE_WINDOW_S = 10
+# Single-process lock; replace with a unique request-hash index when running several workers.
+_save_locks: defaultdict = defaultdict(asyncio.Lock)
 
 CALCULATORS = {
     "mendelian": (MendelianIn, lambda b: g.mendelian_analysis(b.mode, b.parent1, b.parent2)),
@@ -25,6 +41,7 @@ CALCULATORS = {
     "height": (HeightIn, lambda b: g.height_analysis(b.mother_cm, b.father_cm)),
     "pigmentation": (PigmentIn, lambda b: g.pigmentation_analysis(b.trait, b.mother, b.father)),
     "sex-ratio": (SexRatioIn, lambda b: g.sex_ratio_analysis()),
+    "family-pattern": (FamilyPatternIn, lambda b: family_pattern_analysis(b.wife, b.husband, b.child_number)),
 }
 
 
@@ -91,12 +108,12 @@ async def run_analysis(kind: str, body: dict, lang: Lang = "en", member: dict = 
         raise RequestValidationError([{**e, "loc": ("body", *e["loc"])} for e in exc.errors()]) from exc
     analysis_limiter.check(member["user_id"])
     request = payload.model_dump()
-    duplicate = await _recent_duplicate(member["user_id"], kind, request)
-    if duplicate:
-        return {**_view(duplicate, lang), "deduplicated": True}
-    result = fn(payload)
-    doc = AnalysisDoc(user_id=member["user_id"], analysis_type=kind, request=request, result=result)
-    res = await db.analyses.insert_one(doc.to_mongo())
+    async with _save_locks[(member["user_id"], kind)]:  # check + insert are atomic per user and calculator
+        duplicate = await _recent_duplicate(member["user_id"], kind, request)
+        if duplicate:
+            return {**_view(duplicate, lang), "deduplicated": True}
+        doc = AnalysisDoc(user_id=member["user_id"], analysis_type=kind, request=request, result=fn(payload))
+        res = await db.analyses.insert_one(doc.to_mongo())
     doc.id = str(res.inserted_id)
     return _view(doc, lang)
 

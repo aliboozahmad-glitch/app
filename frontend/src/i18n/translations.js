@@ -21,6 +21,7 @@ const en = {
     height: ["Adult height estimate", "Mid-parental target height with range (Tanner)."],
     pigmentation: ["Eye & hair colour", "Qualitative pattern only, polygenic traits."],
     "sex-ratio": ["Boy or girl", "The real biology: natural sex ratio at birth."],
+    "family-pattern": ["Family pattern (traditional)", "Your original table using the wife's and husband's families. Not scientific."],
   },
   c: {
     calculate: "Calculate", calculating: "Calculating…", result: "Result", method: "Method", assumptions: "Assumptions",
@@ -40,11 +41,12 @@ const en = {
   regions: { gulf: "Gulf (GCC)", middle_east_north_africa: "Middle East & North Africa", europe: "Europe", sub_saharan_africa: "Sub-Saharan Africa", south_asia: "South Asia", east_asia: "East Asia", americas: "Americas", global: "Global average" },
   traits: { trait: "Trait", eye_color: "Eye colour", hair_color: "Hair colour",
     colours: { brown: "Brown", hazel: "Hazel", green: "Green", blue: "Blue", gray: "Gray", black: "Black", blonde: "Blonde", red: "Red" } },
+  family: { wife: "Wife's family (children in birth order)", husband: "Husband's family (children in birth order)", child: "Child", add: "Add child", remove: "Remove last", boy: "Boy", girl: "Girl", which: "Which child of yours", first: "First child", second: "Second child", caseLabel: "Table case", notice: "This is your original traditional family-pattern method, kept exactly as you wrote it. It is not science, and it is kept separate from the birth statistic." },
   sex: { intro: "Family birth-order patterns cannot predict a baby's sex. GENOVA shows the population statistic instead.", show: "Show statistic" },
   history: { overline: "Your saved analyses", title: "History" },
   sources: { overline: "Transparency", title: "Methods & sources", subtitle: "Every number in GENOVA comes from a formula or a cited source. Regional carrier figures stay in draft until validated.",
     panel: "Disease panel", inheritance: "Inheritance", gene: "Gene", regional: "Regional evidence", draft: "Draft, not used", validated: "Validated", all: "All references" },
-  tier: { established: "Exact Mendelian result from stated genotypes.", population_estimate: "Uses validated regional frequencies.", statistical_estimate: "Formula with a typical range.", uncertain_estimate: "Qualitative only, many genes involved.", population_statistic: "Population average, not a prediction." },
+  tier: { established: "Exact Mendelian result from stated genotypes.", population_estimate: "Uses validated regional frequencies.", statistical_estimate: "Formula with a typical range.", uncertain_estimate: "Qualitative only, many genes involved.", population_statistic: "Population average, not a prediction.", traditional_belief: "Owner's traditional table, no scientific basis." },
 };
 
 const ar = {
@@ -70,6 +72,7 @@ const ar = {
     height: ["تقدير الطول عند البلوغ", "الطول المستهدف من طول الوالدين مع نطاق (تانر)."],
     pigmentation: ["لون العين والشعر", "نمط وصفي فقط، صفات متعددة الجينات."],
     "sex-ratio": ["ذكر أم أنثى", "الحقيقة البيولوجية: النسبة الطبيعية عند الولادة."],
+    "family-pattern": ["نمط العائلة (تقليدي)", "جدولك الأصلي باستخدام عائلة الزوجة وعائلة الزوج. ليس علمياً."],
   },
   c: {
     calculate: "احسب", calculating: "جارٍ الحساب…", result: "النتيجة", method: "المنهجية", assumptions: "الافتراضات",
@@ -89,11 +92,12 @@ const ar = {
   regions: { gulf: "دول الخليج", middle_east_north_africa: "الشرق الأوسط وشمال أفريقيا", europe: "أوروبا", sub_saharan_africa: "أفريقيا جنوب الصحراء", south_asia: "جنوب آسيا", east_asia: "شرق آسيا", americas: "الأمريكتان", global: "المتوسط العالمي" },
   traits: { trait: "الصفة", eye_color: "لون العين", hair_color: "لون الشعر",
     colours: { brown: "بني", hazel: "عسلي", green: "أخضر", blue: "أزرق", gray: "رمادي", black: "أسود", blonde: "أشقر", red: "أحمر" } },
+  family: { wife: "عائلة الزوجة (الأطفال حسب ترتيب الولادة)", husband: "عائلة الزوج (الأطفال حسب ترتيب الولادة)", child: "طفل", add: "إضافة طفل", remove: "حذف الأخير", boy: "ذكر", girl: "أنثى", which: "أي طفل لكما", first: "الطفل الأول", second: "الطفل الثاني", caseLabel: "حالة الجدول", notice: "هذه طريقتك التقليدية الأصلية لنمط العائلة، محفوظة كما كتبتها تماماً. ليست علماً، وهي منفصلة عن إحصاء الولادة." },
   sex: { intro: "لا يمكن لأنماط ترتيب الولادة في العائلة التنبؤ بجنس الجنين. يعرض GENOVA الإحصاء السكاني بدلاً من ذلك.", show: "اعرض الإحصاء" },
   history: { overline: "تحليلاتك المحفوظة", title: "السجل" },
   sources: { overline: "الشفافية", title: "المنهجية والمصادر", subtitle: "كل رقم في GENOVA مصدره معادلة أو مرجع موثّق. تبقى نسب الحمل الإقليمية مسودة حتى يتم التحقق منها.",
     panel: "قائمة الأمراض", inheritance: "نمط الوراثة", gene: "الجين", regional: "الأدلة الإقليمية", draft: "مسودة، غير مستخدمة", validated: "مُعتمد", all: "جميع المراجع" },
-  tier: { established: "نتيجة مندلية دقيقة من الطرز المدخلة.", population_estimate: "يستخدم نسباً إقليمية معتمدة.", statistical_estimate: "معادلة مع نطاق نموذجي.", uncertain_estimate: "وصفي فقط، جينات كثيرة مشاركة.", population_statistic: "متوسط سكاني وليس تنبؤاً." },
+  tier: { established: "نتيجة مندلية دقيقة من الطرز المدخلة.", population_estimate: "يستخدم نسباً إقليمية معتمدة.", statistical_estimate: "معادلة مع نطاق نموذجي.", uncertain_estimate: "وصفي فقط، جينات كثيرة مشاركة.", population_statistic: "متوسط سكاني وليس تنبؤاً.", traditional_belief: "جدول المالك التقليدي، بلا أساس علمي." },
 };
 
 const de = {
@@ -119,6 +123,7 @@ const de = {
     height: ["Schätzung der Erwachsenengröße", "Elterliche Zielgröße mit Spanne (Tanner)."],
     pigmentation: ["Augen- & Haarfarbe", "Nur qualitatives Muster, polygene Merkmale."],
     "sex-ratio": ["Junge oder Mädchen", "Die echte Biologie: natürliches Geschlechterverhältnis."],
+    "family-pattern": ["Familienmuster (traditionell)", "Ihre ursprüngliche Tabelle mit den Familien von Ehefrau und Ehemann. Nicht wissenschaftlich."],
   },
   c: {
     calculate: "Berechnen", calculating: "Berechne…", result: "Ergebnis", method: "Methode", assumptions: "Annahmen",
@@ -138,11 +143,12 @@ const de = {
   regions: { gulf: "Golfstaaten", middle_east_north_africa: "Naher Osten & Nordafrika", europe: "Europa", sub_saharan_africa: "Subsahara-Afrika", south_asia: "Südasien", east_asia: "Ostasien", americas: "Amerika", global: "Globaler Durchschnitt" },
   traits: { trait: "Merkmal", eye_color: "Augenfarbe", hair_color: "Haarfarbe",
     colours: { brown: "Braun", hazel: "Haselnuss", green: "Grün", blue: "Blau", gray: "Grau", black: "Schwarz", blonde: "Blond", red: "Rot" } },
+  family: { wife: "Familie der Ehefrau (Kinder in Geburtsreihenfolge)", husband: "Familie des Ehemanns (Kinder in Geburtsreihenfolge)", child: "Kind", add: "Kind hinzufügen", remove: "Letztes entfernen", boy: "Junge", girl: "Mädchen", which: "Welches Ihrer Kinder", first: "Erstes Kind", second: "Zweites Kind", caseLabel: "Tabellenfall", notice: "Dies ist Ihre ursprüngliche traditionelle Familienmuster-Methode, genau so übernommen, wie Sie sie geschrieben haben. Sie ist keine Wissenschaft und bleibt getrennt von der Geburtsstatistik." },
   sex: { intro: "Familienmuster der Geburtsreihenfolge können das Geschlecht nicht vorhersagen. GENOVA zeigt stattdessen die Bevölkerungsstatistik.", show: "Statistik anzeigen" },
   history: { overline: "Ihre gespeicherten Analysen", title: "Verlauf" },
   sources: { overline: "Transparenz", title: "Methoden & Quellen", subtitle: "Jede Zahl in GENOVA stammt aus einer Formel oder einer zitierten Quelle. Regionale Trägerfrequenzen bleiben bis zur Validierung im Entwurf.",
     panel: "Erkrankungspanel", inheritance: "Erbgang", gene: "Gen", regional: "Regionale Evidenz", draft: "Entwurf, nicht verwendet", validated: "Validiert", all: "Alle Quellen" },
-  tier: { established: "Exaktes Mendelsches Ergebnis aus angegebenen Genotypen.", population_estimate: "Nutzt validierte regionale Frequenzen.", statistical_estimate: "Formel mit typischer Spanne.", uncertain_estimate: "Nur qualitativ, viele Gene beteiligt.", population_statistic: "Bevölkerungsdurchschnitt, keine Vorhersage." },
+  tier: { established: "Exaktes Mendelsches Ergebnis aus angegebenen Genotypen.", population_estimate: "Nutzt validierte regionale Frequenzen.", statistical_estimate: "Formel mit typischer Spanne.", uncertain_estimate: "Nur qualitativ, viele Gene beteiligt.", population_statistic: "Bevölkerungsdurchschnitt, keine Vorhersage.", traditional_belief: "Traditionelle Tabelle des Eigentümers, ohne wissenschaftliche Grundlage." },
 };
 
 export const translations = { en, ar, de };

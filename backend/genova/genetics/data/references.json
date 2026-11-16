@@ -35,6 +35,7 @@
     {"id": "mlp-tay-sachs", "title": "Tay-Sachs disease", "publisher": "MedlinePlus Genetics", "url": "https://medlineplus.gov/genetics/condition/tay-sachs-disease/", "link_check": "verified_2026_06"},
     {"id": "gr-tay-sachs", "title": "GeneReviews: Hexosaminidase A Deficiency (NBK1218)", "publisher": "NCBI Bookshelf", "url": "https://www.ncbi.nlm.nih.gov/books/NBK1218/", "link_check": "manual_check_required"},
     {"id": "nhgri-tay-sachs", "title": "About Tay-Sachs Disease", "publisher": "National Human Genome Research Institute", "url": "https://www.genome.gov/Genetic-Disorders/Tay-Sachs-Disease", "link_check": "verified_2026_06"},
+    {"id": "legacy-family-pattern-table", "title": "Original family-pattern table (gender_prediction_logic.py, owner's legacy app). Traditional belief, not a scientific source", "publisher": "GENOVA owner, baby-gender-backend repository", "url": "https://github.com/aliboozahmad-glitch/baby-gender-backend", "link_check": "verified_2026_06"},
     {"id": "mlp-cvd", "title": "Color vision deficiency", "publisher": "MedlinePlus Genetics", "url": "https://medlineplus.gov/genetics/condition/color-vision-deficiency/", "link_check": "verified_2026_06"}
   ]
 }

@@ -70,6 +70,15 @@ class PigmentIn(Strict):
     father: Annotated[str, Field(min_length=1, max_length=10)]
 
 
+Gender = Literal["male", "female"]
+
+
+class FamilyPatternIn(Strict):
+    wife: Annotated[list[Gender], Field(min_length=1, max_length=3)]
+    husband: Annotated[list[Gender], Field(min_length=1, max_length=3)]
+    child_number: Literal[1, 2] = 1
+
+
 class SexRatioIn(Strict):
     pass
 

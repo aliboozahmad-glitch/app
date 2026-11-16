@@ -58,6 +58,7 @@ const ResultHeader = ({ result }) => {
         <div className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500">{t.c.result}{suffix}</div>
         <p className="mt-1 text-slate-900 font-medium" data-testid="result-method">{t.c.method}: {result.method_label}</p>
         {d.inheritance_label && <p className="text-sm text-slate-500" data-testid="result-inheritance">{d.inheritance_label}</p>}
+        {d.effective_case && <p className="text-sm text-slate-500 font-mono-genes" data-testid="result-table-case">{t.family.caseLabel} #{d.effective_case}</p>}
         {d.mechanism_text && <p className="text-sm text-slate-600 mt-2 max-w-2xl" data-testid="result-mechanism">{d.mechanism_text}</p>}
       </div>
       <CertaintyBadge tier={result.certainty} label={result.certainty_label} />

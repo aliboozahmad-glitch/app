@@ -1,0 +1,24 @@
+{
+  "summary": "Iteration 4: tested the fixes for the 4 code-review findings (backend and frontend). 1) History summaries are translated in EN, AR and DE, with no raw codes. EN: 'Autosomal recessive · Aa × Aa', 'Mother: Carrier (tested) × Father: Not tested / unknown · Gulf (GCC)', 'Eye colour · Brown × Blue'. AR: 'جسمي متنحٍ · Aa × Aa', 'الأم: حامل (مفحوص) × الأب: غير مفحوص / غير معروف · دول الخليج', 'لون العين · بني × أزرق' (dir=rtl). DE: 'Autosomal-rezessiv · Aa × Aa', 'Mutter: Träger (getestet) × Vater: Nicht getestet / unbekannt · Golfstaaten', 'Augenfarbe · Braun × Blau'. 2) UI duplicate prevention: on all 6 calculators, with the POST slowed by 1.5s, 3 synchronous button.click() calls in the same tick plus a dblclick sent exactly 1 POST each. calculator-fieldset had the disabled attribute while loading (button showed 'Calculating…') and was enabled again afterwards. Each run gave 1 history entry. 3) Server-side dedupe, sequential requests: 3 quick identical POSTs return the same id, the 2nd and 3rd have deduplicated:true, and the history count goes up by 1. Different inputs give a new entry. User B with the same inputs gets a separate entry and cannot read A's entry (404). After 11s the same inputs give a new entry. A dedup with ?lang=de returns a DE-localized result. 70 and 70.0 dedupe to the same entry. FINDING: truly concurrent identical POSTs (6 threads behind a barrier) created 5 separate entries. This is a check-then-insert race in _recent_duplicate, with no lock and no unique key. 4) Regression: backend pytest -n 0 gives 87 passed. Frontend yarn test gives 23 passed. ruff check genova server.py tests is clean. Mendelian mode chips are translated in EN, AR and DE. No page errors.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/analyses/{kind}", "issue": "Dedupe race (TOCTOU): _recent_duplicate does find_one and then insert_one, with no atomicity. 6 truly concurrent identical requests from the same user created 5 entries; only 1 was deduplicated. Sequential rapid requests and the UI are fine, because the UI inFlight guard sends only 1 POST. This only affects concurrent clients, such as two tabs or scripted API use. Fix options: a per-(user_id, kind) asyncio.Lock around find+insert (one process), or store a request_hash plus a time bucket with a unique index and catch DuplicateKeyError, or use find_one_and_update with upsert on {user_id, kind, request_hash, window}."}
+    ]
+  },
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": ["/app/backend/tests/test_dedupe_live.py", "/app/backend/tests/race_probe.py", "/app/backend/tests/history_seed_helper.py"],
+  "action_items": [
+    "Optional/minor: make the server-side dedupe atomic for concurrent identical requests (see backend minor issue). Do not change scientific logic."
+  ],
+  "critical_code_review_comments": [
+    "api.py _recent_duplicate: the match on the embedded 'request' document depends on key order. It is safe today because the request comes from model_dump(), but a hashed canonical JSON (sorted keys) would be more robust and could be indexed. There is also no index on (user_id, analysis_type, created_at), so the dedupe query scans the user's documents. Consider an index.",
+    "Deduplicated requests still count toward the 30/min rate limit (limiter.check runs before the dedupe). This is documented and acceptable."
+  ],
+  "updated_files": ["/app/backend/tests/test_dedupe_live.py (new, 7 live tests)", "/app/backend/tests/race_probe.py (new manual probe, not collected by pytest)", "/app/backend/tests/history_seed_helper.py (new manual helper, not collected)"],
+  "success_rate": {"backend": "100% of the requested checks (87/87 regression and 7/7 new dedupe tests). 1 extra concurrency finding (minor).", "frontend": "100% (translation in 3 languages, single POST on 6/6 calculators, fieldset disabled, 23/23 unit tests)"},
+  "seed_data_creation": "Created test analyses for genova.tester and genova.other: 3 history-seed entries, 6 UI entries, about 15 from the dedupe tests and 5 from the race probe. All of them were deleted by id (200). Older entries in genova.tester's history (11:44–11:53) were already there and were not touched.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Clerk sign-in tickets are single-use: generate a new one for each browser session with python /app/scripts/clerk_test_session.py. Note that tests/test_dedupe_live.py is now picked up by `pytest tests -n 0` (94 tests, adds about 12s because of an 11s sleep). Race probe: python /app/backend/tests/race_probe.py <email> <N>; it cleans up after itself. To check the UI guard, slow the POST with page.route (1.5s) and fire 3 b.click() calls via evaluate. Do not test the baby-gender family-pattern feature."
+}

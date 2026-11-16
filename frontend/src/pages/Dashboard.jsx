@@ -1,23 +1,23 @@
 import { Link } from "react-router-dom";
-import { ArrowUpRight, Grid3x3, Droplet, ShieldAlert, Ruler, Eye, Baby } from "lucide-react";
+import { ArrowUpRight, Grid3x3, Droplet, ShieldAlert, Ruler, Eye, Baby, Users } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
 import { CertaintyBadge, Disclaimer } from "@/components/genova/primitives";
 
 const CALCS = [
   ["mendelian", Grid3x3, "established"], ["blood-type", Droplet, "established"], ["carrier-risk", ShieldAlert, "established"],
-  ["height", Ruler, "statistical_estimate"], ["pigmentation", Eye, "uncertain_estimate"], ["sex-ratio", Baby, "population_statistic"],
+  ["height", Ruler, "statistical_estimate"], ["pigmentation", Eye, "uncertain_estimate"], ["sex-ratio", Baby, "population_statistic"], ["family-pattern", Users, "traditional_belief"],
 ];
-const TIER_KEYS = ["established", "population_estimate", "statistical_estimate", "uncertain_estimate", "population_statistic"];
+const TIER_KEYS = ["established", "population_estimate", "statistical_estimate", "uncertain_estimate", "population_statistic", "traditional_belief"];
 const TIER_NAMES = {
-  en: ["Established", "Population estimate", "Statistical estimate", "Uncertain estimate", "Population statistic"],
-  ar: ["مُثبت", "تقدير سكاني", "تقدير إحصائي", "تقدير غير مؤكد", "إحصاء سكاني"],
-  de: ["Gesichert", "Bevölkerungsschätzung", "Statistische Schätzung", "Unsichere Schätzung", "Bevölkerungsstatistik"],
+  en: ["Established", "Population estimate", "Statistical estimate", "Uncertain estimate", "Population statistic", "Traditional belief"],
+  ar: ["مُثبت", "تقدير سكاني", "تقدير إحصائي", "تقدير غير مؤكد", "إحصاء سكاني", "اعتقاد تقليدي"],
+  de: ["Gesichert", "Bevölkerungsschätzung", "Statistische Schätzung", "Unsichere Schätzung", "Bevölkerungsstatistik", "Traditioneller Glaube"],
 };
 
 export const TierLegend = () => {
   const { t, lang } = useLang();
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3" data-testid="tier-legend">
+    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3" data-testid="tier-legend">
       {TIER_KEYS.map((k, i) => (
         <div key={k} className="bg-white border border-slate-200 rounded-md p-4 space-y-2">
           <CertaintyBadge tier={k} label={TIER_NAMES[lang][i]} testId={`tier-legend-${k}`} />

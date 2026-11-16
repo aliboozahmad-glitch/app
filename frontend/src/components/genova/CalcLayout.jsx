@@ -37,7 +37,7 @@ export const CalcLayout = ({ kind, onSubmit, loading, error, analysis, children,
 };
 
 CalcLayout.propTypes = {
-  kind: PropTypes.oneOf(["mendelian", "blood-type", "carrier-risk", "height", "pigmentation", "sex-ratio"]).isRequired,
+  kind: PropTypes.oneOf(["mendelian", "blood-type", "carrier-risk", "height", "pigmentation", "sex-ratio", "family-pattern"]).isRequired,
   onSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool,
   error: PropTypes.string,

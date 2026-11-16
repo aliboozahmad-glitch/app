@@ -56,5 +56,8 @@ describe("summarize (translated)", () => {
     expect(summarize({ analysis_type: "height", request: { mother_cm: 165, father_cm: 180 } }, en)).toBe("165 cm × 180 cm");
     expect(summarize({ analysis_type: "sex-ratio", request: {} }, en)).toBe("105 : 100");
     expect(summarize({ analysis_type: "unknown" }, en)).toBe("");
+    const family = { analysis_type: "family-pattern", request: { wife: ["male", "female"], husband: ["female"], child_number: 2 } };
+    expect(summarize(family, en)).toBe("Wife's family (children in birth order): Boy, Girl × Husband's family (children in birth order): Girl · Second child");
+    expect(summarize(family, ar)).toContain("ذكر, أنثى");
   });
 });

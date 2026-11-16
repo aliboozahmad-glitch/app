@@ -123,3 +123,30 @@ def test_dedupe_is_per_user(client):
     client.delete(f"/api/analyses/{b}")
     as_user(USER_A)
     client.delete(f"/api/analyses/{a}")
+
+
+def test_concurrent_identical_requests_create_one_entry():
+    import asyncio
+
+    import httpx
+
+    async def burst():
+        app.dependency_overrides[current_member] = lambda: USER_A
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://t") as c:
+            body = {"mother_cm": 159.5, "father_cm": 187}
+            rs = await asyncio.gather(*[c.post("/api/analyses/height", json=body) for _ in range(6)])
+            ids = {r.json()["id"] for r in rs}
+            for aid in ids:
+                await c.delete(f"/api/analyses/{aid}")
+        return ids
+
+    from genova.db import client as mongo_client
+    loop = asyncio.new_event_loop()
+    try:
+        mongo_client.get_io_loop = lambda: loop  # motor binds to the running loop
+        assert len(loop.run_until_complete(burst())) == 1
+    finally:
+        del mongo_client.get_io_loop
+        loop.close()
+        app.dependency_overrides.clear()

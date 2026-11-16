@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { TIERS } from "@/types";
-import { ShieldCheck, BarChart3, Users, HelpCircle, Globe2 } from "lucide-react";
+import { ShieldCheck, BarChart3, Users, HelpCircle, Globe2, ScrollText } from "lucide-react";
 
 export const TIER_STYLE = {
   established: ["bg-emerald-50 text-emerald-800 border-emerald-200", ShieldCheck],
@@ -8,6 +8,7 @@ export const TIER_STYLE = {
   statistical_estimate: ["bg-blue-50 text-blue-800 border-blue-200", BarChart3],
   uncertain_estimate: ["bg-amber-50 text-amber-800 border-amber-200", HelpCircle],
   population_statistic: ["bg-slate-100 text-slate-700 border-slate-300", Globe2],
+  traditional_belief: ["bg-orange-50 text-orange-800 border-orange-300 border-dashed", ScrollText],
 };
 
 export const CertaintyBadge = ({ tier, label, testId = "certainty-badge" }) => {
