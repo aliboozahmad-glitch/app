@@ -1,0 +1,24 @@
+{
+  "summary": "Iteration 3: verified the Step A follow-up fixes, frontend only (plus the regression suites as asked). Every requested item passed. 1) Carrier page: calculate-button stays disabled while /api/catalog is aborted (catalog-error shown) and while it is loading (catalog-loading shown, 2.5s delay); it becomes enabled after Retry succeeds and the error box goes away. 2) LoadState: with catalog data already loaded, a failed refetch on a language switch keeps the previous content on screen together with the inline error and retry box, on both the Carrier page (catalog-error, disease-select still visible, button still enabled) and the Sources page (sources-catalog-error, 10 source-disease cards still visible). Retry clears the error. 3) useAnalysis: Calculate sends one POST and no GET. A language switch sends exactly one GET ?lang=de. A failed AR re-localize shows calculator-error, and the next successful EN re-localize removes it. Last click wins: the first POST (AA×AA) was delayed 4s, the genotype was changed to aa×aa and the form submitted again; the final result shows aa×aa (100% shows trait) and the button returns to Calculate. 4) History: the sex-ratio summary reads '105 : 100'. The carrier title reads 'Disease carrier risk · Beta-thalassaemia' (DE: 'Trägerrisiko für Erkrankungen · Beta-Thalassämie'). 5) Regression: backend pytest -n 0 gives 85 passed; frontend yarn test gives 8 passed. Smoke test: all 6 calculators calculate and re-localize in EN, AR and DE (title and method text translated, dir=rtl in AR), with no page errors.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "History list", "issues": ["Input summaries show raw enum ids that are not translated (e.g. 'autosomal_recessive · Aa × Aa', 'carrier × carrier', 'eye_color · brown × blue') even in DE/AR. Optional polish, not part of this iteration."]},
+      {"screen": "Carrier/Sources after a failed language refetch", "issues": ["Expected behaviour: the kept content (disease names, inheritance label) stays in the previous language until Retry succeeds."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_live_api_e2e.py", "/app/backend/tests/golden_dump.py"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "useAnalysis: when several Calculate clicks overlap, every POST still saves an analysis on the server, so history gets one entry per click even though the UI shows only the last result. This is acceptable, but note it for rate-limit and history clutter. Optional: disable the Choice inputs while loading, or use an AbortController.",
+    "Optional: translate the history summaries (mode, status and trait labels) through the i18n maps."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (85/85 regression)", "frontend": "100% (all 5 requested items + 8/8 unit tests)"},
+  "seed_data_creation": "Created 9 analyses for genova.tester+clerk_test@example.com during the UI tests. All 9 were deleted by id afterwards (DELETE returned 200).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Sign in with the ticket from python /app/scripts/clerk_test_session.py, then open /sign-in?__clerk_ticket=... Error states: use page.route('**/api/catalog*', abort). Re-localize failure: route '**/api/analyses/*?lang=ar' with abort. Last-click test: delay only the first POST in a route handler, then call form.requestSubmit() through evaluate, because the button is disabled while loading. Language buttons: lang-{en|ar|de}-button."
+}
