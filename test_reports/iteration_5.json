@@ -1,0 +1,32 @@
+{
+  "summary": "Iteration 5: everything requested passed. Backend pytest -n 0: 108/108 passed. Frontend yarn test: 23/23 passed. ruff check genova server.py tests: clean. New live test file tests/test_family_pattern_live.py: 17/17 passed. Table integrity check: all 72 entries in data/family_pattern_table.json match the legacy Arabic PREDICTION_TABLE and the EN fixture exactly (key, result and case number; 0 mismatches). There are 10 duplicated patterns. Case numbers 61-68 are absent, as in the original. API: case 1 -> male, no flags. wife [male,male] + husband [male,male] -> matched [41,78], effective 78, flags duplicate_pattern + split_unconfirmed. wife [female] + husband [male,male] -> case 54, split_unconfirmed. wife [male,female,male] + husband [female x3] -> outcomes [], flag not_in_table, no default boy. All probabilities are null and certainty is traditional_belief. Invalid inputs (0 or 4 children, 'boy', child_number 3, extra field, missing wife) -> 4xx. No token -> 401. 6 concurrent identical POSTs behind a barrier -> 1 id (the iteration-4 race is fixed). UI: the dashboard card calculator-card-family-pattern shows the 'Traditional belief' badge. The notice is present. Add/remove child is capped at 3 and floored at 1. Case 54 shows the 'Traditional belief, not science' badge, 'Table case #54', the Boy row and the review-pending limitation. Not-in-table shows no outcome row, no case number and the not-in-table text. EN, AR (dir=rtl) and DE are all localized. A triple synchronous click with the POST slowed by 1.5 s -> 1 POST; the fieldset is disabled while loading. The history summaries for family pattern are translated in EN, AR and DE, and no raw codes were found. The sex-ratio calculator is unchanged (105:100, 51.22%/48.78%), separate, and still says family patterns are not used.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/analyses/{kind}", "issue": "_save_locks is a defaultdict(asyncio.Lock) that is never pruned. It grows by one lock per (user, calculator) pair, and it is process-local, so it only makes the dedupe atomic with a single uvicorn worker. If you run multiple workers or replicas, use a unique index or a request-hash upsert."},
+      {"endpoint": "references: legacy-family-pattern-table", "issue": "The reference title and publisher stay in English in AR and DE (e.g. 'Original family-pattern table (gender_prediction_logic.py, ...)'). This is cosmetic."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "History (family-pattern rows)", "issues": ["The summary reuses the long field labels ('Wife's family (children in birth order): ...'), so it wraps to 2-3 lines. A shorter 'Wife: Girl × Husband: Boy, Boy · First child' would read better.", "AR summary joins names with a Latin comma ',' instead of the Arabic comma '،'."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_family_pattern_live.py", "/app/backend/tests/test_family_pattern.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Optional: prune or bound _save_locks, or add a DB-level unique guard for multi-worker deployments",
+    "Optional: localize the legacy-family-pattern-table reference title in AR/DE, and shorten the family-pattern history summary labels"
+  ],
+  "critical_code_review_comments": [
+    "family_pattern.py is faithful: no randomness, the later duplicate wins (as in the original dict behaviour), flags are added but no data is corrected, and not_in_table gives no outcome. The details still carry original_fallback: 'male' for transparency; the UI does not show it as a result.",
+    "ResultView uses `d.effective_case && ...`, which is safe because case numbers start at 1."
+  ],
+  "updated_files": ["/app/backend/tests/test_family_pattern_live.py (new)"],
+  "success_rate": {"backend": "100% (108/108 suite + 17/17 live)", "frontend": "100% (23/23 jest + all UI flows)"},
+  "seed_data_creation": "None. I used the fresh test user it5+clerk_test@example.com. All 6 of its analyses were deleted by id after the tests.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Use it5+clerk_test@example.com (or another fresh email) for the live family-pattern tests: python -m pytest tests/test_family_pattern_live.py -n 0. In the history API, analysis_type is 'family-pattern' (hyphen); in result.analysis_type it is 'family_pattern'. Tickets are single-use. Do not modify the table data."
+}

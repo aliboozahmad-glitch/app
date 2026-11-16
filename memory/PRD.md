@@ -23,6 +23,13 @@ backend/genova/genetics (pure engine) · genova/i18n · genova/api · genova/aut
 
 - 2026-06 Code-quality pass: backend complexity refactor (radon: nothing at rank C or worse), frontend complexity ≤8, stable React keys, PropTypes + JSDoc types (src/types.js), usePublic loading/error/retry (LoadState), stale-request guards, Calculate disabled until catalog loads, history summaries + two-step delete. Code review 88 → 95/100. Tests: backend 85/85, frontend jest 8/8. Byte-identical engine output was confirmed across 9,921 inputs.
 
+- 2026-06 Review fixes round 2: translated history summaries (AR/EN/DE); one intentional calculation = one history entry (frontend in-flight guard + disabled fieldset, backend 10 s identical-request dedupe with per-user lock); frontend RTL tests for loading/retry/error and hooks; ruff config + cleanup (clean).
+- 2026-06 Owner's original family-pattern gender table restored as a separate "traditional belief" tool (genova/traditional). All 72 entries are reproduced exactly with the original lookup (later duplicate wins). Wife's and husband's families are entered separately, with no random numbers or confidence %. Unconfirmed issues are flagged, not corrected; the review sheet is docs/FAMILY_PATTERN_REVIEW.md. The 105:100 statistic stays separate.
+- Tests: backend 125/125 (incl. live), frontend 23/23, ruff + eslint clean. Engine output byte-identical to before the cleanup.
+
+## Pending owner input
+- Family-pattern review: the 10 duplicate patterns (results identical), the split for cases 53–60 and 69–80, the missing case numbers 61–68, the behaviour for patterns not in the table, and any combinations to add. Change nothing until the owner confirms.
+
 ## Backlog
 - P0 (Step B): AI explanation engine (Claude Opus 5.5, guarded); PDF reports AR/EN/DE; full UI polish; Clerk UI localisation
 - P0 (Step C): Stripe subscriptions + webhook + server-side gating; admin dashboard (EUR prices, users, data validation status); baby-face AI artwork
