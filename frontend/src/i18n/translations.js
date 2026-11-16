@@ -1,7 +1,7 @@
 const en = {
   brand: "GENOVA AI",
   tagline: "Genetic inheritance, calculated honestly.",
-  nav: { dashboard: "Calculators", history: "History", sources: "Methods & sources", signIn: "Sign in", signUp: "Create account" },
+  nav: { dashboard: "Calculators", history: "History", sources: "Methods & sources", signIn: "Sign in", signUp: "Create account", stats: "Statistics" },
   landing: {
     overline: "Genetic inheritance analysis",
     title: "Exact where science is exact. Honest where it isn't.",
@@ -45,6 +45,8 @@ const en = {
   family: { wifeShort: "Wife", husbandShort: "Husband", sep: ", ", wife: "Wife's family (children in birth order)", husband: "Husband's family (children in birth order)", child: "Child", add: "Add child", remove: "Remove last", boy: "Boy", girl: "Girl", which: "Which child of yours", first: "First child", second: "Second child", caseLabel: "Table case", oldAppOnly: "Old App Only", borrowed: "Answer taken from table case", notice: "This is a traditional prediction method. It is not scientifically validated and is kept separate from the birth statistic." },
   sex: { intro: "Family birth-order patterns cannot predict a baby's sex. GENOVA shows the population statistic instead.", show: "Show statistic" },
   history: { overline: "Your saved analyses", title: "History" },
+  feedback: { helpful: "Was this result helpful?", like: "Like", dislike: "Dislike", thanks: "Thank you, saved.", saved: "Saved — you can change it", confirmTitle: "Share the actual result (voluntary)", confirmNote: "Optional and anonymous: only the predicted and actual result and the date are kept for GENOVA AI statistics. No names or documents. You can correct it later.", stages: { pregnancy: "During pregnancy", birth: "After birth" } },
+  stats: { title: "Real-world statistics", label: "Voluntary, user-reported observational statistics. They are not scientific validation.", forbidden: "This page is for the admin only.", predictions: "Total predictions", confirmedTotal: "Total confirmed results", confirmed: "Confirmed", matches: "Match", mismatches: "Mismatch", matchRate: "Match rate", group: "Group", byRange: "Match rate by original percentage", byMethod: "Match rate by calculation method", noRange: "No percentage", methods: { two_child_table: "Two-child table (3 + 3)", one_child_table: "One-child table", other_case_answer: "Answer from another case" }, ratingsTitle: "User satisfaction", ratingsNote: "Like / Dislike ratings. Kept separate from the accuracy statistics.", satisfaction: "Satisfaction", calculator: "Calculator" },
   sources: { overline: "Transparency", title: "Methods & sources", subtitle: "Every number in GENOVA comes from a formula or a cited source. Regional carrier figures stay in draft until validated.",
     panel: "Disease panel", inheritance: "Inheritance", gene: "Gene", regional: "Regional evidence", draft: "Draft, not used", validated: "Validated", all: "All references" },
   tier: { established: "Exact Mendelian result from stated genotypes.", population_estimate: "Uses validated regional frequencies.", statistical_estimate: "Formula with a typical range.", uncertain_estimate: "Qualitative only, many genes involved.", population_statistic: "Population average, not a prediction.", traditional_belief: "Owner's traditional table, no scientific basis." },
@@ -53,7 +55,7 @@ const en = {
 const ar = {
   brand: "GENOVA AI",
   tagline: "الوراثة الجينية، محسوبة بأمانة.",
-  nav: { dashboard: "الحاسبات", history: "السجل", sources: "المنهجية والمصادر", signIn: "تسجيل الدخول", signUp: "إنشاء حساب" },
+  nav: { dashboard: "الحاسبات", history: "السجل", sources: "المنهجية والمصادر", signIn: "تسجيل الدخول", signUp: "إنشاء حساب", stats: "الإحصاءات" },
   landing: {
     overline: "تحليل الوراثة الجينية",
     title: "دقيق حيث يكون العلم دقيقاً، وصريح حيث لا يكون.",
@@ -97,6 +99,8 @@ const ar = {
   family: { wifeShort: "الزوجة", husbandShort: "الزوج", sep: "، ", wife: "عائلة الزوجة (الأطفال حسب ترتيب الولادة)", husband: "عائلة الزوج (الأطفال حسب ترتيب الولادة)", child: "طفل", add: "إضافة طفل", remove: "حذف الأخير", boy: "ذكر", girl: "أنثى", which: "أي طفل لكما", first: "الطفل الأول", second: "الطفل الثاني", caseLabel: "حالة الجدول", oldAppOnly: "التطبيق القديم فقط", borrowed: "الإجابة مأخوذة من حالة الجدول", notice: "هذه طريقة توقع تقليدية. وهي غير مثبتة علمياً ومنفصلة عن إحصاء الولادة." },
   sex: { intro: "لا يمكن لأنماط ترتيب الولادة في العائلة التنبؤ بجنس الجنين. يعرض GENOVA الإحصاء السكاني بدلاً من ذلك.", show: "اعرض الإحصاء" },
   history: { overline: "تحليلاتك المحفوظة", title: "السجل" },
+  feedback: { helpful: "هل كانت هذه النتيجة مفيدة؟", like: "أعجبني", dislike: "لم يعجبني", thanks: "شكراً، تم الحفظ.", saved: "تم الحفظ — يمكنك تعديله", confirmTitle: "شارك النتيجة الفعلية (اختياري)", confirmNote: "اختياري ومجهول الهوية: يُحفظ فقط التوقع والنتيجة الفعلية والتاريخ لإحصاءات GENOVA AI. لا أسماء ولا مستندات. يمكنك التصحيح لاحقاً.", stages: { pregnancy: "أثناء الحمل", birth: "بعد الولادة" } },
+  stats: { title: "إحصاءات من الواقع", label: "إحصاءات رصدية تطوعية يبلغ عنها المستخدمون. ليست تحققاً علمياً.", forbidden: "هذه الصفحة للمشرف فقط.", predictions: "إجمالي التوقعات", confirmedTotal: "إجمالي النتائج المؤكدة", confirmed: "مؤكدة", matches: "مطابقة", mismatches: "غير مطابقة", matchRate: "نسبة المطابقة", group: "المجموعة", byRange: "نسبة المطابقة حسب النسبة الأصلية", byMethod: "نسبة المطابقة حسب طريقة الحساب", noRange: "بدون نسبة", methods: { two_child_table: "جدول الطفلين (3 + 3)", one_child_table: "جدول الطفل الواحد", other_case_answer: "إجابة من حالة أخرى" }, ratingsTitle: "رضا المستخدمين", ratingsNote: "تقييمات أعجبني / لم يعجبني. منفصلة عن إحصاءات الدقة.", satisfaction: "نسبة الرضا", calculator: "الحاسبة" },
   sources: { overline: "الشفافية", title: "المنهجية والمصادر", subtitle: "كل رقم في GENOVA مصدره معادلة أو مرجع موثّق. تبقى نسب الحمل الإقليمية مسودة حتى يتم التحقق منها.",
     panel: "قائمة الأمراض", inheritance: "نمط الوراثة", gene: "الجين", regional: "الأدلة الإقليمية", draft: "مسودة، غير مستخدمة", validated: "مُعتمد", all: "جميع المراجع" },
   tier: { established: "نتيجة مندلية دقيقة من الطرز المدخلة.", population_estimate: "يستخدم نسباً إقليمية معتمدة.", statistical_estimate: "معادلة مع نطاق نموذجي.", uncertain_estimate: "وصفي فقط، جينات كثيرة مشاركة.", population_statistic: "متوسط سكاني وليس تنبؤاً.", traditional_belief: "جدول المالك التقليدي، بلا أساس علمي." },
@@ -105,7 +109,7 @@ const ar = {
 const de = {
   brand: "GENOVA AI",
   tagline: "Genetische Vererbung, ehrlich berechnet.",
-  nav: { dashboard: "Rechner", history: "Verlauf", sources: "Methoden & Quellen", signIn: "Anmelden", signUp: "Konto erstellen" },
+  nav: { dashboard: "Rechner", history: "Verlauf", sources: "Methoden & Quellen", signIn: "Anmelden", signUp: "Konto erstellen", stats: "Statistik" },
   landing: {
     overline: "Analyse genetischer Vererbung",
     title: "Exakt, wo die Wissenschaft exakt ist. Ehrlich, wo sie es nicht ist.",
@@ -149,6 +153,8 @@ const de = {
   family: { wifeShort: "Ehefrau", husbandShort: "Ehemann", sep: ", ", wife: "Familie der Ehefrau (Kinder in Geburtsreihenfolge)", husband: "Familie des Ehemanns (Kinder in Geburtsreihenfolge)", child: "Kind", add: "Kind hinzufügen", remove: "Letztes entfernen", boy: "Junge", girl: "Mädchen", which: "Welches Ihrer Kinder", first: "Erstes Kind", second: "Zweites Kind", caseLabel: "Tabellenfall", oldAppOnly: "Nur alte App", borrowed: "Antwort übernommen aus Tabellenfall", notice: "Dies ist eine traditionelle Vorhersagemethode. Sie ist wissenschaftlich nicht belegt und bleibt getrennt von der Geburtsstatistik." },
   sex: { intro: "Familienmuster der Geburtsreihenfolge können das Geschlecht nicht vorhersagen. GENOVA zeigt stattdessen die Bevölkerungsstatistik.", show: "Statistik anzeigen" },
   history: { overline: "Ihre gespeicherten Analysen", title: "Verlauf" },
+  feedback: { helpful: "War dieses Ergebnis hilfreich?", like: "Gefällt mir", dislike: "Gefällt mir nicht", thanks: "Danke, gespeichert.", saved: "Gespeichert — änderbar", confirmTitle: "Tatsächliches Ergebnis teilen (freiwillig)", confirmNote: "Freiwillig und anonym: Für die GENOVA-AI-Statistik werden nur Vorhersage, tatsächliches Ergebnis und Datum gespeichert. Keine Namen oder Dokumente. Sie können es später korrigieren.", stages: { pregnancy: "Während der Schwangerschaft", birth: "Nach der Geburt" } },
+  stats: { title: "Statistik aus der Praxis", label: "Freiwillige, von Nutzern gemeldete Beobachtungsstatistik. Keine wissenschaftliche Validierung.", forbidden: "Diese Seite ist nur für den Administrator.", predictions: "Vorhersagen gesamt", confirmedTotal: "Bestätigte Ergebnisse gesamt", confirmed: "Bestätigt", matches: "Treffer", mismatches: "Abweichung", matchRate: "Trefferquote", group: "Gruppe", byRange: "Trefferquote nach ursprünglichem Prozentsatz", byMethod: "Trefferquote nach Berechnungsmethode", noRange: "Kein Prozentsatz", methods: { two_child_table: "Zwei-Kind-Tabelle (3 + 3)", one_child_table: "Ein-Kind-Tabelle", other_case_answer: "Antwort aus anderem Fall" }, ratingsTitle: "Nutzerzufriedenheit", ratingsNote: "Gefällt mir / Gefällt mir nicht. Getrennt von der Genauigkeitsstatistik.", satisfaction: "Zufriedenheit", calculator: "Rechner" },
   sources: { overline: "Transparenz", title: "Methoden & Quellen", subtitle: "Jede Zahl in GENOVA stammt aus einer Formel oder einer zitierten Quelle. Regionale Trägerfrequenzen bleiben bis zur Validierung im Entwurf.",
     panel: "Erkrankungspanel", inheritance: "Erbgang", gene: "Gen", regional: "Regionale Evidenz", draft: "Entwurf, nicht verwendet", validated: "Validiert", all: "Alle Quellen" },
   tier: { established: "Exaktes Mendelsches Ergebnis aus angegebenen Genotypen.", population_estimate: "Nutzt validierte regionale Frequenzen.", statistical_estimate: "Formel mit typischer Spanne.", uncertain_estimate: "Nur qualitativ, viele Gene beteiligt.", population_statistic: "Bevölkerungsdurchschnitt, keine Vorhersage.", traditional_belief: "Traditionelle Tabelle des Eigentümers, ohne wissenschaftliche Grundlage." },

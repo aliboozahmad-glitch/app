@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useLang } from "@/i18n/LanguageContext";
 import { analysisShape } from "@/types";
 import { PrintReportButton } from "./FamilyPatternReport";
+import { ResultFeedback } from "./ResultFeedback";
 
 const PublicContent = ({ analysis, testPrefix }) => {
   const { t, lang } = useLang();
@@ -44,6 +45,7 @@ export const PublicFamilyResult = ({ analysis }) => {
       <section className="bg-white border border-slate-200 rounded-md shadow-sm rise p-6 sm:p-8 space-y-6" data-testid="result-card">
         <PublicContent analysis={analysis} testPrefix="public-result" />
         <PrintReportButton />
+        <ResultFeedback analysisId={analysis.id} />
       </section>
     </>
   );

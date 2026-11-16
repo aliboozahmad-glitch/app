@@ -9,6 +9,7 @@ import { PunnettGrid } from "./PunnettGrid";
 import { Scenarios } from "./Scenarios";
 import { FamilyPatternReport, PrintReportButton } from "./FamilyPatternReport";
 import { PublicFamilyResult } from "./PublicFamilyResult";
+import { ResultFeedback } from "./ResultFeedback";
 
 const SectionTitle = ({ children }) => (
   <h3 className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500 mb-2">{children}</h3>
@@ -147,6 +148,7 @@ export const ResultView = ({ analysis }) => {
         </div>
         <Sources refs={r.references} />
         <Versions result={r} id={analysis.id} />
+        <ResultFeedback analysisId={analysis.id} />
       </div>
     </section>
     </>

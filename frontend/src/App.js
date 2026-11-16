@@ -14,6 +14,7 @@ import { HeightPage, PigmentationPage, SexRatioPage } from "@/pages/SimpleCalcul
 import { AnalysisDetailPage, HistoryPage } from "@/pages/HistoryPages";
 import SourcesPage from "@/pages/SourcesPage";
 import FamilyPatternPage from "@/pages/FamilyPatternPage";
+import AdminStatsPage from "@/pages/AdminStatsPage";
 
 const Protected = ({ children }) => (
   <>
@@ -46,6 +47,7 @@ function App() {
               <Route path="/calc/sex-ratio" element={p(<SexRatioPage />)} />
               <Route path="/calc/family-pattern" element={p(<FamilyPatternPage />)} />
               <Route path="/history" element={p(<HistoryPage />)} />
+              <Route path="/admin/stats" element={p(<AdminStatsPage />)} />
               <Route path="/history/:id" element={p(<AnalysisDetailPage />)} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

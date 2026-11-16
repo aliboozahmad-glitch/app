@@ -83,3 +83,37 @@ export const usePublic = (path) => {
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
   return { ...state, retry };
 };
+
+/**
+ * Signed-in GET with loading, error, retry and a forbidden flag for admin-only data.
+ * @param {string} path e.g. "/admin/stats"
+ */
+export const useAuthedGet = (path) => {
+  const api = useApi();
+  const [state, setState] = useState({ data: null, error: false, forbidden: false });
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    let active = true;
+    setState((s) => ({ ...s, error: false }));
+    api("get", path)
+      .then((data) => active && setState({ data, error: false, forbidden: false }))
+      .catch((e) => active && setState((s) => ({ ...s, error: true, forbidden: e?.response?.status === 403 })));
+    return () => { active = false; };
+  }, [api, path, attempt]);
+  const retry = useCallback(() => setAttempt((n) => n + 1), []);
+  return { ...state, retry };
+};
+
+/** @returns {{ role: string }|null} the signed-in member, or null while loading / signed out */
+export const useMe = () => {
+  const { isSignedIn } = useAuth();
+  const api = useApi();
+  const [me, setMe] = useState(null);
+  useEffect(() => {
+    if (!isSignedIn) { setMe(null); return undefined; }
+    let active = true;
+    api("get", "/me").then((m) => active && setMe(m)).catch(() => active && setMe(null));
+    return () => { active = false; };
+  }, [api, isSignedIn]);
+  return me;
+};

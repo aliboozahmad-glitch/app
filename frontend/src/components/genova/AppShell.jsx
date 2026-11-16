@@ -3,12 +3,14 @@ import { Show, SignInButton, UserButton } from "@clerk/react";
 import { Dna } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useMe } from "@/lib/api";
 
 const navCls = ({ isActive }) =>
   `text-sm px-3 py-2 rounded-md transition-colors ${isActive ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"}`;
 
 export const AppShell = () => {
   const { t } = useLang();
+  const isAdmin = useMe()?.role === "admin";
   return (
     <div className="min-h-screen flex flex-col">
       <header className="sticky top-0 z-30 bg-white border-b border-slate-200">
@@ -21,6 +23,7 @@ export const AppShell = () => {
             <Show when="signed-in">
               <NavLink to="/dashboard" className={navCls} data-testid="nav-dashboard">{t.nav.dashboard}</NavLink>
               <NavLink to="/history" className={navCls} data-testid="nav-history">{t.nav.history}</NavLink>
+              {isAdmin && <NavLink to="/admin/stats" className={navCls} data-testid="nav-admin-stats">{t.nav.stats}</NavLink>}
             </Show>
             <NavLink to="/sources" className={navCls} data-testid="nav-sources">{t.nav.sources}</NavLink>
           </nav>
@@ -39,6 +42,7 @@ export const AppShell = () => {
             <NavLink to="/dashboard" className={navCls} data-testid="mobile-nav-dashboard">{t.nav.dashboard}</NavLink>
             <NavLink to="/history" className={navCls} data-testid="mobile-nav-history">{t.nav.history}</NavLink>
             <NavLink to="/sources" className={navCls} data-testid="mobile-nav-sources">{t.nav.sources}</NavLink>
+            {isAdmin && <NavLink to="/admin/stats" className={navCls} data-testid="mobile-nav-admin-stats">{t.nav.stats}</NavLink>}
           </nav>
         </Show>
       </header>

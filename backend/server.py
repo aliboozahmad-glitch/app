@@ -25,6 +25,7 @@ except ModuleNotFoundError:
 from genova.api import router as genova_router
 from genova.auth import RETIRED_ROLES
 from genova.db import client, db
+from genova.feedback import router as feedback_router
 from genova.genetics import GeneticsInputError
 from genova.i18n import LANGS, t
 
@@ -36,6 +37,11 @@ INDEXES: dict[str, list[IndexModel]] = {
                  IndexModel([("user_id", ASCENDING), ("analysis_type", ASCENDING), ("created_at", DESCENDING)],
                             name="user_kind_created")],
     "users": [IndexModel([("user_id", ASCENDING)], name="user_id", unique=True)],
+    "confirmations_pregnancy": [IndexModel([("analysis_id", ASCENDING)], name="analysis_id", unique=True)],
+    "confirmations_birth": [IndexModel([("analysis_id", ASCENDING)], name="analysis_id", unique=True)],
+    "ratings": [IndexModel([("analysis_id", ASCENDING)], name="analysis_id", unique=True)],
+    "usage_daily": [IndexModel([("user_id", ASCENDING), ("kind", ASCENDING), ("day", ASCENDING)], name="user_kind_day",
+                               unique=True)],
 }
 
 
@@ -50,6 +56,7 @@ async def ensure_indexes() -> None:
 
 app = FastAPI(title="GENOVA AI API", version="1.0.0")
 app.include_router(genova_router)
+app.include_router(feedback_router)
 app.include_router(clerk_router)
 
 app.add_middleware(
