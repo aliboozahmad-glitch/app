@@ -39,7 +39,7 @@ Source PDF: `docs/source/family_pattern_rules.pdf` (3 scanned pages, no text lay
 | 91 | أنثى ذكر ذكر | ذكر | ذكر | case 70: ذكر | ✅ |
 | 92 | ذكر أنثى أنثى | ذكر | ذكر | no answer (not in table) | ❌ **different** |
 
-So **3 inputs currently give a different answer from your PDF: cases 84, 87 and 92.**
+So **3 inputs currently give a different answer from your PDF: cases 84, 87 and 92.** For 92, the old app's default ("boy") happens to match the PDF, but GENOVA currently shows no answer.
 
 ## 3. Other differences
 

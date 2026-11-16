@@ -28,6 +28,7 @@ backend/genova/genetics (pure engine) · genova/i18n · genova/api · genova/aut
 - Tests: backend 125/125 (incl. live), frontend 23/23, ruff + eslint clean. Engine output byte-identical to before the cleanup.
 
 ## Pending owner input
+- 2026-06: Owner's original PDF (81 entries: 1–29, 41–92) compared with the implementation; see docs/FAMILY_PATTERN_PDF_COMPARISON.md and docs/source/pdf_transcription.json (independently verified 81/81). Differences: PDF 61–68 and 81–92 are missing as cases; inputs 84, 87 and 92 give different answers; GENOVA has the old-code entries 30–40, which are not in the PDF. Awaiting approval of the proposed change.
 - Family-pattern review: the 10 duplicate patterns (results identical), the split for cases 53–60 and 69–80, the missing case numbers 61–68, the behaviour for patterns not in the table, and any combinations to add. Change nothing until the owner confirms.
 
 ## Backlog
