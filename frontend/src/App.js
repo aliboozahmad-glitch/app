@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Show } from "@clerk/react";
 import ClerkAuthProvider from "@/components/auth/ClerkAuthProvider";
@@ -19,6 +20,8 @@ const Protected = ({ children }) => (
     <Show when="signed-out"><Navigate to="/sign-in" replace /></Show>
   </>
 );
+
+Protected.propTypes = { children: PropTypes.node.isRequired };
 
 const p = (el) => <Protected>{el}</Protected>;
 

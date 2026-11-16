@@ -62,37 +62,48 @@ def _ranges(scenarios):
                 max(s["phenotypes"].get(k, Fraction(0)) for s in scenarios)) for k in keys}
 
 
-def blood_type_analysis(p1_abo: str, p1_rh: str, p2_abo: str, p2_rh: str) -> dict:
-    abo = _locus_scenarios(parse_abo(p1_abo), parse_abo(p2_abo), _canon_abo, abo_phenotype)
-    rh = _locus_scenarios(parse_rh(p1_rh), parse_rh(p2_rh), _canon_rh, rh_phenotype)
-    abo_r, rh_r = _ranges(abo), _ranges(rh)
-    exact = len(abo) == 1 and len(rh) == 1
+ALL_TYPES = [f"{a}{r}" for a in ("A", "B", "AB", "O") for r in ("+", "-")]
+
+
+def _exact_outcome(key, p):
+    return {"key": key, "kind": "blood_type", "group": "all_children",
+            "probability": round(float(p), 6), "fraction": frac_str(p)}
+
+
+def _range_outcome(key, lo, hi):
+    return {"key": key, "kind": "blood_type", "group": "all_children", "probability": None, "fraction": None,
+            "range": [round(float(lo), 6), round(float(hi), 6)], "range_fraction": [frac_str(lo), frac_str(hi)]}
+
+
+def _combined_outcomes(abo_r, rh_r, exact):
+    """ABO and RhD are independent loci, so bounds multiply."""
     outcomes = []
     for a, (amin, amax) in abo_r.items():
         for r, (rmin, rmax) in rh_r.items():
             lo, hi = amin * rmin, amax * rmax
-            if hi == 0:
-                continue
-            o = {"key": f"{a}{r}", "kind": "blood_type", "group": "all_children",
-                 "probability": round(float(hi), 6) if exact else None,
-                 "fraction": frac_str(hi) if exact else None}
-            if not exact:
-                o["range"] = [round(float(lo), 6), round(float(hi), 6)]
-                o["range_fraction"] = [frac_str(lo), frac_str(hi)]
-            outcomes.append(o)
-    outcomes.sort(key=lambda o: -(o["probability"] or o["range"][1]))
-    all_types = [f"{a}{r}" for a in ("A", "B", "AB", "O") for r in ("+", "-")]
+            if hi > 0:
+                outcomes.append(_exact_outcome(f"{a}{r}", hi) if exact else _range_outcome(f"{a}{r}", lo, hi))
+    return sorted(outcomes, key=lambda o: -(o["probability"] or o["range"][1]))
+
+
+def _serialise(scenarios):
+    return [{"parent1": s["parent1"], "parent2": s["parent2"],
+             "phenotypes": {k: frac_str(v) for k, v in s["phenotypes"].items()}} for s in scenarios]
+
+
+def blood_type_analysis(p1_abo: str, p1_rh: str, p2_abo: str, p2_rh: str) -> dict:
+    abo = _locus_scenarios(parse_abo(p1_abo), parse_abo(p2_abo), _canon_abo, abo_phenotype)
+    rh = _locus_scenarios(parse_rh(p1_rh), parse_rh(p2_rh), _canon_rh, rh_phenotype)
+    exact = len(abo) == 1 and len(rh) == 1
+    outcomes = _combined_outcomes(_ranges(abo), _ranges(rh), exact)
     possible = {o["key"] for o in outcomes}
-
-    def ser(scen):
-        return [{"parent1": s["parent1"], "parent2": s["parent2"],
-                 "phenotypes": {k: frac_str(v) for k, v in s["phenotypes"].items()}} for s in scen]
-
-    details = {"possible_types": [t for t in all_types if t in possible],
-               "impossible_types": [t for t in all_types if t not in possible],
-               "abo_scenarios": ser(abo), "rh_scenarios": ser(rh), "exact": exact}
+    details = {"possible_types": [t for t in ALL_TYPES if t in possible],
+               "impossible_types": [t for t in ALL_TYPES if t not in possible],
+               "abo_scenarios": _serialise(abo), "rh_scenarios": _serialise(rh), "exact": exact}
+    assumptions = ["standard_abo_rh_model", "mendelian_segregation"]
+    if not exact:
+        assumptions.append("phenotype_genotype_unknown")
     return make_result(
         "blood_type", "established", "blood_type_exact" if exact else "blood_type_scenarios",
         {"parent1": {"abo": p1_abo, "rh": p1_rh}, "parent2": {"abo": p2_abo, "rh": p2_rh}},
-        outcomes, ["standard_abo_rh_model", "mendelian_segregation"] + ([] if exact else ["phenotype_genotype_unknown"]),
-        ["abo_rare_exceptions"], REFS, details)
+        outcomes, assumptions, ["abo_rare_exceptions"], REFS, details)

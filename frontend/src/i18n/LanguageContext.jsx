@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { createContext, useContext, useEffect, useState } from "react";
 import { translations } from "./translations";
 
@@ -14,3 +15,5 @@ export const LanguageProvider = ({ children }) => {
 };
 
 export const useLang = () => useContext(LangContext);
+
+LanguageProvider.propTypes = { children: PropTypes.node.isRequired };

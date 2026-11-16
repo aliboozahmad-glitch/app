@@ -124,32 +124,40 @@ def t(key: str, lang: str) -> str:
     return entry[LANGS.index(lang)] if entry else key
 
 
-def localize_result(result: dict, lang: str) -> dict:
-    r = deepcopy(result)
-    refs = load_references()
-    diseases = load_diseases()
-    r["lang"] = lang
-    r["certainty_label"] = t("established_conditional" if r["method"] == "carrier_conditional" else r["certainty"], lang)
-    r["method_label"] = t(r["method"], lang)
-    for o in r["outcomes"]:
-        o["label"] = o["key"] if o["kind"] in ("genotype", "blood_type") else t(o["key"], lang)
+RAW_LABEL_KINDS = ("genotype", "blood_type")
+
+
+def _label_outcomes(outcomes: list, lang: str) -> None:
+    for o in outcomes:
+        o["label"] = o["key"] if o.get("kind") in RAW_LABEL_KINDS else t(o["key"], lang)
         o["group_label"] = t(o["group"], lang)
-    r["assumptions"] = [{"key": k, "text": t(k, lang)} for k in r["assumptions"]]
-    r["limitations"] = [{"key": k, "text": t(k, lang)} for k in r["limitations"]]
-    r["references"] = [refs[k] for k in dict.fromkeys(r["references"]) if k in refs]
-    d = r.get("details", {})
+
+
+def _localize_details(d: dict, inputs: dict, lang: str) -> None:
     for s in d.get("scenarios", []):
-        for o in s["outcomes"]:
-            o["label"] = t(o["key"], lang)
-            o["group_label"] = t(o["group"], lang)
+        _label_outcomes(s["outcomes"], lang)
     if "disease" in d:
-        dis = diseases[d["disease"]]
+        dis = load_diseases()[d["disease"]]
         d["disease_name"] = dis["names"][lang]
         d["inheritance_label"] = t(dis["inheritance"], lang)
     if "mechanism" in d:
         d["mechanism_text"] = t(d["mechanism"], lang)
-    if r["inputs"].get("mode"):
-        d["mode_label"] = t(r["inputs"]["mode"], lang)
-    if r["inputs"].get("region"):
-        d["region_label"] = t(r["inputs"]["region"], lang)
+    for field, target in (("mode", "mode_label"), ("region", "region_label")):
+        if inputs.get(field):
+            d[target] = t(inputs[field], lang)
+
+
+def localize_result(result: dict, lang: str) -> dict:
+    r = deepcopy(result)
+    refs = load_references()
+    tier = "established_conditional" if r["method"] == "carrier_conditional" else r["certainty"]
+    r["lang"] = lang
+    r["certainty_label"] = t(tier, lang)
+    r["method_label"] = t(r["method"], lang)
+    _label_outcomes(r["outcomes"], lang)
+    r["assumptions"] = [{"key": k, "text": t(k, lang)} for k in r["assumptions"]]
+    r["limitations"] = [{"key": k, "text": t(k, lang)} for k in r["limitations"]]
+    r["references"] = [refs[k] for k in dict.fromkeys(r["references"]) if k in refs]
+    r.setdefault("details", {})
+    _localize_details(r["details"], r["inputs"], lang)
     return r

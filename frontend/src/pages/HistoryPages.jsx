@@ -4,15 +4,8 @@ import { toast } from "sonner";
 import { Trash2, ArrowLeft } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
 import { errorMessage, useApi } from "@/lib/api";
+import { summarize } from "@/lib/format";
 
-const summarize = ({ analysis_type: k, request: r = {} }) => {
-  if (k === "mendelian") return `${r.mode} · ${r.parent1} × ${r.parent2}`;
-  if (k === "blood-type") return `${r.parent1_abo}${r.parent1_rh} × ${r.parent2_abo}${r.parent2_rh}`;
-  if (k === "carrier-risk") return `${r.mother_status} × ${r.father_status}${r.region ? ` · ${r.region}` : ""}`;
-  if (k === "height") return `${r.mother_cm} cm × ${r.father_cm} cm`;
-  if (k === "pigmentation") return `${r.trait} · ${r.mother} × ${r.father}`;
-  return "";
-};
 import { CertaintyBadge } from "@/components/genova/primitives";
 import { ResultView } from "@/components/genova/ResultView";
 

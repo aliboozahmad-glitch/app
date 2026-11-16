@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Link, Navigate } from "react-router-dom";
 import { Show, SignIn, SignUp } from "@clerk/react";
 import { ArrowRight, Fingerprint, ShieldCheck, BookOpen } from "lucide-react";
@@ -8,7 +9,7 @@ const AUTH_IMG = "https://images.unsplash.com/photo-1641903202531-bfa6bf0c6419?c
 
 export function Landing() {
   const { t } = useLang();
-  const feats = [[Fingerprint, t.landing.f1t, t.landing.f1d], [ShieldCheck, t.landing.f2t, t.landing.f2d], [BookOpen, t.landing.f3t, t.landing.f3d]];
+  const feats = [["deterministic", Fingerprint, t.landing.f1t, t.landing.f1d], ["certainty", ShieldCheck, t.landing.f2t, t.landing.f2d], ["sources", BookOpen, t.landing.f3t, t.landing.f3d]];
   return (
     <>
       <Show when="signed-in"><Navigate to="/dashboard" replace /></Show>
@@ -35,8 +36,8 @@ export function Landing() {
       </section>
       <section className="max-w-7xl mx-auto px-4 sm:px-8 py-16 space-y-12">
         <div className="grid md:grid-cols-3 gap-6">
-          {feats.map(([Icon, title, desc], i) => (
-            <div key={i} className="bg-white border border-slate-200 rounded-md p-6" data-testid={`landing-feature-${i}`}>
+          {feats.map(([id, Icon, title, desc], i) => (
+            <div key={id} className="bg-white border border-slate-200 rounded-md p-6" data-testid={`landing-feature-${i}`}>
               <Icon size={22} /><h2 className="text-lg font-semibold mt-4">{title}</h2><p className="text-sm text-slate-600 mt-2">{desc}</p>
             </div>
           ))}
@@ -65,3 +66,5 @@ export const SignInPage = () => (
 export const SignUpPage = () => (
   <AuthLayout><SignUp routing="path" path="/sign-up" signInUrl="/sign-in" /></AuthLayout>
 );
+
+AuthLayout.propTypes = { children: PropTypes.node.isRequired };

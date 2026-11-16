@@ -1,24 +1,34 @@
+import PropTypes from "prop-types";
 import { ExternalLink } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
+import { analysisShape, noteShape, referenceShape, resultShape } from "@/types";
 import { CertaintyBadge } from "./primitives";
 import { OutcomeTable } from "./OutcomeTable";
 import { PunnettGrid } from "./PunnettGrid";
 import { Scenarios } from "./Scenarios";
 
+const SectionTitle = ({ children }) => (
+  <h3 className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500 mb-2">{children}</h3>
+);
+
+SectionTitle.propTypes = { children: PropTypes.node };
+
 const NoteList = ({ title, items, testId }) => (
   <div data-testid={testId}>
-    <h3 className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500 mb-2">{title}</h3>
+    <SectionTitle>{title}</SectionTitle>
     <ul className="space-y-1.5 text-sm text-slate-700 list-disc ps-5">
       {items.map((i) => <li key={i.key}>{i.text}</li>)}
     </ul>
   </div>
 );
 
+NoteList.propTypes = { title: PropTypes.string.isRequired, items: PropTypes.arrayOf(noteShape).isRequired, testId: PropTypes.string.isRequired };
+
 export const Sources = ({ refs }) => {
   const { t } = useLang();
   return (
     <div data-testid="result-references">
-      <h3 className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500 mb-2">{t.c.references}</h3>
+      <SectionTitle>{t.c.references}</SectionTitle>
       <ol className="space-y-2 text-sm">
         {refs.map((r, i) => (
           <li key={r.id} className="flex gap-2">
@@ -36,35 +46,71 @@ export const Sources = ({ refs }) => {
   );
 };
 
+Sources.propTypes = { refs: PropTypes.arrayOf(referenceShape).isRequired };
+
+const ResultHeader = ({ result }) => {
+  const { t } = useLang();
+  const d = result.details || {};
+  const suffix = d.disease_name ? ` · ${d.disease_name}` : "";
+  return (
+    <div className="p-6 sm:p-8 border-b border-slate-200 flex flex-wrap items-start gap-3 justify-between">
+      <div>
+        <div className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500">{t.c.result}{suffix}</div>
+        <p className="mt-1 text-slate-900 font-medium" data-testid="result-method">{t.c.method}: {result.method_label}</p>
+        {d.inheritance_label && <p className="text-sm text-slate-500" data-testid="result-inheritance">{d.inheritance_label}</p>}
+        {d.mechanism_text && <p className="text-sm text-slate-600 mt-2 max-w-2xl" data-testid="result-mechanism">{d.mechanism_text}</p>}
+      </div>
+      <CertaintyBadge tier={result.certainty} label={result.certainty_label} />
+    </div>
+  );
+};
+
+ResultHeader.propTypes = { result: resultShape.isRequired };
+
+const ResultData = ({ result }) => {
+  const d = result.details || {};
+  const showScenarios = Boolean(d.scenarios) && result.method !== "carrier_exact";
+  return (
+    <>
+      {result.outcomes.length > 0 && <OutcomeTable result={result} />}
+      {showScenarios && <Scenarios details={d} />}
+      {d.grid && <PunnettGrid grid={d.grid} />}
+    </>
+  );
+};
+
+ResultData.propTypes = { result: resultShape.isRequired };
+
+const Versions = ({ result, id }) => {
+  const { t } = useLang();
+  return (
+    <div className="text-xs text-slate-400 font-mono-genes flex flex-wrap gap-4" data-testid="result-versions">
+      <span>{t.c.engine}: {result.engine_version}</span>
+      {result.data_version && <span>{t.c.data}: {result.data_version}</span>}
+      <span>ID: {id}</span>
+    </div>
+  );
+};
+
+Versions.propTypes = { result: resultShape.isRequired, id: PropTypes.string.isRequired };
+
 export const ResultView = ({ analysis }) => {
   const { t } = useLang();
   const r = analysis.result;
-  const d = r.details || {};
   return (
     <section className="bg-white border border-slate-200 rounded-md shadow-sm rise" data-testid="result-card">
-      <div className="p-6 sm:p-8 border-b border-slate-200 flex flex-wrap items-start gap-3 justify-between">
-        <div>
-          <div className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500">{t.c.result}{d.disease_name ? ` · ${d.disease_name}` : ""}</div>
-          <p className="mt-1 text-slate-900 font-medium" data-testid="result-method">{t.c.method}: {r.method_label}</p>
-          {d.inheritance_label && <p className="text-sm text-slate-500" data-testid="result-inheritance">{d.inheritance_label}</p>}
-          {d.mechanism_text && <p className="text-sm text-slate-600 mt-2 max-w-2xl" data-testid="result-mechanism">{d.mechanism_text}</p>}
-        </div>
-        <CertaintyBadge tier={r.certainty} label={r.certainty_label} />
-      </div>
+      <ResultHeader result={r} />
       <div className="p-6 sm:p-8 space-y-8">
-        {r.outcomes.length > 0 && <OutcomeTable result={r} />}
-        {d.scenarios && r.method !== "carrier_exact" && <Scenarios details={d} />}
-        {d.grid && <PunnettGrid grid={d.grid} />}
+        <ResultData result={r} />
         <div className="grid md:grid-cols-2 gap-8">
           <NoteList title={t.c.assumptions} items={r.assumptions} testId="result-assumptions" />
           <NoteList title={t.c.limitations} items={r.limitations} testId="result-limitations" />
         </div>
         <Sources refs={r.references} />
-        <div className="text-xs text-slate-400 font-mono-genes flex flex-wrap gap-4" data-testid="result-versions">
-          <span>{t.c.engine}: {r.engine_version}</span>{r.data_version && <span>{t.c.data}: {r.data_version}</span>}
-          <span>ID: {analysis.id}</span>
-        </div>
+        <Versions result={r} id={analysis.id} />
       </div>
     </section>
   );
 };
+
+ResultView.propTypes = { analysis: analysisShape.isRequired };

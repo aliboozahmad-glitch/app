@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { useLang } from "@/i18n/LanguageContext";
 import { useAnalysis } from "@/lib/api";
@@ -38,3 +39,10 @@ export default function BloodTypePage() {
     </CalcLayout>
   );
 }
+
+ParentInput.propTypes = {
+  id: PropTypes.oneOf(["mother", "father"]).isRequired,
+  label: PropTypes.string.isRequired,
+  state: PropTypes.shape({ mode: PropTypes.oneOf(["type", "genotype"]), abo: PropTypes.string, rh: PropTypes.string }).isRequired,
+  setState: PropTypes.func.isRequired,
+};

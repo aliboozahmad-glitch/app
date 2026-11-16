@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+import { TIERS } from "@/types";
 import { ShieldCheck, BarChart3, Users, HelpCircle, Globe2 } from "lucide-react";
 
 export const TIER_STYLE = {
@@ -38,3 +40,13 @@ export const Choice = ({ options, value, onChange, testId }) => (
 export const FieldLabel = ({ children }) => (
   <div className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500 mb-2">{children}</div>
 );
+
+CertaintyBadge.propTypes = { tier: PropTypes.oneOf(TIERS).isRequired, label: PropTypes.string.isRequired, testId: PropTypes.string };
+Disclaimer.propTypes = { text: PropTypes.string.isRequired };
+Choice.propTypes = {
+  options: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.node)).isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  testId: PropTypes.string.isRequired,
+};
+FieldLabel.propTypes = { children: PropTypes.node };

@@ -46,9 +46,7 @@ def _weight(genotype, region_entry, parent):
     return c if genotype in CARRIER_GENOTYPES else 1 - c
 
 
-def carrier_analysis(disease_id: str, mother_status: str, father_status: str, region: str | None = None,
-                     diseases: dict | None = None) -> dict:
-    diseases = diseases or load_diseases()
+def _resolve(disease_id, mother_status, father_status, diseases):
     disease = diseases.get(disease_id)
     if not disease:
         raise GeneticsInputError("unknown_disease")
@@ -56,28 +54,59 @@ def carrier_analysis(disease_id: str, mother_status: str, father_status: str, re
     m_map, f_map = (AR_STATUS, AR_STATUS) if ar else (X_MOTHER_STATUS, X_FATHER_STATUS)
     if mother_status not in m_map or father_status not in f_map:
         raise GeneticsInputError("invalid_status")
+    return disease, ar, m_map[mother_status], f_map[father_status]
 
-    def run(m, f):
-        if ar:
-            c = cross_autosomal("autosomal_recessive", m, f)
-            return _disease_outcomes(disease, c, lambda c: [("all_children", c["phenotypes"])])
-        c = cross_x("x_linked_recessive", m, f)
-        return _disease_outcomes(disease, c, lambda c: [(g, c[g]["phenotypes"]) for g in ("sons", "daughters")])
 
-    scenarios = [{"mother_genotype": m, "father_genotype": f, "outcomes": run(m, f)}
-                 for m, f in product(m_map[mother_status], f_map[father_status])]
+def _run_cross(disease, ar, mother_genotype, father_genotype):
+    if ar:
+        c = cross_autosomal("autosomal_recessive", mother_genotype, father_genotype)
+        return _disease_outcomes(disease, c, lambda c: [("all_children", c["phenotypes"])])
+    c = cross_x("x_linked_recessive", mother_genotype, father_genotype)
+    return _disease_outcomes(disease, c, lambda c: [(g, c[g]["phenotypes"]) for g in ("sons", "daughters")])
+
+
+def _scenario_weight(scenario, statuses, entry, ar):
+    w = Fraction(1)
+    if statuses[0] == "unknown":
+        w *= _weight(scenario["mother_genotype"], entry, "mother")
+    if statuses[1] == "unknown":
+        w *= _weight(scenario["father_genotype"], entry, "father" if ar else "father_x")
+    return w
+
+
+def _population_outcomes(scenarios, statuses, entry, ar):
+    totals = {}
+    for s in scenarios:
+        w = _scenario_weight(s, statuses, entry, ar)
+        for o in s["outcomes"]:
+            k = (o["group"], o["key"])
+            totals[k] = totals.get(k, Fraction(0)) + w * Fraction(o["fraction"])
+    return [{"key": k, "kind": "phenotype", "group": g, "probability": round(float(p), 6), "fraction": frac_str(p)}
+            for (g, k), p in sorted(totals.items(), key=lambda kv: -kv[1]) if p > 0]
+
+
+def _limitations(disease, statuses):
+    limitations = list(disease.get("limitations", []))
+    if "non_carrier" in statuses:
+        limitations.append("negative_test_residual")
+    return limitations
+
+
+def carrier_analysis(disease_id: str, mother_status: str, father_status: str, region: str | None = None,
+                     diseases: dict | None = None) -> dict:
+    diseases = diseases or load_diseases()
+    disease, ar, m_options, f_options = _resolve(disease_id, mother_status, father_status, diseases)
+    statuses = (mother_status, father_status)
+    scenarios = [{"mother_genotype": m, "father_genotype": f, "outcomes": _run_cross(disease, ar, m, f)}
+                 for m, f in product(m_options, f_options)]
     inputs = {"disease_id": disease_id, "mother_status": mother_status, "father_status": father_status,
               "region": region}
     assumptions = ["stated_status_correct", "mendelian_segregation", "complete_penetrance"]
-    limitations = list(disease.get("limitations", []))
-    if "non_carrier" in (mother_status, father_status):
-        limitations.append("negative_test_residual")
-    refs = disease["references"]
-    data_version = diseases.get("_version")
+    limitations = _limitations(disease, statuses)
+    refs, data_version = disease["references"], diseases.get("_version")
     common = {"disease": disease_id, "inheritance": disease["inheritance"], "scenarios": scenarios}
 
-    unknown = "unknown" in (mother_status, father_status)
-    if not unknown:
+    if "unknown" not in statuses:
         return make_result("carrier_risk", "established", "carrier_exact", inputs, scenarios[0]["outcomes"],
                            assumptions, limitations, refs, common, data_version)
 
@@ -88,19 +117,8 @@ def carrier_analysis(disease_id: str, mother_status: str, father_status: str, re
         return make_result("carrier_risk", "established", "carrier_conditional", inputs, [],
                            assumptions, limitations + ["region_data_unvalidated"], refs, common, data_version)
 
-    totals = {}
-    for m, f in product(m_map[mother_status], f_map[father_status]):
-        w = Fraction(1)
-        if mother_status == "unknown":
-            w *= _weight(m, entry, "mother")
-        if father_status == "unknown":
-            w *= _weight(f, entry, "father_x" if not ar else "father")
-        for o in run(m, f):
-            k = (o["group"], o["key"])
-            totals[k] = totals.get(k, Fraction(0)) + w * Fraction(o["fraction"])
-    outcomes = [{"key": k, "kind": "phenotype", "group": g, "probability": round(float(p), 6), "fraction": frac_str(p)}
-                for (g, k), p in sorted(totals.items(), key=lambda kv: -kv[1]) if p > 0]
     common["population_estimate"] = {"available": True, "region": region, "source": entry["source"]}
-    return make_result("carrier_risk", "population_estimate", "carrier_population", inputs, outcomes,
+    return make_result("carrier_risk", "population_estimate", "carrier_population", inputs,
+                       _population_outcomes(scenarios, statuses, entry, ar),
                        assumptions + ["regional_frequency_applies"], limitations, refs + [entry["source"]],
                        common, data_version)

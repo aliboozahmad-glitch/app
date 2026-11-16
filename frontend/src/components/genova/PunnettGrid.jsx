@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+import { gridShape } from "@/types";
 import { useLang } from "@/i18n/LanguageContext";
 
 const recessiveOnly = (g) => g.replace(/X|Y/g, "") === g.replace(/X|Y/g, "").toLowerCase() && /[a-z]/.test(g);
@@ -26,3 +28,5 @@ export const PunnettGrid = ({ grid }) => {
     </div>
   );
 };
+
+PunnettGrid.propTypes = { grid: gridShape.isRequired };

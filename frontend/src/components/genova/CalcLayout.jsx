@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+import { analysisShape } from "@/types";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
@@ -32,4 +34,13 @@ export const CalcLayout = ({ kind, onSubmit, loading, error, analysis, children 
       {analysis && <ResultView analysis={analysis} />}
     </div>
   );
+};
+
+CalcLayout.propTypes = {
+  kind: PropTypes.oneOf(["mendelian", "blood-type", "carrier-risk", "height", "pigmentation", "sex-ratio"]).isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  loading: PropTypes.bool,
+  error: PropTypes.string,
+  analysis: analysisShape,
+  children: PropTypes.node,
 };

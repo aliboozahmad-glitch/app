@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+import { scenarioShape } from "@/types";
 import { Info } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
 
@@ -15,7 +17,7 @@ export const Scenarios = ({ details }) => {
       <h3 className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500">{t.c.scenarios}</h3>
       <div className="grid md:grid-cols-2 gap-4">
         {details.scenarios.map((s, i) => (
-          <div key={i} className="border border-slate-200 rounded-md p-4" data-testid={`scenario-${i}`}>
+          <div key={`${s.mother_genotype}-${s.father_genotype}`} className="border border-slate-200 rounded-md p-4" data-testid={`scenario-${i}`}>
             <div className="text-sm text-slate-600 mb-3">
               {t.c.ifMother} <span className="font-mono-genes font-semibold text-slate-900">{s.mother_genotype}</span>{" "}
               {t.c.ifFather} <span className="font-mono-genes font-semibold text-slate-900">{s.father_genotype}</span>
@@ -33,4 +35,12 @@ export const Scenarios = ({ details }) => {
       </div>
     </div>
   );
+};
+
+Scenarios.propTypes = {
+  details: PropTypes.shape({
+    scenarios: PropTypes.arrayOf(scenarioShape).isRequired,
+    population_estimate: PropTypes.shape({ available: PropTypes.bool }),
+    region_label: PropTypes.string,
+  }).isRequired,
 };
