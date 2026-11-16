@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 import requests
+from live_roles import as_role
 from dotenv import dotenv_values
 
 BASE_URL = (os.environ.get("REACT_APP_BACKEND_URL")
@@ -29,7 +30,8 @@ def s(created):
         pytest.skip("clerk session failed")
     sess = requests.Session()
     sess.headers["Authorization"] = f"Bearer {json.loads(out.stdout)['token']}"
-    yield sess
+    with as_role(sess, API, "admin"):  # admin sees the protected details these tests check
+        yield sess
     for i in created:
         sess.delete(f"{API}/analyses/{i}")
 

@@ -59,13 +59,11 @@ export default function FamilyPatternPage() {
         <FamilyInput id="wife" label={t.family.wife} onChange={setWife}>{wife}</FamilyInput>
         <FamilyInput id="husband" label={t.family.husband} onChange={setHusband}>{husband}</FamilyInput>
       </div>
-      {twoChild ? (
+      {twoChild && (
         <div>
           <FieldLabel>{t.family.which}</FieldLabel>
           <Choice testId="child-number" value={childNumber} onChange={setChildNumber} options={[["1", t.family.first], ["2", t.family.second]]} />
         </div>
-      ) : (
-        <p className="text-sm text-slate-600" data-testid="single-child-note">{t.family.singleNote}</p>
       )}
     </CalcLayout>
   );

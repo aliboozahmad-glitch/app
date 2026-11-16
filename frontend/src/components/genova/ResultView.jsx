@@ -8,6 +8,7 @@ import { OutcomeTable } from "./OutcomeTable";
 import { PunnettGrid } from "./PunnettGrid";
 import { Scenarios } from "./Scenarios";
 import { FamilyPatternReport, PrintReportButton } from "./FamilyPatternReport";
+import { PublicFamilyResult } from "./PublicFamilyResult";
 
 const SectionTitle = ({ children }) => (
   <h3 className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500 mb-2">{children}</h3>
@@ -130,6 +131,7 @@ Versions.propTypes = { result: resultShape.isRequired, id: PropTypes.string.isRe
 export const ResultView = ({ analysis }) => {
   const { t } = useLang();
   const r = analysis.result;
+  if (r.public) return <PublicFamilyResult analysis={analysis} />;
   const isFamily = r.analysis_type === "family_pattern";
   return (
     <>

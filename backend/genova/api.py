@@ -25,6 +25,7 @@ from .models import (
     RoleIn,
     SexRatioIn,
 )
+from .protection import DAILY_LIMIT, PROTECTED_KIND, protect_item, protect_view
 from .ratelimit import analysis_limiter
 from .traditional import family_pattern_analysis
 
@@ -52,9 +53,21 @@ def _oid(value: str) -> ObjectId:
         raise HTTPException(status_code=404, detail="Not found") from exc
 
 
-def _view(doc: AnalysisDoc, lang: str) -> dict:
-    return {"id": doc.id, "analysis_type": doc.analysis_type, "created_at": doc.created_at, "request": doc.request,
+def _view(doc: AnalysisDoc, lang: str, role: str) -> dict:
+    view = {"id": doc.id, "analysis_type": doc.analysis_type, "created_at": doc.created_at, "request": doc.request,
             "result": localize_result(doc.result, lang)}
+    return protect_view(view, role)
+
+
+async def _check_daily_limit(member: dict, kind: str, lang: str) -> None:
+    """Counts saved calculations per UTC day; deleting history does not reset it. Admin is not limited."""
+    if kind != PROTECTED_KIND or member["role"] == "admin":
+        return
+    key = {"user_id": member["user_id"], "kind": kind, "day": datetime.now(UTC).date().isoformat()}
+    used = await db.usage_daily.find_one(key)
+    if used and used["count"] >= DAILY_LIMIT:
+        raise HTTPException(status_code=429, detail=t("daily_limit_reached", lang))
+    await db.usage_daily.update_one(key, {"$inc": {"count": 1}}, upsert=True)
 
 
 async def _recent_duplicate(user_id: str, kind: str, request: dict) -> AnalysisDoc | None:
@@ -89,7 +102,7 @@ async def catalog(lang: Lang = "en"):
 
 @router.get("/references")
 async def references():
-    return {"references": list(load_references().values())}
+    return {"references": [r for r in load_references().values() if not r.get("internal")]}
 
 
 @router.get("/me")
@@ -111,11 +124,12 @@ async def run_analysis(kind: str, body: dict, lang: Lang = "en", member: dict = 
     async with _save_locks[(member["user_id"], kind)]:  # check + insert are atomic per user and calculator
         duplicate = await _recent_duplicate(member["user_id"], kind, request)
         if duplicate:
-            return {**_view(duplicate, lang), "deduplicated": True}
+            return {**_view(duplicate, lang, member["role"]), "deduplicated": True}
+        await _check_daily_limit(member, kind, lang)
         doc = AnalysisDoc(user_id=member["user_id"], analysis_type=kind, request=request, result=fn(payload))
         res = await db.analyses.insert_one(doc.to_mongo())
     doc.id = str(res.inserted_id)
-    return _view(doc, lang)
+    return _view(doc, lang, member["role"])
 
 
 @router.get("/analyses")
@@ -126,9 +140,10 @@ async def list_analyses(lang: Lang = "en", limit: int = Query(50, ge=1, le=200),
     async for raw in cursor:
         d = AnalysisDoc.from_mongo(raw)
         loc = localize_result(d.result, lang)
-        items.append({"id": d.id, "analysis_type": d.analysis_type, "created_at": d.created_at, "request": d.request,
-                      "certainty": d.result["certainty"], "certainty_label": loc["certainty_label"],
-                      "method_label": loc["method_label"], "disease_name": loc["details"].get("disease_name")})
+        item = {"id": d.id, "analysis_type": d.analysis_type, "created_at": d.created_at, "request": d.request,
+                "certainty": d.result["certainty"], "certainty_label": loc["certainty_label"],
+                "method_label": loc["method_label"], "disease_name": loc["details"].get("disease_name")}
+        items.append(protect_item(item, member["role"], lang))
     return {"items": items}
 
 
@@ -137,7 +152,7 @@ async def get_analysis(analysis_id: str, lang: Lang = "en", member: dict = Depen
     raw = await db.analyses.find_one({"_id": _oid(analysis_id), "user_id": member["user_id"]})
     if not raw:
         raise HTTPException(status_code=404, detail="Not found")
-    return _view(AnalysisDoc.from_mongo(raw), lang)
+    return _view(AnalysisDoc.from_mongo(raw), lang, member["role"])
 
 
 @router.delete("/analyses/{analysis_id}")

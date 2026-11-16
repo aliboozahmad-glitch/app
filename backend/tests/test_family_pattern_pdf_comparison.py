@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 import requests
 from dotenv import dotenv_values
+from live_roles import as_role
 
 from genova.traditional.family_pattern import family_pattern_analysis, load_table
 
@@ -99,9 +100,13 @@ def test_results_table_flagged_unchanged():
 def token():
     r = subprocess.run(["python", str(ROOT / "scripts/clerk_test_session.py")], capture_output=True, text=True)
     try:
-        return json.loads(r.stdout)["token"]
-    except Exception:
+        tok = json.loads(r.stdout)["token"]
+    except (ValueError, KeyError):
         pytest.skip("no clerk token")
+    sess = requests.Session()
+    sess.headers["Authorization"] = f"Bearer {tok}"
+    with as_role(sess, f"{BASE_URL}/api", "admin"):
+        yield tok
 
 
 @pytest.mark.parametrize("case", [84, 87, 92])

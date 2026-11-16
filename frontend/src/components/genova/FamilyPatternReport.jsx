@@ -51,11 +51,11 @@ export const FamilyPatternReport = ({ analysis }) => {
         <p className="mt-2 font-semibold" data-testid="report-traditional-note">{r.certainty_label}</p>
       </header>
       <dl className="mb-6">
-        <Row label={t.report.number} testId="report-number">{analysis.id}</Row>
+        <Row label={t.report.number} testId="report-number">{analysis.report_id || analysis.id}</Row>
         <Row label={t.report.date} testId="report-date">{date}</Row>
         <Row label={t.family.wife} testId="report-wife">{kids(req.wife)}</Row>
         <Row label={t.family.husband} testId="report-husband">{kids(req.husband)}</Row>
-        <Row label={t.report.answer} testId="report-answer">{answer ? `${answer.group_label}: ${answer.label}` : "—"}</Row>
+        <Row label={t.report.answer} testId="report-answer">{answer ? `${answer.group_label}: ${answer.label}${answer.stated_range ? ` (${answer.stated_range})` : ""}` : "—"}</Row>
         <Row label={t.report.source} testId="report-source"><SourceText details={d} /></Row>
       </dl>
       <p className="mb-4">{t.family.notice}</p>

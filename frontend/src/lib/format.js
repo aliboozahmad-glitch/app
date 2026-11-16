@@ -34,6 +34,7 @@ const SUMMARIES = {
   pigmentation: (r, t) => `${label(t.traits, r.trait)} · ${label(t.traits.colours, r.mother)} × ${label(t.traits.colours, r.father)}`,
   "sex-ratio": () => "105 : 100",
   "family-pattern": (r, t) => {
+    if (!r.wife) return "";
     const child = { 1: ` · ${t.family.first}`, 2: ` · ${t.family.second}` }[r.child_number] || "";
     return `${t.family.wifeShort}: ${familyNames(r.wife, t)} × ${t.family.husbandShort}: ${familyNames(r.husband, t)}${child}`;
   },
