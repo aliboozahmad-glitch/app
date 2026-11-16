@@ -49,7 +49,8 @@ export const OutcomeTable = ({ result }) => {
       {groups.map((g) => (
         <div key={g}>
           <div className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500 mb-1">{result.outcomes.find((o) => o.group === g).group_label}</div>
-          <table className="w-full text-start">
+          <table className="w-full text-start table-fixed">
+            <colgroup><col className="w-[50%]" /><col className="w-[30%]" /><col className="w-[20%]" /></colgroup>
             <tbody>{result.outcomes.filter((o) => o.group === g).map((o) => <Row key={`${o.kind}-${o.key}`} o={o} i={idx++} />)}</tbody>
           </table>
         </div>

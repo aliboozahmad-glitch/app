@@ -20,8 +20,8 @@ const DiseaseRow = ({ d, t, refs }) => (
             <span className={`text-xs px-2 py-0.5 rounded border ${r.status === "validated" ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-amber-50 border-amber-200 text-amber-800"}`}>
               {r.status === "validated" ? t.sources.validated : t.sources.draft}
             </span>
-            <span className="font-medium">{r.region_label}:</span><span className="text-slate-600">{r.candidate}</span>
-            <span className="text-slate-400">[{refs[r.source]?.publisher}]</span>
+            <span className="font-medium">{r.region_label}</span>
+            <span className="text-slate-400">· {refs[r.source]?.publisher}</span>
           </li>
         ))}
       </ul>

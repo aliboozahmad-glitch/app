@@ -7,6 +7,7 @@ LANGS = ("en", "ar", "de")
 
 T = {
     # certainty tiers
+    "established_conditional": ("Established per scenario (one parent untested)", "مُثبت لكل سيناريو (أحد الوالدين غير مفحوص)", "Gesichert je Szenario (ein Elternteil ungetestet)"),
     "established": ("Established (Mendelian)", "مُثبت علمياً (قوانين مندل)", "Gesichert (Mendelsch)"),
     "population_estimate": ("Population-based estimate", "تقدير مبني على بيانات السكان", "Bevölkerungsbasierte Schätzung"),
     "statistical_estimate": ("Statistical estimate", "تقدير إحصائي", "Statistische Schätzung"),
@@ -128,7 +129,7 @@ def localize_result(result: dict, lang: str) -> dict:
     refs = load_references()
     diseases = load_diseases()
     r["lang"] = lang
-    r["certainty_label"] = t(r["certainty"], lang)
+    r["certainty_label"] = t("established_conditional" if r["method"] == "carrier_conditional" else r["certainty"], lang)
     r["method_label"] = t(r["method"], lang)
     for o in r["outcomes"]:
         o["label"] = o["key"] if o["kind"] in ("genotype", "blood_type") else t(o["key"], lang)

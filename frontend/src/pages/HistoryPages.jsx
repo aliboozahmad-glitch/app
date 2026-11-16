@@ -3,7 +3,16 @@ import { Link, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Trash2, ArrowLeft } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
-import { useApi } from "@/lib/api";
+import { errorMessage, useApi } from "@/lib/api";
+
+const summarize = ({ analysis_type: k, request: r = {} }) => {
+  if (k === "mendelian") return `${r.mode} · ${r.parent1} × ${r.parent2}`;
+  if (k === "blood-type") return `${r.parent1_abo}${r.parent1_rh} × ${r.parent2_abo}${r.parent2_rh}`;
+  if (k === "carrier-risk") return `${r.mother_status} × ${r.father_status}${r.region ? ` · ${r.region}` : ""}`;
+  if (k === "height") return `${r.mother_cm} cm × ${r.father_cm} cm`;
+  if (k === "pigmentation") return `${r.trait} · ${r.mother} × ${r.father}`;
+  return "";
+};
 import { CertaintyBadge } from "@/components/genova/primitives";
 import { ResultView } from "@/components/genova/ResultView";
 
@@ -11,13 +20,20 @@ export function HistoryPage() {
   const { t, lang } = useLang();
   const api = useApi();
   const [items, setItems] = useState(null);
+  const [pending, setPending] = useState(null);
   const load = useCallback(() => api("get", `/analyses?lang=${lang}`).then((d) => setItems(d.items)), [api, lang]);
   useEffect(() => { load().catch(() => setItems([])); }, [load]);
 
   const remove = async (id) => {
-    await api("delete", `/analyses/${id}`);
-    toast.success(t.c.delete);
-    load();
+    if (pending !== id) return setPending(id);
+    setPending(null);
+    try {
+      await api("delete", `/analyses/${id}`);
+      toast.success(t.c.deleted);
+      await load();
+    } catch (e) {
+      toast.error(errorMessage(e, t.c.error));
+    }
   };
 
   return (
@@ -32,11 +48,15 @@ export function HistoryPage() {
           <li key={it.id} className="p-4 sm:p-5 flex flex-wrap items-center gap-3" data-testid={`history-item-${it.id}`}>
             <div className="flex-1 min-w-[220px]">
               <div className="font-medium">{t.calc[it.analysis_type]?.[0]}{it.disease_name ? ` · ${it.disease_name}` : ""}</div>
+              <div className="text-sm text-slate-600 font-mono-genes" data-testid={`history-summary-${it.id}`}>{summarize(it)}</div>
               <div className="text-xs text-slate-500 font-mono-genes">{new Date(it.created_at).toLocaleString(lang)}</div>
             </div>
             <CertaintyBadge tier={it.certainty} label={it.certainty_label} testId={`history-tier-${it.id}`} />
             <Link to={`/history/${it.id}`} className="text-sm underline underline-offset-2" data-testid={`history-open-${it.id}`}>{t.c.open}</Link>
-            <button onClick={() => remove(it.id)} className="text-slate-400 hover:text-red-700 p-1" aria-label={t.c.delete} data-testid={`history-delete-${it.id}`}><Trash2 size={16} /></button>
+            <button onClick={() => remove(it.id)} aria-label={t.c.delete} data-testid={`history-delete-${it.id}`}
+              className={`text-xs inline-flex items-center gap-1 px-2 py-1 rounded border transition-colors ${pending === it.id ? "border-red-300 bg-red-50 text-red-700" : "border-transparent text-slate-400 hover:text-red-700"}`}>
+              <Trash2 size={14} />{pending === it.id && t.c.confirmDelete}
+            </button>
           </li>
         ))}
       </ul>
@@ -49,14 +69,17 @@ export function AnalysisDetailPage() {
   const { t, lang } = useLang();
   const api = useApi();
   const [analysis, setAnalysis] = useState(null);
-  const [missing, setMissing] = useState(false);
-  useEffect(() => { api("get", `/analyses/${id}?lang=${lang}`).then(setAnalysis).catch(() => setMissing(true)); }, [api, id, lang]);
+  const [failure, setFailure] = useState(null);
+  useEffect(() => {
+    api("get", `/analyses/${id}?lang=${lang}`).then(setAnalysis)
+      .catch((e) => setFailure(e?.response?.status === 404 ? t.c.notFound : errorMessage(e, t.c.error)));
+  }, [api, id, lang, t]);
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-8 py-10 space-y-6">
       <Link to="/history" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900" data-testid="back-to-history">
         <ArrowLeft size={14} className="rtl:rotate-180" /> {t.history.title}
       </Link>
-      {missing && <p className="text-slate-500" data-testid="analysis-not-found">404</p>}
+      {failure && <p className="text-slate-500" data-testid="analysis-error">{failure}</p>}
       {analysis && <><h1 className="text-3xl font-bold tracking-tight">{t.calc[analysis.analysis_type]?.[0]}</h1><ResultView analysis={analysis} /></>}
     </div>
   );

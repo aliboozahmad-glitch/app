@@ -72,12 +72,12 @@ async def me(member: dict = Depends(current_member)):
 async def run_analysis(kind: str, body: dict, lang: Lang = "en", member: dict = Depends(current_member)):
     if kind not in CALCULATORS:
         raise HTTPException(status_code=404, detail="Unknown analysis")
-    analysis_limiter.check(member["user_id"])
     schema, fn = CALCULATORS[kind]
     try:
         payload = schema.model_validate(body)
     except ValidationError as exc:
         raise RequestValidationError([{**e, "loc": ("body", *e["loc"])} for e in exc.errors()])
+    analysis_limiter.check(member["user_id"])
     result = fn(payload)
     doc = AnalysisDoc(user_id=member["user_id"], analysis_type=kind, request=payload.model_dump(), result=result)
     res = await db.analyses.insert_one(doc.to_mongo())
@@ -93,7 +93,7 @@ async def list_analyses(lang: Lang = "en", limit: int = Query(50, ge=1, le=200),
     async for raw in cursor:
         d = AnalysisDoc.from_mongo(raw)
         loc = localize_result(d.result, lang)
-        items.append({"id": d.id, "analysis_type": d.analysis_type, "created_at": d.created_at,
+        items.append({"id": d.id, "analysis_type": d.analysis_type, "created_at": d.created_at, "request": d.request,
                       "certainty": d.result["certainty"], "certainty_label": loc["certainty_label"],
                       "method_label": loc["method_label"], "disease_name": loc["details"].get("disease_name")})
     return {"items": items}

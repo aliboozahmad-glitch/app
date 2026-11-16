@@ -4,6 +4,7 @@ import os
 import requests
 from fastapi import Depends, HTTPException
 from pymongo import ReturnDocument
+from starlette.concurrency import run_in_threadpool
 
 try:
     from backend.clerk_auth import require_user
@@ -43,7 +44,7 @@ async def current_member(user: dict = Depends(require_user)) -> dict:
     uid = user["user_id"]
     member = await db.users.find_one({"user_id": uid}, {"_id": 0})
     if member is None or not member.get("role"):
-        cu = _clerk_user(uid)
+        cu = await run_in_threadpool(_clerk_user, uid)
         role = "admin" if _is_admin_email(cu) else DEFAULT_ROLE
         email = next((e["email_address"] for e in cu.get("email_addresses", [])
                       if e.get("id") == cu.get("primary_email_address_id")), None)

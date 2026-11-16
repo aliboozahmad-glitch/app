@@ -1,0 +1,44 @@
+{
+  "summary": "First full test pass of GENOVA AI Step A. Backend: the existing 68-test suite passes (pytest -n 0). I added a live e2e suite that runs against the public preview URL with real Clerk tokens (17 tests, all pass). It covers public endpoints, 401s, all 6 calculators with scientific checks, localized 400/422/404 errors, re-localization by id, data isolation between two users, 403 on /api/users and delete-then-404. I also checked by hand: rate limit (30/min, then 429), invalid lang (422), unknown disease and invalid status (localized 400), and non-object body (422). Frontend, run with Playwright on desktop and mobile with a Clerk ticket sign-in: landing page with hero and tier legend, the public Sources page with draft badges and references, protected-route redirect, session kept after refresh, a dashboard with 6 cards, and every calculator form showing the correct result card. This included the Punnett grid, X-linked results split by sex, blood-type ranges plus impossible types, the genotype entry mode, G6PD 'heterozygous variable', beta-thal carrier x unknown with scenarios and the population-unavailable message, Tanner height 179 (170.5-187.5)/166, qualitative pigmentation bands and sex ratio 21/41. EN/AR/DE switching flips dir to rtl and re-localizes a result already on screen. History list, the detail page in German, delete and 404 after delete, and sign-out all work. No functional bugs found; only minor UX, copy and design notes.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "auth.current_member", "issue": "_clerk_user uses blocking requests.get inside an async dependency (first request per user only). It blocks the event loop for up to 10s. Use httpx.AsyncClient or run_in_threadpool."},
+      {"endpoint": "POST /api/analyses/{kind}", "issue": "The rate limiter runs before payload validation, so invalid requests also count toward the 30/min quota. The limiter is in-memory per worker (documented)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "HistoryPage delete", "issue": "Delete runs in one click with no confirm dialog and no error handling: remove() has no try/catch, so a failure shows no toast and causes an unhandled promise rejection.", "selector": "[data-testid^=history-delete-]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "OutcomeTable (X-linked / carrier results)", "issues": ["The 'Each son' and 'Each daughter' groups are separate auto-width tables, so the fraction and bar columns don't line up between groups (seen in EN and AR). Use fixed column widths."]},
+      {"screen": "Carrier scenarios", "issues": ["Copy reads 'If mother is Aa if father is Aa'. It is missing 'and' or a comma (EN)."]},
+      {"screen": "Sources page / catalog regional notes", "issues": ["Internal data-entry notes such as 'country figures to extract' and 'To extract from Table 1' are shown to users. These region notes are English-only, even in AR and DE."]},
+      {"screen": "Sign-out", "issues": ["After sign-out the user lands on /sign-in, not the landing page. Optional: set afterSignOutUrl='/'."]},
+      {"screen": "History list", "issues": ["Mendelian and blood entries show no summary of the inputs (mode or genotypes), so several 'Single-gene inheritance' rows look the same."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_live_api_e2e.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "(Low) Add a confirm dialog and try/catch with an error toast to history delete",
+    "(Low) Align OutcomeTable columns across groups",
+    "(Low) Fix the scenario sentence copy ('If mother is X and father is Y')",
+    "(Low) Hide or translate the internal draft notes in regional sources",
+    "(Low) Make the Clerk user lookup non-blocking (async httpx)"
+  ],
+  "critical_code_review_comments": [
+    "Carrier 'carrier_conditional' (unknown parent) is badged 'Established (Mendelian)'. Each scenario is exact, but the overall answer depends on an unknown status. Consider a clearer label so users don't read it as a definitive risk.",
+    "useAnalysis refetch on language change swallows errors silently (.catch(() => {})). This is acceptable, but stale-language results can appear without notice.",
+    "AnalysisDetailPage treats any error (including network or 401) as '404'.",
+    "Files are small and well modularized; _id is excluded properly; env vars are used; pydantic uses extra=forbid. Good."
+  ],
+  "updated_files": ["/app/backend/tests/test_live_api_e2e.py", "/app/memory/test_credentials.md (added second test user)"],
+  "success_rate": {"backend": "100% (68 unit/integration + 17 live e2e)", "frontend": "100% of tested flows"},
+  "test_credentials": "genova.tester+clerk_test@example.com (member) and genova.other+clerk_test@example.com (member, created in Clerk for isolation tests). Sessions come from /app/scripts/clerk_test_session.py.",
+  "seed_data_creation": "Created the Clerk user genova.other+clerk_test@example.com. I deleted all analyses I created during testing by id or by my session's time window; 3 pre-existing analyses of the main tester were left untouched.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run `cd /app/backend && python -m pytest tests -n 0` (unit tests plus test_live_api_e2e.py, which mints real Clerk tokens through the script). UI sign-in: open /sign-in?__clerk_ticket=<ticket>; every browser session needs a new ticket. Clerk sign out: click '[data-testid=user-menu] button', then 'button:has-text(\"Sign out\")'. The analysis rate limit is 30/min per user, so spread heavy UI runs over time or use the second user."
+}
