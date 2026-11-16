@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { ExternalLink } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
+import { familyNames } from "@/lib/format";
 import { analysisShape, noteShape, referenceShape, resultShape } from "@/types";
 import { CertaintyBadge } from "./primitives";
 import { OutcomeTable } from "./OutcomeTable";
@@ -51,7 +52,7 @@ Sources.propTypes = { refs: PropTypes.arrayOf(referenceShape).isRequired };
 
 const TableCase = ({ details }) => {
   const { t } = useLang();
-  const kids = (list) => list.map((g) => (g === "male" ? t.family.boy : t.family.girl)).join(t.family.sep);
+  const kids = (list) => familyNames(list, t);
   const src = details.answer_borrowed ? details.source_case : null;
   return (
     <div className="text-sm text-slate-500" data-testid="result-table-case">

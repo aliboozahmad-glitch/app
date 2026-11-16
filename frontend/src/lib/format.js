@@ -1,5 +1,8 @@
 /** Pure formatting helpers (no React, no network) so they can be unit-tested. */
 
+/** @returns {string} translated, ordered list of children, e.g. "Boy, Girl" */
+export const familyNames = (list, t) => list.map((g) => (g === "male" ? t.family.boy : t.family.girl)).join(t.family.sep);
+
 const formatErrors = (errors) => errors.map((e) => `${e.field}: ${e.message}`).join(" · ");
 
 const detailText = (d) => {
@@ -31,9 +34,8 @@ const SUMMARIES = {
   pigmentation: (r, t) => `${label(t.traits, r.trait)} · ${label(t.traits.colours, r.mother)} × ${label(t.traits.colours, r.father)}`,
   "sex-ratio": () => "105 : 100",
   "family-pattern": (r, t) => {
-    const names = (list) => list.map((g) => (g === "male" ? t.family.boy : t.family.girl)).join(t.family.sep);
     const child = { 1: ` · ${t.family.first}`, 2: ` · ${t.family.second}` }[r.child_number] || "";
-    return `${t.family.wifeShort}: ${names(r.wife)} × ${t.family.husbandShort}: ${names(r.husband)}${child}`;
+    return `${t.family.wifeShort}: ${familyNames(r.wife, t)} × ${t.family.husbandShort}: ${familyNames(r.husband, t)}${child}`;
   },
 };
 

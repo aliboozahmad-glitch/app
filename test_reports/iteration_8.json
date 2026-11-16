@@ -1,0 +1,25 @@
+{
+  "summary": "Tested the new PDF cases (61-68, 81-91), the single-child scope and the printable family-pattern report. Backend: the engine function gives the same answer as the baseline fixture for all 392 inputs (0 differences). In the baseline, every non-3+3 input has the same answer for child 1 and child 2. The new table entries match docs/source/pdf_transcription.json, and cases 84, 87 and 92 are still not in the table. A new live API test file passes 12/12: case 61 (origin original_pdf, not borrowed, group single_child, female, label 'Baby'), case 81 (female) and case 91 (male). Input 84 still returns male from case 75 (borrowed), 87 still returns female from 72, and 92 is still not_in_table. A 3+3 request without child_number returns 400 child_number_required with en/ar/de messages. 3+3 with child 1/2 gives first_child/second_child. A non-3+3 request with child 1, child 2 or no child number returns the same id (deduped) with request and inputs child_number null. The single-child label is 'طفل' in AR and 'Kind' in DE. 30 random baseline pairs checked through the API: 0 differences. Unit tests pass 159/159 (family_pattern, pdf_comparison, mendelian, scientific_integrity) and format.test.js passes 10/10. Frontend (Clerk ticket session): the child-number choice appears only for 3+3, otherwise the single-child-note is shown in EN/AR/DE. The Print report button is on the result card and on the History detail page. The report is placed under body: hidden on screen, shown in print media, and #root is hidden in print. It contains the report number (analysis id), date, wife, husband, answer, source, traditional note and limitations. Checked: 'Baby: Girl' with 'Table case #37 · Old App Only'; 'Baby: Boy' with 'Answer taken from table case #75 (Wife: Boy · Husband: Girl, Boy, Girl)' plus both 'Owner review pending' notes; 3+3 'Second child: Boy' with case #34 Old App Only; not-in-table '—' with the localized not-in-table text. Arabic report has dir=rtl and is fully translated; German is translated. History summary has no 'First child' suffix for new single-child entries and shows '· Second child' for 3+3. No page errors.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Printed report", "issues": ["The report number is the raw 24-character MongoDB id. It works, but a shorter human-friendly number might be easier for the owner to read (optional).", "The reference title is still English in AR/DE (carried over from iteration 7, optional)."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_family_pattern_cases_report_live.py", "/app/test_reports/pytest/fp_cases_report_live.xml"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "family_pattern.py: _validate rejects 3+3 without child_number. The model validator sets child_number to None for non-3+3 inputs, so dedupe works. Correct.",
+    "History entries saved before this change, for non-3+3 inputs with child_number 1/2, still have child_number in their stored request. Their summary still shows '· First child' and their group is first_child. These new requests will not dedupe against them. This is expected and not a bug, but the owner may notice the difference in old History.",
+    "FamilyPatternReport repeats the kids() helper that is also in ResultView.TableCase and format.js. It is small, but it could be shared."
+  ],
+  "updated_files": ["/app/backend/tests/test_family_pattern_cases_report_live.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "None. Analyses created by pytest were deleted by the fixture. The 4 UI-created ids (6afb7873...9846, 6afb7892...9847, 6afb7892...9848, 6afb7896...9849) and 1 curl id (6afb77d8...af80) were deleted by id (200).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Run live tests with -n 0. Rate limit is 30/min. Clerk tickets are single-use, so generate one for each browser session. Print checks: page.emulate_media(media='print'), then check that [data-testid=family-pattern-report] is visible and #root is hidden. The 392-input baseline comparison is in /tmp/cmp.py (run with PYTHONPATH=/app/backend).",
+  "test_credentials": "genova.tester+clerk_test@example.com via /app/scripts/clerk_test_session.py"
+}

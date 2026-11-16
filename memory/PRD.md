@@ -36,6 +36,10 @@ backend/genova/genetics (pure engine) · genova/i18n · genova/api · genova/aut
   - Lookup: an exact wife/husband entry is used first; otherwise the old joined-list lookup is used and the source case is shown.
   - All 392 possible inputs give the same answers as before (fixture `tests/fixtures/family_pattern_results_baseline.json`).
   - Cases 84, 87 and 92 and items U1–U6 await individual owner approval.
+- 2026-06: Added 17 PDF-only cases as their own entries with origin `original_pdf`: 61–68, 81–83, 85, 86 and 88–91. Their answers equal today's answers, and all 392 inputs are unchanged. Cases 84, 87 and 92 are still not applied.
+- 2026-06: Single-child scope. "First or second child" is asked only when both families have 3 children; every other combination shows one answer ("Baby" / «طفل» / "Kind"). The API makes child_number optional and requires it only for 3 + 3.
+- 2026-06: Printable family-pattern report, printed from the browser in EN/AR/DE (`FamilyPatternReport.jsx`, rendered into document.body; print CSS hides #root). It shows the report number (analysis id), date, both families, the answer, the source case or Old App Only label, the traditional note and the pending-review notes. The Print button appears on the result card and on the History detail page.
+
 
 
 - Family-pattern review: the 10 duplicate patterns (results identical), the split for cases 53–60 and 69–80, the missing case numbers 61–68, the behaviour for patterns not in the table, and any combinations to add. Change nothing until the owner confirms.

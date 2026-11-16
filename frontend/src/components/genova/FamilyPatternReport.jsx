@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { createPortal } from "react-dom";
 import { Printer } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
+import { familyNames } from "@/lib/format";
 import { analysisShape } from "@/types";
 
 const Row = ({ label, children, testId }) => (
@@ -25,7 +26,7 @@ export const PrintReportButton = () => {
 
 const SourceText = ({ details }) => {
   const { t } = useLang();
-  const kids = (list) => list.map((g) => (g === "male" ? t.family.boy : t.family.girl)).join(t.family.sep);
+  const kids = (list) => familyNames(list, t);
   if (!details.effective_case) return t.report.notInTable;
   const src = details.source_case;
   const base = details.answer_borrowed
@@ -39,7 +40,7 @@ export const FamilyPatternReport = ({ analysis }) => {
   const r = analysis.result;
   const req = analysis.request || r.inputs;
   const d = r.details || {};
-  const kids = (list) => list.map((g) => (g === "male" ? t.family.boy : t.family.girl)).join(t.family.sep);
+  const kids = (list) => familyNames(list, t);
   const answer = r.outcomes[0];
   const date = analysis.created_at ? new Date(analysis.created_at).toLocaleString(lang) : "";
   return createPortal(
