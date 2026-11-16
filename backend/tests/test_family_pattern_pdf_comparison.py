@@ -6,13 +6,15 @@ from pathlib import Path
 
 import pytest
 import requests
+from dotenv import dotenv_values
 
 from genova.traditional.family_pattern import family_pattern_analysis, load_table
 
 ROOT = Path(__file__).resolve().parents[2]
 PDF = json.loads((ROOT / "docs/source/pdf_transcription.json").read_text(encoding="utf-8"))
 G = {"M": "male", "F": "female"}
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
+BASE_URL = (os.environ.get("REACT_APP_BACKEND_URL")
+            or dotenv_values(ROOT / "frontend/.env")["REACT_APP_BACKEND_URL"]).rstrip("/")
 
 
 def _genova(e, child=1):

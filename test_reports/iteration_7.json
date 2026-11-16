@@ -1,0 +1,33 @@
+{
+  "summary": "Tested the family-pattern wife/husband split (structural only). Backend: I checked all 392 input combinations (3 wife lengths x 3 husband lengths x child 1/2) against the previous committed engine and table (git b559a27). There were 0 differences, and the baseline fixture also matches the old engine 392/392, so no prediction changed. All 61 master cases have the same wife/husband split and result as docs/source/pdf_transcription.json. Cases 30-40 are stored separately with origin old_app_only and do not appear in the PDF. A new live API test file passes 9/9: borrowed answers 75 and 72, not_in_table, exact 41 with duplicate_pattern, case 37 old_app_only with en/ar/de text (no raw keys), 15 random baseline pairs checked via the API, and History. The existing family-pattern unit and PDF tests pass 110/110 when REACT_APP_BACKEND_URL is exported. Frontend (Clerk ticket session): wife Boy,Girl,Boy / husband Girl gives 'Table case #75', the 'Answer taken from table case #75 (Wife: Boy · Husband: Girl, Boy, Girl)' line and Boy. Wife Boy / husband Girl gives the 'Old App Only' badge next to Table case #37. The 3+3 Boy,Boy,Girl input gives Table case #1 with no source line and no badge. Arabic is RTL with all new labels translated and no horizontal overflow. German labels are translated. History lists family-pattern analyses with localized summaries. No page errors.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "tests/test_family_pattern_pdf_comparison.py::test_api_matches_function", "issue": "The test fails with MissingSchema (BASE_URL empty) unless REACT_APP_BACKEND_URL is exported in the shell. Other live tests fall back to dotenv_values('/app/frontend/.env'); this one should do the same."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Family pattern result (AR/DE)", "issues": ["The reference title ('Original family-pattern table (gender_prediction_logic.py, owner's legacy app)...') stays in English in AR and DE.", "DE: the husband family label wraps to 2 lines, so the husband box sits slightly lower than the wife box (cosmetic)."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_family_pattern_split_live.py", "/app/test_reports/pytest/fp_split_live.xml"],
+  "action_items": [
+    "Optional: make test_family_pattern_pdf_comparison.py read BASE_URL from /app/frontend/.env when the env var is missing",
+    "Optional: localize the family-pattern reference title for AR/DE"
+  ],
+  "critical_code_review_comments": [
+    "_pick logic is correct: it first looks for an exact wife/husband entry in legacy_order (source_line order), otherwise it uses the last joined-pattern match, which is the same later-wins behaviour as the old dict. Every duplicate pair (41/78, 42/75, 43/69, 44/72, 45/71, 46/76, 47/79, 48/70, 49/77, 52/73) has identical first and second answers, so the 'both entries give the same answer' text is accurate.",
+    "When the answer is borrowed, the header shows the case number twice ('Table case #75' and 'Answer taken from table case #75 ...'). This matches the spec but is redundant; consider showing only the source line.",
+    "Rate limiter is 30 analyses per minute per user, in memory and single worker (already documented)."
+  ],
+  "updated_files": ["/app/backend/tests/test_family_pattern_split_live.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "None. Analyses created by tests were deleted by id (pytest fixture plus the 5 UI-created ids 6afb718d...646d to 6afb71e8...6471).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Route /calc/family-pattern. Clerk tickets are single-use: run scripts/clerk_test_session.py again for each browser session. Run live pytest with -n 0 (pytest.ini adds xdist). The limit is 30 requests/min per user, so pace requests. /tmp/oldfp/compare.py shows how to compare against the old engine using git show b559a27.",
+  "test_credentials": "genova.tester+clerk_test@example.com via /app/scripts/clerk_test_session.py"
+}

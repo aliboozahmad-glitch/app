@@ -51,20 +51,16 @@ Sources.propTypes = { refs: PropTypes.arrayOf(referenceShape).isRequired };
 const TableCase = ({ details }) => {
   const { t } = useLang();
   const kids = (list) => list.map((g) => (g === "male" ? t.family.boy : t.family.girl)).join(t.family.sep);
-  const src = details.source_case;
+  const src = details.answer_borrowed ? details.source_case : null;
   return (
-    <div className="text-sm text-slate-500 space-y-1" data-testid="result-table-case">
-      <p className="font-mono-genes">
-        {t.family.caseLabel} #{details.effective_case}
+    <div className="text-sm text-slate-500" data-testid="result-table-case">
+      <p className="font-mono-genes" data-testid={src ? "result-answer-source" : undefined}>
+        {src ? t.family.borrowed : t.family.caseLabel} #{details.effective_case}
+        {src && ` (${t.family.wifeShort}: ${kids(src.wife)} · ${t.family.husbandShort}: ${kids(src.husband)})`}
         {details.origin === "old_app_only" && (
           <span className="ms-2 px-2 py-0.5 text-xs rounded border border-amber-300 bg-amber-50 text-amber-900" data-testid="result-old-app-only">{t.family.oldAppOnly}</span>
         )}
       </p>
-      {details.answer_borrowed && src && (
-        <p data-testid="result-answer-source">
-          {t.family.borrowed} #{src.case} ({t.family.wifeShort}: {kids(src.wife)} · {t.family.husbandShort}: {kids(src.husband)})
-        </p>
-      )}
     </div>
   );
 };

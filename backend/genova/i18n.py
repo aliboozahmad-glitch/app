@@ -173,7 +173,8 @@ def localize_result(result: dict, lang: str) -> dict:
     _label_outcomes(r["outcomes"], lang)
     r["assumptions"] = [{"key": k, "text": t(k, lang)} for k in r["assumptions"]]
     r["limitations"] = [{"key": k, "text": t(k, lang)} for k in r["limitations"]]
-    r["references"] = [refs[k] for k in dict.fromkeys(r["references"]) if k in refs]
+    r["references"] = [{**refs[k], "title": refs[k].get(f"title_{lang}", refs[k]["title"])}
+                       for k in dict.fromkeys(r["references"]) if k in refs]
     r.setdefault("details", {})
     _localize_details(r["details"], r["inputs"], lang)
     return r
