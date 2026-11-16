@@ -59,5 +59,7 @@ describe("summarize (translated)", () => {
     const family = { analysis_type: "family-pattern", request: { wife: ["male", "female"], husband: ["female"], child_number: 2 } };
     expect(summarize(family, en)).toBe("Wife: Boy, Girl × Husband: Girl · Second child");
     expect(summarize(family, ar)).toBe("الزوجة: ذكر، أنثى × الزوج: أنثى · الطفل الثاني");
+    const single = { analysis_type: "family-pattern", request: { wife: ["male"], husband: ["female"], child_number: null } };
+    expect(summarize(single, en)).toBe("Wife: Boy × Husband: Girl");
   });
 });

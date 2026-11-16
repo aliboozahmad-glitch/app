@@ -7,7 +7,7 @@ import pytest
 from genova.genetics import GeneticsInputError
 from genova.i18n import LANGS, T, localize_result
 from genova.traditional import family_pattern_analysis
-from genova.traditional.family_pattern import legacy_order, load_table
+from genova.traditional.family_pattern import all_entries, legacy_order, load_table
 
 LEGACY = Path(__file__).parent / "fixtures" / "legacy_family_pattern_raw.json"  # parsed from the original file
 SRC = Path(__file__).resolve().parents[1] / "genova" / "traditional" / "family_pattern.py"
@@ -24,7 +24,10 @@ BASELINE = Path(__file__).parent / "fixtures" / "family_pattern_results_baseline
 
 def test_all_72_original_entries_preserved_unchanged():
     t = load_table()
-    assert sorted(c["case"] for c in t["cases"]) == [*range(1, 30), *range(41, 61), *range(69, 81)]
+    pdf_only = [*range(61, 69), 81, 82, 83, 85, 86, 88, 89, 90, 91]
+    assert sorted(c["case"] for c in t["cases"]) == sorted([*range(1, 30), *range(41, 61), *range(69, 81), *pdf_only])
+    assert sorted(c["case"] for c in t["cases"] if c["origin"] == "original_pdf") == pdf_only
+    assert not {84, 87, 92} & {c["case"] for c in all_entries()}
     assert sorted(c["case"] for c in t["old_app_only_cases"]) == list(range(30, 41))
     assert all(c["origin"] == "old_app_only" for c in t["old_app_only_cases"])
     cases = legacy_order()
@@ -35,7 +38,7 @@ def test_all_72_original_entries_preserved_unchanged():
 
 
 def test_wife_and_husband_stored_separately():
-    for c in legacy_order():
+    for c in all_entries():
         assert c["wife"] + c["husband"] == c["pattern"] and 1 <= len(c["wife"]) <= 3 and 1 <= len(c["husband"]) <= 3
 
 
@@ -69,19 +72,19 @@ def test_three_plus_three_case_1_and_no_flags():
 
 def test_duplicate_pattern_prefers_exact_family_split():
     r = family_pattern_analysis(["male", "male"], ["male", "male"], 1)
-    assert r["details"]["matched_cases"] == [41, 78] and r["details"]["effective_case"] == 41
+    assert r["details"]["matched_cases"] == [41, 78, 90] and r["details"]["effective_case"] == 41
     assert r["details"]["review_flags"] == ["duplicate_pattern"] and r["details"]["answer_borrowed"] is False
 
 
 def test_one_plus_two_exact_case_54():
     r = family_pattern_analysis(["female"], ["male", "male"], 1)
-    assert r["details"]["effective_case"] == 54 and r["details"]["review_flags"] == []
+    assert r["details"]["effective_case"] == 54 and r["details"]["review_flags"] == ["duplicate_pattern"]
+    assert r["details"]["answer_borrowed"] is False
 
 
 @pytest.mark.parametrize("wife,husband,case,answer", [
     (["male", "female", "male"], ["female"], 75, "male"),  # PDF 84 says girl: not applied yet
     (["female", "male", "female"], ["male"], 72, "female"),  # PDF 87 says boy: not applied yet
-    (["female", "female"], ["female"], 53, "female"),
 ])
 def test_answer_from_other_case_shows_source(wife, husband, case, answer):
     r = family_pattern_analysis(wife, husband, 1)
@@ -123,7 +126,7 @@ def test_statistic_kept_separate():
 
 
 @pytest.mark.parametrize("wife,husband,n", [([], ["male"], 1), (["male"] * 4, ["male"], 1), (["boy"], ["male"], 1),
-                                            (["male"], ["male"], 3)])
+                                            (["male"] * 3, ["male"] * 3, 3), (["male"] * 3, ["male"] * 3, None)])
 def test_invalid(wife, husband, n):
     with pytest.raises(GeneticsInputError):
         family_pattern_analysis(wife, husband, n)
@@ -139,3 +142,33 @@ def test_all_keys_translated():
             assert k in T, k
         for lang in LANGS:
             assert localize_result(r, lang)["references"]
+
+
+@pytest.mark.parametrize("wife,husband,case,answer", [
+    (["female", "female"], ["female"], 61, "female"), (["male", "female"], ["male"], 68, "male"),
+    (["female", "female", "female"], ["female"], 81, "female"), (["female", "male", "male"], ["male"], 91, "male"),
+])
+def test_pdf_only_cases_exact_and_unborrowed(wife, husband, case, answer):
+    r = family_pattern_analysis(wife, husband)
+    d = r["details"]
+    assert d["effective_case"] == case and d["origin"] == "original_pdf" and d["answer_borrowed"] is False
+    assert "answer_from_other_case" not in d["review_flags"]
+    assert [(o["key"], o["group"]) for o in r["outcomes"]] == [(answer, "single_child")]
+
+
+def test_single_child_scope_ignores_child_number():
+    a = family_pattern_analysis(["male"], ["female"], 1)
+    b = family_pattern_analysis(["male"], ["female"], 2)
+    assert a == b and a["inputs"]["child_number"] is None and a["details"]["prediction_scope"] == "single_child"
+
+
+def test_three_plus_three_keeps_first_and_second():
+    w, h = ["male", "male", "female"], ["female", "male", "female"]
+    groups = [family_pattern_analysis(w, h, n)["outcomes"][0] for n in (1, 2)]
+    assert [(o["key"], o["group"]) for o in groups] == [("male", "first_child"), ("female", "second_child")]
+
+
+def test_non_three_plus_three_entries_have_one_answer():
+    for c in all_entries():
+        if not (len(c["wife"]) == 3 and len(c["husband"]) == 3):
+            assert c["result"]["first"] == c["result"]["second"], c["case"]

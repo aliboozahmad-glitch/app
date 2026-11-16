@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 from typing import Annotated, Literal
 
 from bson import ObjectId
-from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
+from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, model_validator
 
 from .genetics.mendelian import MODES
 
@@ -76,7 +76,13 @@ Gender = Literal["male", "female"]
 class FamilyPatternIn(Strict):
     wife: Annotated[list[Gender], Field(min_length=1, max_length=3)]
     husband: Annotated[list[Gender], Field(min_length=1, max_length=3)]
-    child_number: Literal[1, 2] = 1
+    child_number: Literal[1, 2] | None = None
+
+    @model_validator(mode="after")
+    def _single_child_scope(self):
+        if not (len(self.wife) == 3 and len(self.husband) == 3):
+            self.child_number = None  # only 3 + 3 families predict a first and second child
+        return self
 
 
 class SexRatioIn(Strict):

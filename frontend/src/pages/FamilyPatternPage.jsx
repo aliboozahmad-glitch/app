@@ -49,18 +49,24 @@ export default function FamilyPatternPage() {
   const [wife, setWife] = useState(["male", "male", "female"]);
   const [husband, setHusband] = useState(["male", "male", "female"]);
   const [childNumber, setChildNumber] = useState("1");
+  const twoChild = wife.length === MAX && husband.length === MAX;
+  const body = () => ({ wife, husband, ...(twoChild && { child_number: Number(childNumber) }) });
   return (
     <CalcLayout kind="family-pattern" loading={loading} error={error} analysis={analysis}
-      onSubmit={() => run({ wife, husband, child_number: Number(childNumber) })}>
+      onSubmit={() => run(body())}>
       <p className="text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-md p-4" data-testid="family-pattern-notice">{t.family.notice}</p>
       <div className="grid md:grid-cols-2 gap-6">
         <FamilyInput id="wife" label={t.family.wife} onChange={setWife}>{wife}</FamilyInput>
         <FamilyInput id="husband" label={t.family.husband} onChange={setHusband}>{husband}</FamilyInput>
       </div>
-      <div>
-        <FieldLabel>{t.family.which}</FieldLabel>
-        <Choice testId="child-number" value={childNumber} onChange={setChildNumber} options={[["1", t.family.first], ["2", t.family.second]]} />
-      </div>
+      {twoChild ? (
+        <div>
+          <FieldLabel>{t.family.which}</FieldLabel>
+          <Choice testId="child-number" value={childNumber} onChange={setChildNumber} options={[["1", t.family.first], ["2", t.family.second]]} />
+        </div>
+      ) : (
+        <p className="text-sm text-slate-600" data-testid="single-child-note">{t.family.singleNote}</p>
+      )}
     </CalcLayout>
   );
 }

@@ -6,6 +6,7 @@ import { CertaintyBadge } from "./primitives";
 import { OutcomeTable } from "./OutcomeTable";
 import { PunnettGrid } from "./PunnettGrid";
 import { Scenarios } from "./Scenarios";
+import { FamilyPatternReport, PrintReportButton } from "./FamilyPatternReport";
 
 const SectionTitle = ({ children }) => (
   <h3 className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500 mb-2">{children}</h3>
@@ -128,10 +129,14 @@ Versions.propTypes = { result: resultShape.isRequired, id: PropTypes.string.isRe
 export const ResultView = ({ analysis }) => {
   const { t } = useLang();
   const r = analysis.result;
+  const isFamily = r.analysis_type === "family_pattern";
   return (
+    <>
+    {isFamily && <FamilyPatternReport analysis={analysis} />}
     <section className="bg-white border border-slate-200 rounded-md shadow-sm rise" data-testid="result-card">
       <ResultHeader result={r} />
       <div className="p-6 sm:p-8 space-y-8">
+        {isFamily && <PrintReportButton />}
         <ResultData result={r} />
         <div className="grid md:grid-cols-2 gap-8">
           <NoteList title={t.c.assumptions} items={r.assumptions} testId="result-assumptions" />
@@ -141,6 +146,7 @@ export const ResultView = ({ analysis }) => {
         <Versions result={r} id={analysis.id} />
       </div>
     </section>
+    </>
   );
 };
 

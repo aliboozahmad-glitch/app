@@ -1,12 +1,12 @@
 {
- "version": "legacy-family-pattern-2026-06-split",
+ "version": "legacy-family-pattern-2026-06-pdf-cases",
  "source": {
   "repository": "aliboozahmad-glitch/baby-gender-backend",
   "file": "gender_prediction_logic.py",
   "table": "PREDICTION_TABLE_EN (identical to the Arabic PREDICTION_TABLE)",
   "commit_date": "2025-12-21"
  },
- "lookup_rule": "an entry with the same wife's family and husband's family is used first; otherwise, as in the old app, the entry whose joined list (wife + husband) is the same is used, later entry winning, and the source case is shown",
+ "lookup_rule": "an entry with the same wife's family and husband's family is used first; otherwise the old app's joined-list lookup over the old-app entries (later entry wins) is used and the source case is shown. Original-PDF-only entries are used only for an exact wife/husband match.",
  "review_status": "pending_owner_review",
  "cases": [
   {
@@ -1335,6 +1335,214 @@
    "origin": "old_app_and_pdf"
   },
   {
+   "case": 61,
+   "section": "two_plus_one",
+   "pattern": [
+    "female",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "pdf_result": {
+    "single": "female"
+   },
+   "pdf_page": 2,
+   "wife": [
+    "female",
+    "female"
+   ],
+   "husband": [
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 62,
+   "section": "two_plus_one",
+   "pattern": [
+    "male",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "pdf_result": {
+    "single": "male"
+   },
+   "pdf_page": 2,
+   "wife": [
+    "male",
+    "male"
+   ],
+   "husband": [
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 63,
+   "section": "two_plus_one",
+   "pattern": [
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "pdf_result": {
+    "single": "female"
+   },
+   "pdf_page": 2,
+   "wife": [
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 64,
+   "section": "two_plus_one",
+   "pattern": [
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "pdf_result": {
+    "single": "female"
+   },
+   "pdf_page": 2,
+   "wife": [
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 65,
+   "section": "two_plus_one",
+   "pattern": [
+    "female",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "pdf_result": {
+    "single": "female"
+   },
+   "pdf_page": 2,
+   "wife": [
+    "female",
+    "female"
+   ],
+   "husband": [
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 66,
+   "section": "two_plus_one",
+   "pattern": [
+    "male",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "pdf_result": {
+    "single": "male"
+   },
+   "pdf_page": 2,
+   "wife": [
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 67,
+   "section": "two_plus_one",
+   "pattern": [
+    "female",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "pdf_result": {
+    "single": "male"
+   },
+   "pdf_page": 2,
+   "wife": [
+    "female",
+    "male"
+   ],
+   "husband": [
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 68,
+   "section": "two_plus_one",
+   "pattern": [
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "pdf_result": {
+    "single": "male"
+   },
+   "pdf_page": 3,
+   "wife": [
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
    "case": 69,
    "section": "one_plus_three",
    "pattern": [
@@ -1633,6 +1841,258 @@
    ],
    "split_source": "original_pdf",
    "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 81,
+   "section": "three_plus_one",
+   "pattern": [
+    "female",
+    "female",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "pdf_result": {
+    "single": "female"
+   },
+   "pdf_page": 3,
+   "wife": [
+    "female",
+    "female",
+    "female"
+   ],
+   "husband": [
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 82,
+   "section": "three_plus_one",
+   "pattern": [
+    "male",
+    "male",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "pdf_result": {
+    "single": "male"
+   },
+   "pdf_page": 3,
+   "wife": [
+    "male",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 83,
+   "section": "three_plus_one",
+   "pattern": [
+    "female",
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "pdf_result": {
+    "single": "female"
+   },
+   "pdf_page": 3,
+   "wife": [
+    "female",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 85,
+   "section": "three_plus_one",
+   "pattern": [
+    "female",
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "pdf_result": {
+    "single": "female"
+   },
+   "pdf_page": 3,
+   "wife": [
+    "female",
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 86,
+   "section": "three_plus_one",
+   "pattern": [
+    "male",
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "pdf_result": {
+    "single": "male"
+   },
+   "pdf_page": 3,
+   "wife": [
+    "male",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 88,
+   "section": "three_plus_one",
+   "pattern": [
+    "male",
+    "female",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "pdf_result": {
+    "single": "male"
+   },
+   "pdf_page": 3,
+   "wife": [
+    "male",
+    "female",
+    "male"
+   ],
+   "husband": [
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 89,
+   "section": "three_plus_one",
+   "pattern": [
+    "female",
+    "female",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "pdf_result": {
+    "single": "female"
+   },
+   "pdf_page": 3,
+   "wife": [
+    "female",
+    "female",
+    "female"
+   ],
+   "husband": [
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 90,
+   "section": "three_plus_one",
+   "pattern": [
+    "male",
+    "male",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "pdf_result": {
+    "single": "male"
+   },
+   "pdf_page": 3,
+   "wife": [
+    "male",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
+  },
+  {
+   "case": 91,
+   "section": "three_plus_one",
+   "pattern": [
+    "female",
+    "male",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "pdf_result": {
+    "single": "male"
+   },
+   "pdf_page": 3,
+   "wife": [
+    "female",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "original_pdf"
   }
  ],
  "old_app_only_cases": [
@@ -1925,5 +2385,20 @@
   }
  ],
  "old_app_only_note": "Cases 30-40 exist only in the old app code. The original PDF says numbers 30-40 are not in the sent text. Archived and labelled Old App Only; not part of the PDF master table.",
- "results_changed": false
+ "results_changed": false,
+ "pending_owner_approval": {
+  "cases": [
+   84,
+   87,
+   92
+  ],
+  "unclear_items": [
+   "U1",
+   "U2",
+   "U3",
+   "U4",
+   "U5",
+   "U6"
+  ]
+ }
 }

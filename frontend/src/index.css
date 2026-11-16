@@ -55,3 +55,12 @@
 .rise { animation: rise 0.45s ease both; }
 
 [data-debug-wrapper="true"] { display: contents !important; }
+
+.print-report { display: none; }
+
+@media print {
+    @page { margin: 16mm; }
+    #root { display: none !important; }
+    .print-report { display: block; background: #fff; color: #0f172a; }
+    .no-print { display: none !important; }
+}

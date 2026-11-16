@@ -32,8 +32,8 @@ const SUMMARIES = {
   "sex-ratio": () => "105 : 100",
   "family-pattern": (r, t) => {
     const names = (list) => list.map((g) => (g === "male" ? t.family.boy : t.family.girl)).join(t.family.sep);
-    const child = r.child_number === 2 ? t.family.second : t.family.first;
-    return `${t.family.wifeShort}: ${names(r.wife)} × ${t.family.husbandShort}: ${names(r.husband)} · ${child}`;
+    const child = { 1: ` · ${t.family.first}`, 2: ` · ${t.family.second}` }[r.child_number] || "";
+    return `${t.family.wifeShort}: ${names(r.wife)} × ${t.family.husbandShort}: ${names(r.husband)}${child}`;
   },
 };
 

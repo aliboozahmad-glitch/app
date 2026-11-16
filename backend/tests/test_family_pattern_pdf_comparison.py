@@ -51,7 +51,8 @@ def test_case_71_correction():
 def test_genova_table_count_and_extras():
     t = load_table()
     cases = [c["case"] for c in t["cases"]]
-    assert len(cases) == 61 and not set(cases) - {e["case"] for e in PDF}
+    assert len(cases) == 78 and not set(cases) - {e["case"] for e in PDF}
+    assert {e["case"] for e in PDF} - set(cases) == {84, 87, 92}
     assert [c["case"] for c in t["old_app_only_cases"]] == list(range(30, 41))
 
 
@@ -118,3 +119,11 @@ def test_api_matches_function(token, case):
     outs = res["outcomes"]
     api = outs[0]["key"] if outs else None
     assert api == _genova(e)[0]
+
+
+@pytest.mark.parametrize("e", [x for x in PDF if 61 <= x["case"] <= 68 or x["case"] >= 81 and x["case"] not in (84, 87, 92)],
+                         ids=lambda e: f"case{e['case']}")
+def test_pdf_only_entries_copied_exactly(e):
+    c = {c["case"]: c for c in load_table()["cases"]}[e["case"]]
+    assert c["wife"] == [G[x] for x in e["wife"]] and c["husband"] == [G[x] for x in e["husband"]]
+    assert c["pdf_result"]["single"] == _pdf(e) and c["origin"] == "original_pdf"

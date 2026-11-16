@@ -68,7 +68,7 @@ def test_case_1(s, created):
 def test_duplicate_41_78(s, created):
     r = _post(s, created, {"wife": ["male", "male"], "husband": ["male", "male"], "child_number": 2})
     res = _res(r)
-    assert res["details"]["matched_cases"] == [41, 78]
+    assert res["details"]["matched_cases"] == [41, 78, 90]
     assert res["details"]["effective_case"] == 41
     assert res["details"]["review_flags"] == ["duplicate_pattern"]
 
@@ -77,7 +77,7 @@ def test_duplicate_41_78(s, created):
 def test_case_54(s, created):
     res = _res(_post(s, created, {"wife": ["female"], "husband": ["male", "male"], "child_number": 1}))
     assert res["details"]["effective_case"] == 54
-    assert res["details"]["review_flags"] == []
+    assert res["details"]["review_flags"] == ["duplicate_pattern"] and res["details"]["answer_borrowed"] is False
     assert all(o["probability"] is None for o in res["outcomes"])
 
 
@@ -96,6 +96,7 @@ def test_not_in_table(s, created):
     {"wife": ["male"] * 4, "husband": ["male"]},
     {"wife": ["boy"], "husband": ["male"]},
     {"wife": ["male"], "husband": ["male"], "child_number": 3},
+    {"wife": ["male"] * 3, "husband": ["male"] * 3},
     {"wife": ["male"], "husband": ["male"], "extra": 1},
     {"husband": ["male"]},
 ])
