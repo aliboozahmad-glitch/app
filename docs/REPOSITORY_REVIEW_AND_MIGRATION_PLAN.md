@@ -1,6 +1,6 @@
 # GENOVA AI — Repository Review & Migration Plan
 
-Status: AWAITING YOUR APPROVAL. No existing code has been modified, replaced or deleted.
+Status: AWAITING YOUR APPROVAL (round 2 decisions added §7). No existing code has been modified, replaced or deleted.
 Decisions received: real-biology sex info · baby-face as premium AI artwork · AR/EN/DE · subscribers-only access · user picks region.
 Reviewed: June 2026 (read-only clones of all 5 repositories).
 
@@ -188,14 +188,22 @@ Arabic (RTL), English, German for UI, results, disclaimers and AI explanations. 
 9. Proper input validation and error handling.
 10. Shareable/printable result report (optional, can be later).
 
-## 7. Still needed from you (can be decided during build)
+## 7. Decisions confirmed (round 2)
 
-- **Subscription price and billing period** (e.g. monthly / yearly; currency). Default if not given: one monthly plan in USD (placeholder price, easy to change).
-- **Old mobile apps**: keep them live on the old backend for now, or move later? Default: untouched.
-- **Leaked key**: the Emergent LLM key in `baby-gender-app/DOWNLOAD_APP_GUIDE.md` should be rotated. I won't touch the old repo; you can rotate it from your Emergent profile.
-- Disease list for v1. Default: thalassemia (β), sickle cell, G6PD deficiency (X-linked, important for the Gulf), cystic fibrosis, hemophilia A/B, Duchenne, red-green color blindness, PKU, SMA, Tay-Sachs. All figures will be taken from published sources and cited, not invented.
+- **Pricing:** no hardcoded prices. The admin dashboard sets the **monthly and yearly price in EUR**, saved in the database. Stripe Checkout uses the current admin price, and the server re-reads it on every checkout (it never trusts a price sent by the browser). Until the admin sets prices, checkout is disabled and shows "Plans coming soon".
+- **Disease panel:** 10 conditions proposed in `docs/DISEASE_PANEL_PROPOSAL.md`, with inheritance, regional evidence and sources. **Not finalized.** Regional figures stay `draft` until validated.
+- **Printable reports:** PDF reports in Arabic (right-to-left, Arabic font), English and German. Each report contains:
+  1. Header with GENOVA logo, report ID, date, language, engine and data version
+  2. Inputs used, marked "lab-confirmed" vs "unknown / population estimate"
+  3. Calculations shown step by step (Punnett grid, formula, Bayesian step if used)
+  4. Results with certainty badge and ranges
+  5. Assumptions and limitations (penetrance, de novo rate, residual risk, test sensitivity)
+  6. Sources with links and access dates
+  7. Medical disclaimer (full, in the report language) + "discuss with a genetic counsellor"
+  8. Optional AI explanation section, clearly labelled "AI-generated explanation of the calculation above"
 
----
+  The PDF is generated on the server, so you can download and print it. Every page has a page number, the report ID and a short disclaimer in the footer.
+- **Old repos / current version:** not touched. GENOVA lives in this new workspace only.
 
 ## 8. Scientific honesty rules (built into code + tests)
 
@@ -203,3 +211,39 @@ Arabic (RTL), English, German for UI, results, disclaimers and AI explanations. 
 - Every number traces to a formula or a cited data entry; data entries without a reference fail the test suite.
 - The AI never produces probabilities; it receives the engine result and explains it, and the response is checked for unexpected percentages.
 - No claims of diagnostic accuracy. Every result shows "educational, not a diagnosis".
+
+---
+
+## 9. Feature list and status
+
+### Done (no credits spent on implementation yet)
+| Item | Status |
+|---|---|
+| Full audit of 5 repositories, feature inventory F1–F17 | ✅ Done |
+| Science / security / engineering problems list | ✅ Done |
+| Architecture proposal + result format + certainty tiers | ✅ Done |
+| Migration plan (8 phases, old repos untouched) | ✅ Done |
+| Disease panel proposal with sources + link check | ✅ Done (draft, needs validation) |
+| Decisions: pricing, languages, access, region, baby-face, reports | ✅ Recorded |
+
+### Remaining (to build after your approval)
+| # | Feature | Phase | Size |
+|---|---|---|---|
+| 1 | Genetics engine: Punnett (AD/AR/XD/XR/codominant), ABO+Rh, carrier risk, height, polygenic estimates, sex ratio | 1 | Large |
+| 2 | Disease + region data files with validation status + references | 1 | Medium |
+| 3 | Automated tests (exact crosses, sums = 1, no randomness, sources required) | 1 | Medium |
+| 4 | Email/password login, admin account, lockout | 2 | Medium |
+| 5 | Analysis API + input validation + safe error handling + saved history | 2 | Medium |
+| 6 | AI explanation engine (Claude Opus 5.5) with number guardrails, AR/EN/DE | 3 | Medium |
+| 7 | Web app AR/EN/DE (RTL), calculators, result cards with badges and sources | 4 | Large |
+| 8 | Stripe subscriptions (monthly/yearly EUR from admin), webhook, server-side access control | 5 | Medium |
+| 9 | Admin dashboard: prices, users, subscriptions, data-validation status, usage stats | 5 | Medium |
+| 10 | Printable PDF reports AR/EN/DE | 5 | Medium |
+| 11 | Baby-face AI artwork (premium, labelled, daily limit, private photo storage) | 6 | Medium |
+| 12 | Docs (ARCHITECTURE, SCIENCE, API, SECURITY, PRIVACY AR/EN/DE), CI, GitHub-ready | 7 | Small |
+| 13 | Scientific validation of regional figures by you / a genetic counsellor | ongoing | Your side |
+
+### Suggested build order to control credits
+- **Step A (smallest useful version):** items 1–5 + a basic web UI for them. You can test real, exact calculations with tests passing.
+- **Step B:** items 6, 7 (full UI), 10.
+- **Step C:** items 8, 9, 11, 12.
