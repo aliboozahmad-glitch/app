@@ -48,6 +48,40 @@ export const Sources = ({ refs }) => {
 
 Sources.propTypes = { refs: PropTypes.arrayOf(referenceShape).isRequired };
 
+const TableCase = ({ details }) => {
+  const { t } = useLang();
+  const kids = (list) => list.map((g) => (g === "male" ? t.family.boy : t.family.girl)).join(t.family.sep);
+  const src = details.source_case;
+  return (
+    <div className="text-sm text-slate-500 space-y-1" data-testid="result-table-case">
+      <p className="font-mono-genes">
+        {t.family.caseLabel} #{details.effective_case}
+        {details.origin === "old_app_only" && (
+          <span className="ms-2 px-2 py-0.5 text-xs rounded border border-amber-300 bg-amber-50 text-amber-900" data-testid="result-old-app-only">{t.family.oldAppOnly}</span>
+        )}
+      </p>
+      {details.answer_borrowed && src && (
+        <p data-testid="result-answer-source">
+          {t.family.borrowed} #{src.case} ({t.family.wifeShort}: {kids(src.wife)} · {t.family.husbandShort}: {kids(src.husband)})
+        </p>
+      )}
+    </div>
+  );
+};
+
+TableCase.propTypes = {
+  details: PropTypes.shape({
+    effective_case: PropTypes.number.isRequired,
+    origin: PropTypes.string,
+    answer_borrowed: PropTypes.bool,
+    source_case: PropTypes.shape({
+      case: PropTypes.number,
+      wife: PropTypes.arrayOf(PropTypes.string),
+      husband: PropTypes.arrayOf(PropTypes.string),
+    }),
+  }).isRequired,
+};
+
 const ResultHeader = ({ result }) => {
   const { t } = useLang();
   const d = result.details || {};
@@ -58,7 +92,7 @@ const ResultHeader = ({ result }) => {
         <div className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500">{t.c.result}{suffix}</div>
         <p className="mt-1 text-slate-900 font-medium" data-testid="result-method">{t.c.method}: {result.method_label}</p>
         {d.inheritance_label && <p className="text-sm text-slate-500" data-testid="result-inheritance">{d.inheritance_label}</p>}
-        {d.effective_case && <p className="text-sm text-slate-500 font-mono-genes" data-testid="result-table-case">{t.family.caseLabel} #{d.effective_case}</p>}
+        {d.effective_case && <TableCase details={d} />}
         {d.mechanism_text && <p className="text-sm text-slate-600 mt-2 max-w-2xl" data-testid="result-mechanism">{d.mechanism_text}</p>}
       </div>
       <CertaintyBadge tier={result.certainty} label={result.certainty_label} />

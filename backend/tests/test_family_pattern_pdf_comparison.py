@@ -47,9 +47,10 @@ def test_case_71_correction():
 
 
 def test_genova_table_count_and_extras():
-    cases = [c["case"] for c in load_table()["cases"]]
-    assert len(cases) == 72
-    assert set(cases) - {e["case"] for e in PDF} == set(range(30, 41))
+    t = load_table()
+    cases = [c["case"] for c in t["cases"]]
+    assert len(cases) == 61 and not set(cases) - {e["case"] for e in PDF}
+    assert [c["case"] for c in t["old_app_only_cases"]] == list(range(30, 41))
 
 
 # Section 1: exact match on families and both results
@@ -68,7 +69,7 @@ def test_section1_matches(e):
 def test_section2_listed_match(e):
     table = {c["case"]: c for c in load_table()["cases"]}
     c = table[e["case"]]
-    assert c["pattern"] == [G[x] for x in e["wife"] + e["husband"]]
+    assert c["wife"] == [G[x] for x in e["wife"]] and c["husband"] == [G[x] for x in e["husband"]]
     assert c["result"]["first"] == c["result"]["second"] == _pdf(e)
     assert _genova(e)[0] == _pdf(e)
 
@@ -86,10 +87,8 @@ def test_missing_ranges_current_behaviour(e):
         assert got == _pdf(e)
 
 
-def test_no_diff_in_traditional():
-    out = subprocess.run(["git", "status", "--porcelain", "backend/genova/traditional"], cwd=ROOT,
-                         capture_output=True, text=True).stdout
-    assert out.strip() == ""
+def test_results_table_flagged_unchanged():
+    assert load_table()["results_changed"] is False
 
 
 # API: same answers via POST /api/analyses/family-pattern

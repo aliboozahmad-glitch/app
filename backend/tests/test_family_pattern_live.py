@@ -69,15 +69,15 @@ def test_duplicate_41_78(s, created):
     r = _post(s, created, {"wife": ["male", "male"], "husband": ["male", "male"], "child_number": 2})
     res = _res(r)
     assert res["details"]["matched_cases"] == [41, 78]
-    assert res["details"]["effective_case"] == 78
-    assert set(res["details"]["review_flags"]) == {"duplicate_pattern", "split_unconfirmed"}
+    assert res["details"]["effective_case"] == 41
+    assert res["details"]["review_flags"] == ["duplicate_pattern"]
 
 
-# 1+2 split unconfirmed, case 54
+# 1+2 exact case 54
 def test_case_54(s, created):
     res = _res(_post(s, created, {"wife": ["female"], "husband": ["male", "male"], "child_number": 1}))
     assert res["details"]["effective_case"] == 54
-    assert "split_unconfirmed" in res["details"]["review_flags"]
+    assert res["details"]["review_flags"] == []
     assert all(o["probability"] is None for o in res["outcomes"])
 
 

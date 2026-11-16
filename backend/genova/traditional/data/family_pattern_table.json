@@ -1,12 +1,12 @@
 {
- "version": "legacy-family-pattern-2025-12-21",
+ "version": "legacy-family-pattern-2026-06-split",
  "source": {
   "repository": "aliboozahmad-glitch/baby-gender-backend",
   "file": "gender_prediction_logic.py",
   "table": "PREDICTION_TABLE_EN (identical to the Arabic PREDICTION_TABLE)",
   "commit_date": "2025-12-21"
  },
- "lookup_rule": "key = wife's children + husband's children in birth order; when a key appears twice, the later entry is used (original Python dict behaviour)",
+ "lookup_rule": "an entry with the same wife's family and husband's family is used first; otherwise, as in the old app, the entry whose joined list (wife + husband) is the same is used, later entry winning, and the source case is shown",
  "review_status": "pending_owner_review",
  "cases": [
   {
@@ -34,7 +34,9 @@
     "male",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 2,
@@ -61,7 +63,9 @@
     "male",
     "female",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 3,
@@ -88,7 +92,9 @@
     "female",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 4,
@@ -115,7 +121,9 @@
     "female",
     "male",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 5,
@@ -142,7 +150,9 @@
     "female",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 6,
@@ -169,7 +179,9 @@
     "male",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 7,
@@ -196,7 +208,9 @@
     "male",
     "female",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 8,
@@ -223,7 +237,9 @@
     "female",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 9,
@@ -250,7 +266,9 @@
     "female",
     "male",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 10,
@@ -277,7 +295,9 @@
     "female",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 11,
@@ -304,7 +324,9 @@
     "male",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 12,
@@ -331,7 +353,9 @@
     "male",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 13,
@@ -358,7 +382,9 @@
     "male",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 14,
@@ -385,7 +411,9 @@
     "male",
     "female",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 15,
@@ -412,7 +440,9 @@
     "female",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 16,
@@ -439,7 +469,9 @@
     "female",
     "male",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 17,
@@ -466,7 +498,9 @@
     "female",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 18,
@@ -493,7 +527,9 @@
     "male",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 19,
@@ -520,7 +556,9 @@
     "male",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 20,
@@ -547,7 +585,9 @@
     "male",
     "female",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 21,
@@ -574,7 +614,9 @@
     "female",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 22,
@@ -601,7 +643,9 @@
     "female",
     "male",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 23,
@@ -628,7 +672,9 @@
     "female",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 24,
@@ -655,7 +701,9 @@
     "male",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 25,
@@ -682,7 +730,9 @@
     "male",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 26,
@@ -709,7 +759,9 @@
     "male",
     "female",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 27,
@@ -736,7 +788,9 @@
     "female",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 28,
@@ -763,7 +817,9 @@
     "female",
     "male",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
   {
    "case": 29,
@@ -790,8 +846,796 @@
     "female",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
   },
+  {
+   "case": 41,
+   "section": "two_each",
+   "pattern": [
+    "male",
+    "male",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 154,
+   "wife": [
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male",
+    "male"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 42,
+   "section": "two_each",
+   "pattern": [
+    "male",
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 155,
+   "wife": [
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 43,
+   "section": "two_each",
+   "pattern": [
+    "female",
+    "female",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 156,
+   "wife": [
+    "female",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 44,
+   "section": "two_each",
+   "pattern": [
+    "female",
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 157,
+   "wife": [
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 45,
+   "section": "two_each",
+   "pattern": [
+    "female",
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 158,
+   "wife": [
+    "female",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 46,
+   "section": "two_each",
+   "pattern": [
+    "male",
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 159,
+   "wife": [
+    "male",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 47,
+   "section": "two_each",
+   "pattern": [
+    "male",
+    "female",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 160,
+   "wife": [
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "male"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 48,
+   "section": "two_each",
+   "pattern": [
+    "female",
+    "male",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 161,
+   "wife": [
+    "female",
+    "male"
+   ],
+   "husband": [
+    "male",
+    "male"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 49,
+   "section": "two_each",
+   "pattern": [
+    "male",
+    "female",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 162,
+   "wife": [
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 50,
+   "section": "two_each",
+   "pattern": [
+    "female",
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 163,
+   "wife": [
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "female"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 51,
+   "section": "two_each",
+   "pattern": [
+    "male",
+    "male",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 164,
+   "wife": [
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male",
+    "female"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 52,
+   "section": "two_each",
+   "pattern": [
+    "female",
+    "female",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 165,
+   "wife": [
+    "female",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male"
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 53,
+   "section": "one_plus_two",
+   "pattern": [
+    "female",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 168,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 54,
+   "section": "one_plus_two",
+   "pattern": [
+    "female",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 169,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "male",
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 55,
+   "section": "one_plus_two",
+   "pattern": [
+    "female",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 170,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 56,
+   "section": "one_plus_two",
+   "pattern": [
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 171,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 57,
+   "section": "one_plus_two",
+   "pattern": [
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 172,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "female",
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 58,
+   "section": "one_plus_two",
+   "pattern": [
+    "male",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 173,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "male",
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 59,
+   "section": "one_plus_two",
+   "pattern": [
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 174,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 60,
+   "section": "one_plus_two",
+   "pattern": [
+    "male",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 175,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "male",
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 69,
+   "section": "one_plus_three",
+   "pattern": [
+    "female",
+    "female",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 178,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female",
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 70,
+   "section": "one_plus_three",
+   "pattern": [
+    "female",
+    "male",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 179,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "male",
+    "male",
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 71,
+   "section": "one_plus_three",
+   "pattern": [
+    "female",
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 180,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 72,
+   "section": "one_plus_three",
+   "pattern": [
+    "female",
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 181,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 73,
+   "section": "one_plus_three",
+   "pattern": [
+    "female",
+    "female",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 182,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female",
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 74,
+   "section": "one_plus_three",
+   "pattern": [
+    "female",
+    "male",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 183,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "male",
+    "male",
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 75,
+   "section": "one_plus_three",
+   "pattern": [
+    "male",
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 184,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 76,
+   "section": "one_plus_three",
+   "pattern": [
+    "male",
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 185,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 77,
+   "section": "one_plus_three",
+   "pattern": [
+    "male",
+    "female",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "source_line": 186,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "female",
+    "female",
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 78,
+   "section": "one_plus_three",
+   "pattern": [
+    "male",
+    "male",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 187,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "male",
+    "male",
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 79,
+   "section": "one_plus_three",
+   "pattern": [
+    "male",
+    "female",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 188,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "male"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  },
+  {
+   "case": 80,
+   "section": "one_plus_three",
+   "pattern": [
+    "male",
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "source_line": 189,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "female"
+   ],
+   "split_source": "original_pdf",
+   "origin": "old_app_and_pdf"
+  }
+ ],
+ "old_app_only_cases": [
   {
    "case": 30,
    "section": "wife3_husband3",
@@ -817,7 +1661,9 @@
     "male",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_only"
   },
   {
    "case": 31,
@@ -844,7 +1690,9 @@
     "male",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_only"
   },
   {
    "case": 32,
@@ -871,7 +1719,9 @@
     "male",
     "female",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_only"
   },
   {
    "case": 33,
@@ -898,7 +1748,9 @@
     "female",
     "male",
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_only"
   },
   {
    "case": 34,
@@ -925,7 +1777,9 @@
     "female",
     "male",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_only"
   },
   {
    "case": 35,
@@ -952,7 +1806,9 @@
     "female",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_only"
   },
   {
    "case": 36,
@@ -979,7 +1835,9 @@
     "male",
     "female",
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_only"
   },
   {
    "case": 37,
@@ -998,7 +1856,9 @@
    ],
    "husband": [
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_only"
   },
   {
    "case": 38,
@@ -1017,7 +1877,9 @@
    ],
    "husband": [
     "male"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_only"
   },
   {
    "case": 39,
@@ -1036,7 +1898,9 @@
    ],
    "husband": [
     "female"
-   ]
+   ],
+   "split_source": "old_app_code",
+   "origin": "old_app_only"
   },
   {
    "case": 40,
@@ -1055,575 +1919,11 @@
    ],
    "husband": [
     "male"
-   ]
-  },
-  {
-   "case": 41,
-   "section": "two_each",
-   "pattern": [
-    "male",
-    "male",
-    "male",
-    "male"
    ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 154,
-   "wife": [
-    "male",
-    "male"
-   ],
-   "husband": [
-    "male",
-    "male"
-   ]
-  },
-  {
-   "case": 42,
-   "section": "two_each",
-   "pattern": [
-    "male",
-    "female",
-    "male",
-    "female"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 155,
-   "wife": [
-    "male",
-    "female"
-   ],
-   "husband": [
-    "male",
-    "female"
-   ]
-  },
-  {
-   "case": 43,
-   "section": "two_each",
-   "pattern": [
-    "female",
-    "female",
-    "female",
-    "female"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 156,
-   "wife": [
-    "female",
-    "female"
-   ],
-   "husband": [
-    "female",
-    "female"
-   ]
-  },
-  {
-   "case": 44,
-   "section": "two_each",
-   "pattern": [
-    "female",
-    "male",
-    "female",
-    "male"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 157,
-   "wife": [
-    "female",
-    "male"
-   ],
-   "husband": [
-    "female",
-    "male"
-   ]
-  },
-  {
-   "case": 45,
-   "section": "two_each",
-   "pattern": [
-    "female",
-    "female",
-    "male",
-    "female"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 158,
-   "wife": [
-    "female",
-    "female"
-   ],
-   "husband": [
-    "male",
-    "female"
-   ]
-  },
-  {
-   "case": 46,
-   "section": "two_each",
-   "pattern": [
-    "male",
-    "male",
-    "female",
-    "male"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 159,
-   "wife": [
-    "male",
-    "male"
-   ],
-   "husband": [
-    "female",
-    "male"
-   ]
-  },
-  {
-   "case": 47,
-   "section": "two_each",
-   "pattern": [
-    "male",
-    "female",
-    "male",
-    "male"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 160,
-   "wife": [
-    "male",
-    "female"
-   ],
-   "husband": [
-    "male",
-    "male"
-   ]
-  },
-  {
-   "case": 48,
-   "section": "two_each",
-   "pattern": [
-    "female",
-    "male",
-    "male",
-    "male"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 161,
-   "wife": [
-    "female",
-    "male"
-   ],
-   "husband": [
-    "male",
-    "male"
-   ]
-  },
-  {
-   "case": 49,
-   "section": "two_each",
-   "pattern": [
-    "male",
-    "female",
-    "female",
-    "female"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 162,
-   "wife": [
-    "male",
-    "female"
-   ],
-   "husband": [
-    "female",
-    "female"
-   ]
-  },
-  {
-   "case": 50,
-   "section": "two_each",
-   "pattern": [
-    "female",
-    "male",
-    "female",
-    "female"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 163,
-   "wife": [
-    "female",
-    "male"
-   ],
-   "husband": [
-    "female",
-    "female"
-   ]
-  },
-  {
-   "case": 51,
-   "section": "two_each",
-   "pattern": [
-    "male",
-    "male",
-    "male",
-    "female"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 164,
-   "wife": [
-    "male",
-    "male"
-   ],
-   "husband": [
-    "male",
-    "female"
-   ]
-  },
-  {
-   "case": 52,
-   "section": "two_each",
-   "pattern": [
-    "female",
-    "female",
-    "female",
-    "male"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 165,
-   "wife": [
-    "female",
-    "female"
-   ],
-   "husband": [
-    "female",
-    "male"
-   ]
-  },
-  {
-   "case": 53,
-   "section": "one_plus_two",
-   "pattern": [
-    "female",
-    "female",
-    "female"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 168
-  },
-  {
-   "case": 54,
-   "section": "one_plus_two",
-   "pattern": [
-    "female",
-    "male",
-    "male"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 169
-  },
-  {
-   "case": 55,
-   "section": "one_plus_two",
-   "pattern": [
-    "female",
-    "female",
-    "male"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 170
-  },
-  {
-   "case": 56,
-   "section": "one_plus_two",
-   "pattern": [
-    "female",
-    "male",
-    "female"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 171
-  },
-  {
-   "case": 57,
-   "section": "one_plus_two",
-   "pattern": [
-    "male",
-    "female",
-    "female"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 172
-  },
-  {
-   "case": 58,
-   "section": "one_plus_two",
-   "pattern": [
-    "male",
-    "male",
-    "male"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 173
-  },
-  {
-   "case": 59,
-   "section": "one_plus_two",
-   "pattern": [
-    "male",
-    "female",
-    "male"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 174
-  },
-  {
-   "case": 60,
-   "section": "one_plus_two",
-   "pattern": [
-    "male",
-    "male",
-    "female"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 175
-  },
-  {
-   "case": 69,
-   "section": "one_plus_three",
-   "pattern": [
-    "female",
-    "female",
-    "female",
-    "female"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 178
-  },
-  {
-   "case": 70,
-   "section": "one_plus_three",
-   "pattern": [
-    "female",
-    "male",
-    "male",
-    "male"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 179
-  },
-  {
-   "case": 71,
-   "section": "one_plus_three",
-   "pattern": [
-    "female",
-    "female",
-    "male",
-    "female"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 180
-  },
-  {
-   "case": 72,
-   "section": "one_plus_three",
-   "pattern": [
-    "female",
-    "male",
-    "female",
-    "male"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 181
-  },
-  {
-   "case": 73,
-   "section": "one_plus_three",
-   "pattern": [
-    "female",
-    "female",
-    "female",
-    "male"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 182
-  },
-  {
-   "case": 74,
-   "section": "one_plus_three",
-   "pattern": [
-    "female",
-    "male",
-    "male",
-    "female"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 183
-  },
-  {
-   "case": 75,
-   "section": "one_plus_three",
-   "pattern": [
-    "male",
-    "female",
-    "male",
-    "female"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 184
-  },
-  {
-   "case": 76,
-   "section": "one_plus_three",
-   "pattern": [
-    "male",
-    "male",
-    "female",
-    "male"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 185
-  },
-  {
-   "case": 77,
-   "section": "one_plus_three",
-   "pattern": [
-    "male",
-    "female",
-    "female",
-    "female"
-   ],
-   "result": {
-    "first": "female",
-    "second": "female"
-   },
-   "source_line": 186
-  },
-  {
-   "case": 78,
-   "section": "one_plus_three",
-   "pattern": [
-    "male",
-    "male",
-    "male",
-    "male"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 187
-  },
-  {
-   "case": 79,
-   "section": "one_plus_three",
-   "pattern": [
-    "male",
-    "female",
-    "male",
-    "male"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 188
-  },
-  {
-   "case": 80,
-   "section": "one_plus_three",
-   "pattern": [
-    "male",
-    "male",
-    "female",
-    "female"
-   ],
-   "result": {
-    "first": "male",
-    "second": "male"
-   },
-   "source_line": 189
+   "split_source": "old_app_code",
+   "origin": "old_app_only"
   }
- ]
+ ],
+ "old_app_only_note": "Cases 30-40 exist only in the old app code. The original PDF says numbers 30-40 are not in the sent text. Archived and labelled Old App Only; not part of the PDF master table.",
+ "results_changed": false
 }

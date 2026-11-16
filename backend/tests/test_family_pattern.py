@@ -7,7 +7,7 @@ import pytest
 from genova.genetics import GeneticsInputError
 from genova.i18n import LANGS, T, localize_result
 from genova.traditional import family_pattern_analysis
-from genova.traditional.family_pattern import load_table
+from genova.traditional.family_pattern import legacy_order, load_table
 
 LEGACY = Path(__file__).parent / "fixtures" / "legacy_family_pattern_raw.json"  # parsed from the original file
 SRC = Path(__file__).resolve().parents[1] / "genova" / "traditional" / "family_pattern.py"
@@ -19,13 +19,33 @@ def legacy_dict():
     return {tuple(e["key"]): e["result"] for e in raw}
 
 
+BASELINE = Path(__file__).parent / "fixtures" / "family_pattern_results_baseline.json"
+
+
 def test_all_72_original_entries_preserved_unchanged():
-    cases = load_table()["cases"]
+    t = load_table()
+    assert sorted(c["case"] for c in t["cases"]) == [*range(1, 30), *range(41, 61), *range(69, 81)]
+    assert sorted(c["case"] for c in t["old_app_only_cases"]) == list(range(30, 41))
+    assert all(c["origin"] == "old_app_only" for c in t["old_app_only_cases"])
+    cases = legacy_order()
     assert len(cases) == 72
-    assert sorted(c["case"] for c in cases) == [*range(1, 61), *range(69, 81)]
     if LEGACY.exists():
         raw = json.loads(LEGACY.read_text(encoding="utf-8"))["PREDICTION_TABLE_EN"]
         assert [(c["pattern"], c["result"]) for c in cases] == [(e["key"], e["result"]) for e in raw]
+
+
+def test_wife_and_husband_stored_separately():
+    for c in legacy_order():
+        assert c["wife"] + c["husband"] == c["pattern"] and 1 <= len(c["wife"]) <= 3 and 1 <= len(c["husband"]) <= 3
+
+
+def test_every_answer_unchanged_by_split():
+    base = json.loads(BASELINE.read_text(encoding="utf-8"))["results"]
+    assert len(base) == 392
+    for k, v in base.items():
+        w, h, n = k.split("|")
+        outs = family_pattern_analysis(w.split(","), h.split(","), int(n))["outcomes"]
+        assert (outs[0]["key"] if outs else None) == v, k
 
 
 @pytest.mark.skipif(not LEGACY.exists(), reason="legacy extract not present")
@@ -47,15 +67,40 @@ def test_three_plus_three_case_1_and_no_flags():
     assert r["certainty"] == "traditional_belief"
 
 
-def test_duplicate_pattern_uses_later_entry_and_is_flagged():
+def test_duplicate_pattern_prefers_exact_family_split():
     r = family_pattern_analysis(["male", "male"], ["male", "male"], 1)
-    assert r["details"]["matched_cases"] == [41, 78] and r["details"]["effective_case"] == 78
-    assert "duplicate_pattern" in r["details"]["review_flags"]
+    assert r["details"]["matched_cases"] == [41, 78] and r["details"]["effective_case"] == 41
+    assert r["details"]["review_flags"] == ["duplicate_pattern"] and r["details"]["answer_borrowed"] is False
 
 
-def test_one_plus_two_split_flagged_unconfirmed():
+def test_one_plus_two_exact_case_54():
     r = family_pattern_analysis(["female"], ["male", "male"], 1)
-    assert r["details"]["effective_case"] == 54 and "split_unconfirmed" in r["details"]["review_flags"]
+    assert r["details"]["effective_case"] == 54 and r["details"]["review_flags"] == []
+
+
+@pytest.mark.parametrize("wife,husband,case,answer", [
+    (["male", "female", "male"], ["female"], 75, "male"),  # PDF 84 says girl: not applied yet
+    (["female", "male", "female"], ["male"], 72, "female"),  # PDF 87 says boy: not applied yet
+    (["female", "female"], ["female"], 53, "female"),
+])
+def test_answer_from_other_case_shows_source(wife, husband, case, answer):
+    r = family_pattern_analysis(wife, husband, 1)
+    d = r["details"]
+    assert d["effective_case"] == case and d["answer_borrowed"] is True
+    assert "answer_from_other_case" in d["review_flags"] and d["source_case"]["case"] == case
+    assert [o["key"] for o in r["outcomes"]] == [answer]
+
+
+def test_pdf_92_still_not_in_table():
+    r = family_pattern_analysis(["male", "female", "female"], ["male"], 1)
+    assert r["outcomes"] == [] and r["details"]["review_flags"] == ["not_in_table"]
+
+
+@pytest.mark.parametrize("wife,husband,case", [(["male"], ["female"], 37), (["female", "female", "male"],
+                                                                         ["male", "female", "male"], 30)])
+def test_old_app_only_labelled(wife, husband, case):
+    d = family_pattern_analysis(wife, husband, 1)["details"]
+    assert d["effective_case"] == case and d["origin"] == "old_app_only" and "old_app_only" in d["review_flags"]
 
 
 def test_unknown_pattern_gives_no_answer_and_no_default():
@@ -86,6 +131,7 @@ def test_invalid(wife, husband, n):
 
 def test_all_keys_translated():
     for w, h in ((["male"], ["female"]), (["male", "male"], ["male", "male"]), (["female"], ["male", "male"]),
+                 (["male", "female", "male"], ["female"]),
                  (["male", "female", "male"], ["female", "female", "female"])):
         r = family_pattern_analysis(w, h, 1)
         groups = [o["group"] for o in r["outcomes"]]
