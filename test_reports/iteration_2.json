@@ -1,0 +1,25 @@
+{
+  "summary": "Regression test after the code-quality refactor (GENOVA AI Step A). Backend: pytest -n 0 gives 85/85 passed, including the live e2e suite with real Clerk tokens. Frontend jest gives 8/8 passed. I also ran a golden comparison: blood_type_analysis, carrier_analysis and localize_result (en/ar/de) at the pre-refactor commit b7ea7bd and at HEAD, over 9,921 inputs (all ABO/Rh combinations including genotypes and invalid values; all 10 diseases x 6 statuses x 7 regions including invalid ones; errors included). The JSON output is byte-identical, so the scientific results and response structures did not change. UI checked with Playwright and a Clerk ticket sign-in: Carrier page catalog-error/retry/loading using route interception; Sources page sources-catalog-error/retry/loading and sources-references-loading; switching to hemophilia_a gives father options affected/unaffected/unknown and resets father 'carrier' to 'unaffected'; the region choice appears only when a status is unknown; beta-thal carrier x unknown gulf shows the 'Established per scenario (one parent untested)' badge, the scenarios and population-unavailable; G6PD daughters are heterozygous variable 1/2; Aa x Aa gives 1/4, 1/2, 1/4 with the Punnett grid; XAXa x XAY gives sons affected 1/2; AB+ x O+ gives A/B ranges and AB/O impossible; A+ x B+ gives AB+ 3/16-1; height, pigmentation and sex-ratio render. Rapid EN/AR/DE toggling ends in the last language chosen (de), and AR flips to rtl and re-localizes the result. History: summaries are shown, the first click shows 'Confirm delete', the second deletes with a 'Deleted' toast, and bad or deleted ids show 'Analysis not found.'. No React key or PropTypes warnings on any page visited; the only console errors were the intentionally blocked requests and the expected 404s. No behavior differences vs iteration 1.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Carrier page with a catalog load error", "issues": ["The Calculate button stays visible and enabled while the catalog failed to load. It would submit the default form (beta_thalassemia carrier x carrier). Consider disabling or hiding it until the catalog loads."]},
+      {"screen": "History list", "issues": ["Sex-ratio items show an empty summary line (no inputs, so an empty string by design). Consider a short label instead.", "The carrier-risk summary shows only the statuses and region, without the disease (e.g. 'carrier × unknown · gulf'). Check that the item title shows the disease name."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_live_api_e2e.py", "/app/backend/tests/golden_dump.py", "/app/test_reports/pytest/pytest_results_iter2.xml"],
+  "action_items": ["Optional: disable Calculate on CarrierPage while catalogState.error or loading", "Optional: add a non-empty history summary for sex-ratio and the disease name in the carrier summary"],
+  "critical_code_review_comments": [
+    "LoadState shows the error box whenever state.error is true, even if older data exists. With usePublic keeping stale data, a failed refetch after a language switch hides content that was already loaded. That is acceptable, but rendering the stale data with an inline error would be gentler.",
+    "useAnalysis: the error from the re-localize effect is never cleared when a later refetch succeeds (setError(null) is called only in run). A transient failure while switching language leaves a stale error message next to a valid result.",
+    "useAnalysis.run has no stale guard: if the user clicks Calculate twice quickly, the last response to arrive wins, not the last request. This is minor."
+  ],
+  "updated_files": ["/app/backend/tests/golden_dump.py (new helper; not collected by pytest)"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "None. The analyses created by the UI runs for genova.tester+clerk_test were deleted by id afterwards.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Golden regression: `git archive b7ea7bd backend/genova | tar -x -C /tmp/old`, then `python /app/backend/tests/golden_dump.py /tmp/old/backend > old.json` and `python /app/backend/tests/golden_dump.py /app/backend > new.json`, then cmp. Route interception for the error states: page.route('**/api/catalog*', abort), then switch the handler to continue_ with a delay and click the retry button to see the loading state. Choice buttons use the testid pattern {testId}-{value}, e.g. father-status-unknown, mother-abo-AB, mode-choice-x_linked_recessive."
+}

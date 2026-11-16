@@ -30,6 +30,7 @@ describe("summarize", () => {
     expect(summarize({ analysis_type: "blood-type", request: { parent1_abo: "A", parent1_rh: "+", parent2_abo: "O", parent2_rh: "-" } })).toBe("A+ × O-");
     expect(summarize({ analysis_type: "carrier-risk", request: { mother_status: "carrier", father_status: "unknown", region: "gulf" } })).toBe("carrier × unknown · gulf");
     expect(summarize({ analysis_type: "height", request: { mother_cm: 165, father_cm: 180 } })).toBe("165 cm × 180 cm");
-    expect(summarize({ analysis_type: "sex-ratio", request: {} })).toBe("");
+    expect(summarize({ analysis_type: "sex-ratio", request: {} })).toBe("105 : 100");
+    expect(summarize({ analysis_type: "unknown" })).toBe("");
   });
 });

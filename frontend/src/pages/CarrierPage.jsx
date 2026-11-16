@@ -59,7 +59,7 @@ export default function CarrierPage() {
   const st = (l) => l.map((s) => [s, t.carrier.status[s]]);
 
   return (
-    <CalcLayout kind="carrier-risk" loading={loading} error={error} analysis={analysis} onSubmit={() => run(body)}>
+    <CalcLayout kind="carrier-risk" loading={loading} error={error} analysis={analysis} onSubmit={() => run(body)} disabled={!catalogState.data}>
       <LoadState state={catalogState} testId="catalog">
         {(catalog) => (
           <>

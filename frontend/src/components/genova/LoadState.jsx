@@ -5,8 +5,7 @@ import { useLang } from "@/i18n/LanguageContext";
 /** Loading / error / retry wrapper for public data fetched with usePublic. */
 export const LoadState = ({ state, testId, children }) => {
   const { t } = useLang();
-  if (state.error) {
-    return (
+  const errorBox = (
       <div className="flex flex-wrap items-center gap-3 p-4 border border-red-200 bg-red-50 text-red-800 rounded-md text-sm" data-testid={`${testId}-error`}>
         <AlertTriangle size={16} /> {t.c.loadError}
         <button type="button" onClick={state.retry} data-testid={`${testId}-retry`}
@@ -14,12 +13,12 @@ export const LoadState = ({ state, testId, children }) => {
           <RotateCw size={13} /> {t.c.retry}
         </button>
       </div>
-    );
-  }
+  );
+  if (state.error && !state.data) return errorBox;
   if (!state.data) {
     return <div className="flex items-center gap-2 text-sm text-slate-500" data-testid={`${testId}-loading`}><Loader2 size={16} className="animate-spin" /> {t.c.loading}</div>;
   }
-  return children(state.data);
+  return <>{state.error && errorBox}{children(state.data)}</>;
 };
 
 LoadState.propTypes = {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@clerk/react";
 import { useLang } from "@/i18n/LanguageContext";
@@ -30,28 +30,32 @@ export const useAnalysis = (kind) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const latest = useRef(0);
   const run = async (body) => {
+    const request = ++latest.current;
     setLoading(true);
     setError(null);
     try {
-      setAnalysis(await api("post", `/analyses/${kind}?lang=${lang}`, body));
+      const result = await api("post", `/analyses/${kind}?lang=${lang}`, body);
+      if (request === latest.current) setAnalysis(result);
     } catch (e) {
-      setError(errorMessage(e, t.c.error));
+      if (request === latest.current) setError(errorMessage(e, t.c.error));
     } finally {
-      setLoading(false);
+      if (request === latest.current) setLoading(false);
     }
   };
 
   const id = analysis?.id;
+  const loadedLang = analysis?.result?.lang;
   const fallback = t.c.error;
   useEffect(() => {
-    if (!id) return undefined;
+    if (!id || loadedLang === lang) return undefined;
     let active = true;
     api("get", `/analyses/${id}?lang=${lang}`)
-      .then((a) => active && setAnalysis(a))
+      .then((a) => { if (active) { setAnalysis(a); setError(null); } })
       .catch((e) => active && setError(errorMessage(e, fallback)));
     return () => { active = false; };
-  }, [lang, id, api, fallback]);
+  }, [lang, id, loadedLang, api, fallback]);
 
   return { run, analysis, loading, error };
 };

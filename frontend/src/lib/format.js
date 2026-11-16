@@ -23,6 +23,7 @@ const SUMMARIES = {
   "carrier-risk": (r) => `${r.mother_status} × ${r.father_status}${r.region ? ` · ${r.region}` : ""}`,
   height: (r) => `${r.mother_cm} cm × ${r.father_cm} cm`,
   pigmentation: (r) => `${r.trait} · ${r.mother} × ${r.father}`,
+  "sex-ratio": () => "105 : 100",
 };
 
 /** @param {{ analysis_type: string, request?: Object }} item history item @returns {string} one-line input summary */
