@@ -41,7 +41,7 @@ export function HistoryPage() {
           <li key={it.id} className="p-4 sm:p-5 flex flex-wrap items-center gap-3" data-testid={`history-item-${it.id}`}>
             <div className="flex-1 min-w-[220px]">
               <div className="font-medium">{t.calc[it.analysis_type]?.[0]}{it.disease_name ? ` · ${it.disease_name}` : ""}</div>
-              <div className="text-sm text-slate-600 font-mono-genes" data-testid={`history-summary-${it.id}`}>{summarize(it)}</div>
+              <div className="text-sm text-slate-600 font-mono-genes" data-testid={`history-summary-${it.id}`}>{summarize(it, t)}</div>
               <div className="text-xs text-slate-500 font-mono-genes">{new Date(it.created_at).toLocaleString(lang)}</div>
             </div>
             <CertaintyBadge tier={it.certainty} label={it.certainty_label} testId={`history-tier-${it.id}`} />

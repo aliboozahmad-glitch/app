@@ -35,7 +35,8 @@ def test_recessive_affected_x_carrier():
 
 
 def test_genotype_order_is_normalised():
-    assert dist(mendelian_analysis("autosomal_recessive", "aA", "Aa"), "genotype") == {"AA": "1/4", "Aa": "1/2", "aa": "1/4"}
+    result = mendelian_analysis("autosomal_recessive", "aA", "Aa")
+    assert dist(result, "genotype") == {"AA": "1/4", "Aa": "1/2", "aa": "1/4"}
 
 
 def test_codominant_and_incomplete():

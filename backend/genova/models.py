@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
-from typing import Annotated, Literal, Optional
+from datetime import UTC, datetime
+from typing import Annotated, Literal
 
 from bson import ObjectId
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
@@ -9,11 +9,13 @@ from .genetics.mendelian import MODES
 PyObjectId = Annotated[str, BeforeValidator(lambda v: str(v) if isinstance(v, ObjectId) else v)]
 Lang = Literal["en", "ar", "de"]
 Short = Annotated[str, Field(min_length=1, max_length=6)]
+Region = Literal["gulf", "middle_east_north_africa", "europe", "sub_saharan_africa", "south_asia", "east_asia",
+                 "americas", "global"]
 
 
 class BaseDocument(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
-    id: Optional[PyObjectId] = Field(default=None, alias="_id")
+    id: PyObjectId | None = Field(default=None, alias="_id")
 
     @classmethod
     def from_mongo(cls, doc: dict):
@@ -30,7 +32,7 @@ class AnalysisDoc(BaseDocument):
     analysis_type: str
     request: dict
     result: dict
-    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    created_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 class Strict(BaseModel):
@@ -54,8 +56,7 @@ class CarrierIn(Strict):
     disease_id: Annotated[str, Field(min_length=1, max_length=40)]
     mother_status: Literal["affected", "carrier", "non_carrier", "unknown"]
     father_status: Literal["affected", "carrier", "non_carrier", "unaffected", "unknown"]
-    region: Optional[Literal["gulf", "middle_east_north_africa", "europe", "sub_saharan_africa", "south_asia",
-                             "east_asia", "americas", "global"]] = None
+    region: Region | None = None
 
 
 class HeightIn(Strict):

@@ -93,3 +93,33 @@ def test_validation_errors(client):
     assert r.status_code == 422  # extra fields rejected
     assert client.post("/api/analyses/unknown", json={}).status_code == 404
     assert client.get("/api/analyses/not-an-id").status_code == 404
+
+
+def test_rapid_identical_requests_create_one_history_entry(client):
+    as_user(USER_A)
+    body = {"mode": "autosomal_dominant", "parent1": "Aa", "parent2": "aa"}
+    before = len(client.get("/api/analyses?limit=200").json()["items"])
+    responses = [client.post("/api/analyses/mendelian", json=body) for _ in range(3)]
+    ids = {r.json()["id"] for r in responses}
+    assert all(r.status_code == 200 for r in responses)
+    assert len(ids) == 1
+    assert [r.json().get("deduplicated", False) for r in responses] == [False, True, True]
+    assert len(client.get("/api/analyses?limit=200").json()["items"]) == before + 1
+    assert responses[0].json()["result"] == responses[2].json()["result"]
+
+    different = client.post("/api/analyses/mendelian", json={**body, "parent2": "Aa"})
+    assert different.json()["id"] not in ids  # different inputs are a new, intentional calculation
+    for aid in [*ids, different.json()["id"]]:
+        client.delete(f"/api/analyses/{aid}")
+
+
+def test_dedupe_is_per_user(client):
+    body = {"mother_cm": 161, "father_cm": 183}
+    as_user(USER_A)
+    a = client.post("/api/analyses/height", json=body).json()["id"]
+    as_user(USER_B)
+    b = client.post("/api/analyses/height", json=body).json()["id"]
+    assert a != b
+    client.delete(f"/api/analyses/{b}")
+    as_user(USER_A)
+    client.delete(f"/api/analyses/{a}")

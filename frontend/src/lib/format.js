@@ -17,14 +17,24 @@ export const errorMessage = (err, fallback) => {
 /** @param {number} p probability 0..1 @returns {string} e.g. "25%" or "1.25%" */
 export const pct = (p) => `${(p * 100).toFixed((p * 100) % 1 === 0 ? 0 : 2)}%`;
 
+const label = (map, key) => (map && map[key]) || key;
+
 const SUMMARIES = {
-  mendelian: (r) => `${r.mode} · ${r.parent1} × ${r.parent2}`,
+  mendelian: (r, t) => `${label(t.modes, r.mode)} · ${r.parent1} × ${r.parent2}`,
   "blood-type": (r) => `${r.parent1_abo}${r.parent1_rh} × ${r.parent2_abo}${r.parent2_rh}`,
-  "carrier-risk": (r) => `${r.mother_status} × ${r.father_status}${r.region ? ` · ${r.region}` : ""}`,
+  "carrier-risk": (r, t) => {
+    const status = (s) => label(t.carrier.status, s);
+    const region = r.region ? ` · ${label(t.regions, r.region)}` : "";
+    return `${t.c.mother}: ${status(r.mother_status)} × ${t.c.father}: ${status(r.father_status)}${region}`;
+  },
   height: (r) => `${r.mother_cm} cm × ${r.father_cm} cm`,
-  pigmentation: (r) => `${r.trait} · ${r.mother} × ${r.father}`,
+  pigmentation: (r, t) => `${label(t.traits, r.trait)} · ${label(t.traits.colours, r.mother)} × ${label(t.traits.colours, r.father)}`,
   "sex-ratio": () => "105 : 100",
 };
 
-/** @param {{ analysis_type: string, request?: Object }} item history item @returns {string} one-line input summary */
-export const summarize = ({ analysis_type: kind, request = {} }) => (SUMMARIES[kind] ? SUMMARIES[kind](request) : "");
+/**
+ * @param {{ analysis_type: string, request?: Object }} item history item
+ * @param {Object} t translations for the current language
+ * @returns {string} one-line, translated input summary
+ */
+export const summarize = ({ analysis_type: kind, request = {} }, t) => (SUMMARIES[kind] ? SUMMARIES[kind](request, t) : "");

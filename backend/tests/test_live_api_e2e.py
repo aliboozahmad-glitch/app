@@ -53,8 +53,8 @@ def post(s, kind, body, created, lang="en"):
 
 
 def by(outcomes, key, group=None, kind=None):
-    return [o for o in outcomes if o["key"] == key and (group is None or o["group"] == group)
-            and (kind is None or o["kind"] == kind)][0]
+    return next(o for o in outcomes if o["key"] == key and (group is None or o["group"] == group)
+            and (kind is None or o["kind"] == kind))
 
 
 # --- Public endpoints
@@ -117,8 +117,8 @@ def test_blood_a_b_ranges(a, created):
 
 def test_height(a, created):
     res = post(a, "height", {"mother_cm": 165, "father_cm": 180}, created).json()["result"]
-    sons = [o for o in res["outcomes"] if o["group"] == "sons"][0]
-    daughters = [o for o in res["outcomes"] if o["group"] == "daughters"][0]
+    sons = next(o for o in res["outcomes"] if o["group"] == "sons")
+    daughters = next(o for o in res["outcomes"] if o["group"] == "daughters")
     assert sons["value"] == 179 and sons["range"] == [170.5, 187.5] and daughters["value"] == 166
     assert res["certainty"] == "statistical_estimate"
 

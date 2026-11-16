@@ -3,8 +3,14 @@ import itertools
 from fractions import Fraction
 from pathlib import Path
 
-from genova.genetics import (blood_type_analysis, carrier_analysis, height_analysis, mendelian_analysis,
-                             pigmentation_analysis, sex_ratio_analysis)
+from genova.genetics import (
+    blood_type_analysis,
+    carrier_analysis,
+    height_analysis,
+    mendelian_analysis,
+    pigmentation_analysis,
+    sex_ratio_analysis,
+)
 from genova.genetics.data_loader import disease_list, load_references
 from genova.genetics.mendelian import AUTOSOMAL_GENOTYPES, X_FATHER, X_MOTHER
 from genova.i18n import LANGS, T, localize_result

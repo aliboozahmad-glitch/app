@@ -1,0 +1,14 @@
+line-length = 120
+target-version = "py311"
+extend-exclude = ["clerk_auth.py"]
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "RUF", "BLE", "PLW"]
+# B008: FastAPI's Depends()/Query() in defaults is the framework's documented pattern.
+ignore = ["B008"]
+
+[lint.per-file-ignores]
+"server.py" = ["E402"]
+# Translation table: one AR/EN/DE sentence per line is clearer than wrapped strings.
+"genova/i18n.py" = ["E501"]
+"tests/*" = ["PLW1510"]

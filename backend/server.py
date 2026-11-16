@@ -9,29 +9,32 @@ from dotenv import load_dotenv
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
 
-from fastapi import FastAPI, Request  # noqa: E402
-from fastapi.exceptions import RequestValidationError  # noqa: E402
-from fastapi.responses import JSONResponse  # noqa: E402
-from pymongo import ASCENDING, DESCENDING, IndexModel  # noqa: E402
-from starlette.exceptions import HTTPException as StarletteHTTPException  # noqa: E402
-from starlette.middleware.cors import CORSMiddleware  # noqa: E402
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from pymongo import ASCENDING, DESCENDING, IndexModel
+from pymongo.errors import PyMongoError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.middleware.cors import CORSMiddleware
 
 try:
     from backend.clerk_auth import clerk_router
 except ModuleNotFoundError:
     from clerk_auth import clerk_router
 
-from genova.api import router as genova_router  # noqa: E402
-from genova.auth import RETIRED_ROLES  # noqa: E402
-from genova.db import client, db  # noqa: E402
-from genova.genetics import GeneticsInputError  # noqa: E402
-from genova.i18n import LANGS, t  # noqa: E402
+from genova.api import router as genova_router
+from genova.auth import RETIRED_ROLES
+from genova.db import client, db
+from genova.genetics import GeneticsInputError
+from genova.i18n import LANGS, t
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("genova")
 
 INDEXES: dict[str, list[IndexModel]] = {
-    "analyses": [IndexModel([("user_id", ASCENDING), ("created_at", DESCENDING)], name="user_created")],
+    "analyses": [IndexModel([("user_id", ASCENDING), ("created_at", DESCENDING)], name="user_created"),
+                 IndexModel([("user_id", ASCENDING), ("analysis_type", ASCENDING), ("created_at", DESCENDING)],
+                            name="user_kind_created")],
     "users": [IndexModel([("user_id", ASCENDING)], name="user_id", unique=True)],
 }
 
@@ -41,7 +44,7 @@ async def ensure_indexes() -> None:
         for model in models:
             try:
                 await db[collection].create_indexes([model])
-            except Exception as exc:
+            except PyMongoError as exc:
                 logger.error("ensure_indexes(%s.%s): %s", collection, model.document["name"], exc)
 
 

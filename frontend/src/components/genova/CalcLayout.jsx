@@ -21,7 +21,7 @@ export const CalcLayout = ({ kind, onSubmit, loading, error, analysis, children,
       <Disclaimer text={t.disclaimer} />
       <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }}
         className="bg-white border border-slate-200 rounded-md shadow-sm p-6 sm:p-8 space-y-6" data-testid="calculator-form">
-        {children}
+        <fieldset disabled={loading} className="space-y-6 disabled:opacity-70" data-testid="calculator-fieldset">{children}</fieldset>
         <div className="flex items-center gap-4">
           <button type="submit" disabled={loading || disabled} data-testid="calculate-button"
             className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-2.5 rounded-md font-medium hover:bg-slate-800 disabled:opacity-60 transition-colors">

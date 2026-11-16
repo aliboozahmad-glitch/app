@@ -29,7 +29,8 @@ def effective_role(role) -> str:
 
 def _clerk_user(user_id: str) -> dict:
     r = requests.get(f"https://api.clerk.com/v1/users/{user_id}", timeout=10,
-                     headers={"Authorization": f"Bearer {os.environ['CLERK_SECRET_KEY']}", "User-Agent": "emergent-app"})
+                     headers={"Authorization": f"Bearer {os.environ['CLERK_SECRET_KEY']}",
+                              "User-Agent": "emergent-app"})
     r.raise_for_status()
     return r.json()
 

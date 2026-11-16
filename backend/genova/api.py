@@ -1,3 +1,5 @@
+from datetime import UTC, datetime, timedelta
+
 from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -9,15 +11,16 @@ from .auth import IN_ENV, RANK, ROLES, current_member, effective_role, require_r
 from .db import db
 from .genetics.data_loader import disease_list, load_diseases, load_references
 from .i18n import localize_result, t
-from .models import (AnalysisDoc, BloodTypeIn, CarrierIn, HeightIn, Lang, MendelianIn, PigmentIn, RoleIn,
-                     SexRatioIn)
+from .models import AnalysisDoc, BloodTypeIn, CarrierIn, HeightIn, Lang, MendelianIn, PigmentIn, RoleIn, SexRatioIn
 from .ratelimit import analysis_limiter
 
 router = APIRouter(prefix="/api")
+DEDUPE_WINDOW_S = 10
 
 CALCULATORS = {
     "mendelian": (MendelianIn, lambda b: g.mendelian_analysis(b.mode, b.parent1, b.parent2)),
-    "blood-type": (BloodTypeIn, lambda b: g.blood_type_analysis(b.parent1_abo, b.parent1_rh, b.parent2_abo, b.parent2_rh)),
+    "blood-type": (BloodTypeIn,
+                   lambda b: g.blood_type_analysis(b.parent1_abo, b.parent1_rh, b.parent2_abo, b.parent2_rh)),
     "carrier-risk": (CarrierIn, lambda b: g.carrier_analysis(b.disease_id, b.mother_status, b.father_status, b.region)),
     "height": (HeightIn, lambda b: g.height_analysis(b.mother_cm, b.father_cm)),
     "pigmentation": (PigmentIn, lambda b: g.pigmentation_analysis(b.trait, b.mother, b.father)),
@@ -28,13 +31,22 @@ CALCULATORS = {
 def _oid(value: str) -> ObjectId:
     try:
         return ObjectId(value)
-    except (InvalidId, TypeError):
-        raise HTTPException(status_code=404, detail="Not found")
+    except (InvalidId, TypeError) as exc:
+        raise HTTPException(status_code=404, detail="Not found") from exc
 
 
 def _view(doc: AnalysisDoc, lang: str) -> dict:
     return {"id": doc.id, "analysis_type": doc.analysis_type, "created_at": doc.created_at, "request": doc.request,
             "result": localize_result(doc.result, lang)}
+
+
+async def _recent_duplicate(user_id: str, kind: str, request: dict) -> AnalysisDoc | None:
+    """Same user, same calculator, same inputs within the window = one intentional calculation."""
+    cutoff = (datetime.now(UTC) - timedelta(seconds=DEDUPE_WINDOW_S)).isoformat()
+    raw = await db.analyses.find_one(
+        {"user_id": user_id, "analysis_type": kind, "request": request, "created_at": {"$gte": cutoff}},
+        sort=[("created_at", -1)])
+    return AnalysisDoc.from_mongo(raw) if raw else None
 
 
 @router.get("/health")
@@ -76,10 +88,14 @@ async def run_analysis(kind: str, body: dict, lang: Lang = "en", member: dict = 
     try:
         payload = schema.model_validate(body)
     except ValidationError as exc:
-        raise RequestValidationError([{**e, "loc": ("body", *e["loc"])} for e in exc.errors()])
+        raise RequestValidationError([{**e, "loc": ("body", *e["loc"])} for e in exc.errors()]) from exc
     analysis_limiter.check(member["user_id"])
+    request = payload.model_dump()
+    duplicate = await _recent_duplicate(member["user_id"], kind, request)
+    if duplicate:
+        return {**_view(duplicate, lang), "deduplicated": True}
     result = fn(payload)
-    doc = AnalysisDoc(user_id=member["user_id"], analysis_type=kind, request=payload.model_dump(), result=result)
+    doc = AnalysisDoc(user_id=member["user_id"], analysis_type=kind, request=request, result=result)
     res = await db.analyses.insert_one(doc.to_mongo())
     doc.id = str(res.inserted_id)
     return _view(doc, lang)

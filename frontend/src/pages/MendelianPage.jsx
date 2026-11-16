@@ -12,14 +12,9 @@ const GENOTYPES = {
   x_linked_recessive: [["XAXA", "XAXa", "XaXa"], ["XAY", "XaY"]],
   x_linked_dominant: [["XAXA", "XAXa", "XaXa"], ["XAY", "XaY"]],
 };
-const MODE_LABEL = {
-  en: { autosomal_dominant: "Autosomal dominant", autosomal_recessive: "Autosomal recessive", codominant: "Codominant", incomplete_dominance: "Incomplete dominance", x_linked_recessive: "X-linked recessive", x_linked_dominant: "X-linked dominant" },
-  ar: { autosomal_dominant: "جسمي سائد", autosomal_recessive: "جسمي متنحٍ", codominant: "سيادة مشتركة", incomplete_dominance: "سيادة غير تامة", x_linked_recessive: "متنحٍ مرتبط بـ X", x_linked_dominant: "سائد مرتبط بـ X" },
-  de: { autosomal_dominant: "Autosomal-dominant", autosomal_recessive: "Autosomal-rezessiv", codominant: "Kodominant", incomplete_dominance: "Unvollständige Dominanz", x_linked_recessive: "X-rezessiv", x_linked_dominant: "X-dominant" },
-};
 
 export default function MendelianPage() {
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const { run, analysis, loading, error } = useAnalysis("mendelian");
   const [mode, setMode] = useState("autosomal_recessive");
   const [p1, setP1] = useState("Aa");
@@ -35,7 +30,7 @@ export default function MendelianPage() {
     <CalcLayout kind="mendelian" onSubmit={() => run({ mode, parent1: p1, parent2: p2 })} loading={loading} error={error} analysis={analysis}>
       <div>
         <FieldLabel>{t.mendelian.mode}</FieldLabel>
-        <Choice testId="mode-choice" value={mode} onChange={changeMode} options={Object.keys(GENOTYPES).map((m) => [m, MODE_LABEL[lang][m]])} />
+        <Choice testId="mode-choice" value={mode} onChange={changeMode} options={Object.keys(GENOTYPES).map((m) => [m, t.modes[m]])} />
         <p className="text-sm text-slate-500 mt-2" data-testid="mode-hint">{hint}</p>
       </div>
       <div className="grid sm:grid-cols-2 gap-6">

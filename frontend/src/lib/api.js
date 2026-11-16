@@ -30,18 +30,20 @@ export const useAnalysis = (kind) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const latest = useRef(0);
+  const inFlight = useRef(false);
+  // One click = one calculation: further submits are ignored until the current one finishes.
   const run = async (body) => {
-    const request = ++latest.current;
+    if (inFlight.current) return;
+    inFlight.current = true;
     setLoading(true);
     setError(null);
     try {
-      const result = await api("post", `/analyses/${kind}?lang=${lang}`, body);
-      if (request === latest.current) setAnalysis(result);
+      setAnalysis(await api("post", `/analyses/${kind}?lang=${lang}`, body));
     } catch (e) {
-      if (request === latest.current) setError(errorMessage(e, t.c.error));
+      setError(errorMessage(e, t.c.error));
     } finally {
-      if (request === latest.current) setLoading(false);
+      inFlight.current = false;
+      setLoading(false);
     }
   };
 

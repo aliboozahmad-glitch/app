@@ -115,10 +115,10 @@ def carrier_analysis(disease_id: str, mother_status: str, father_status: str, re
     if entry is None:
         common["population_estimate"] = {"available": False, "reason": "region_data_unvalidated"}
         return make_result("carrier_risk", "established", "carrier_conditional", inputs, [],
-                           assumptions, limitations + ["region_data_unvalidated"], refs, common, data_version)
+                           assumptions, [*limitations, "region_data_unvalidated"], refs, common, data_version)
 
     common["population_estimate"] = {"available": True, "region": region, "source": entry["source"]}
     return make_result("carrier_risk", "population_estimate", "carrier_population", inputs,
                        _population_outcomes(scenarios, statuses, entry, ar),
-                       assumptions + ["regional_frequency_applies"], limitations, refs + [entry["source"]],
+                       [*assumptions, "regional_frequency_applies"], limitations, [*refs, entry["source"]],
                        common, data_version)
