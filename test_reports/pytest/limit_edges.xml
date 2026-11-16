@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="7" time="2.887" timestamp="2026-11-16T22:06:31.573695+00:00" hostname="agent-env-75239e26-e459-425c-bdcb-38a807d38464"><testcase classname="tests.test_family_pattern_limit_edges_live" name="test_error_does_not_count" time="1.316"><failure message="AssertionError: failed request counted: 1&#10;assert 1 == 0&#10; +  where 1 = _count('user_3MCtQozBR5xW2omNyVHcSHF2Uf2')">session = &lt;requests.sessions.Session object at 0xff8adecd4710&gt;, created = set()
+
+    def test_error_does_not_count(session, created):
+        with as_role(session, API, "member") as uid:
+            r = _post(session, created, {"wife": ["male", "male", "female"], "husband": ["female", "male", "female"]})
+            assert r.status_code == 400, r.text
+&gt;           assert _count(uid) == 0, f"failed request counted: {_count(uid)}"
+E           AssertionError: failed request counted: 1
+E           assert 1 == 0
+E            +  where 1 = _count('user_3MCtQozBR5xW2omNyVHcSHF2Uf2')
+
+tests/test_family_pattern_limit_edges_live.py:60: AssertionError</failure></testcase><testcase classname="tests.test_family_pattern_limit_edges_live" name="test_dedupe_and_delete" time="0.354" /><testcase classname="tests.test_family_pattern_limit_edges_live" name="test_429_localized[en]" time="0.208" /><testcase classname="tests.test_family_pattern_limit_edges_live" name="test_429_localized[ar]" time="0.173" /><testcase classname="tests.test_family_pattern_limit_edges_live" name="test_429_localized[de]" time="0.173" /><testcase classname="tests.test_family_pattern_limit_edges_live" name="test_admin_exempt" time="0.173" /><testcase classname="tests.test_family_pattern_limit_edges_live" name="test_other_calculators_unlimited" time="0.325" /></testsuite></testsuites>

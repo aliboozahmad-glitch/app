@@ -60,7 +60,8 @@
 
 @media print {
     @page { margin: 16mm; }
+    html, body { background: #fff !important; }
     #root { display: none !important; }
-    .print-report { display: block; background: #fff; color: #0f172a; }
+    .print-report { display: block; padding: 8mm; background: #fff; color: #0f172a; }
     .no-print { display: none !important; }
 }

@@ -1,0 +1,31 @@
+{
+  "summary": "Tested the family-pattern protection for members, admin, the AR/DE versions, the daily limit and the other calculators. Backend: protection suite 9/9 passes. New edge-case suite 6/7 passes (one bug, below). live e2e + family live 35/35 pass. test_api, blood_type, mendelian and carrier 54/54 pass. Member UI (Clerk ticket): the result card shows only GENOVA AI, the date, the GN-XXXXXXXX id, the Boy/Girl answer, the disclaimer and Print report. 3+3 child 1 shows 70–90% and child 2 shows 50–60%. Single child (wife B,B,G / husband B) shows Boy with no range. Not in table (wife B,G,G / husband B) shows '—' and 'No result is available for this combination.' None of these strings appeared: case #, Answer taken, Wife, Husband, review, Owner, engine, data version, Old App, reference. The form shows only the general traditional notice. The 'Which child' choice shows only for 3+3. Print media: #root is hidden and only the minimal report shows. On screen the report is hidden. History list items have no Wife/Husband summary, and History detail shows the public card. AR is RTL (html dir=rtl, report dir=rtl) and fully translated. DE is translated. When the count is set to 20, the UI shows the localized 429 message in calculator-error in DE and AR. API 429 messages are correct in en/ar/de. An admin is not limited even at count 25. Other calculators are not blocked when the family-pattern count is 20. Admin UI shows the full result: table case #75 with the borrowed source, Owner review notes, sources and engine/data versions. The admin print report shows the wife/husband families, the source and the limitations. The admin history list shows the Wife/Husband summary. No page errors.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/analyses/family-pattern", "issue": "A 3+3 request without child_number returns 400 child_number_required, but it still adds 1 to usage_daily. In api.py, _check_daily_limit runs $inc before fn(payload) raises GeneticsInputError. Members lose quota on input errors. Repro: test_family_pattern_limit_edges_live.py::test_error_does_not_count (count becomes 1, expected 0)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Print report (member)", "issues": ["In print emulation the report has no padding and sits on the edge of the page. The body's light-grey background shows below the white report area. Add padding / a white body background in @media print (minor)."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_family_pattern_limit_edges_live.py", "/app/backend/tests/test_family_pattern_protection_live.py", "/app/test_reports/pytest/limit_edges.xml"],
+  "action_items": [
+    "Count against the daily limit only after the calculation succeeds. Either check the limit first and run $inc after fn(payload)/insert, or catch GeneticsInputError and undo the increment.",
+    "Optional: add padding and a white background to the print report in @media print."
+  ],
+  "critical_code_review_comments": [
+    "api.py _check_daily_limit: increments before the calculation is validated (see the minor backend issue).",
+    "Protection is applied on the server in every read path: POST (including the dedupe branch), GET list and GET detail. /api/references filters internal refs. No secret table data was found in the frontend source except the admin-only rendering in ResultView/FamilyPatternReport, which uses data from the server only."
+  ],
+  "updated_files": ["/app/backend/tests/test_family_pattern_limit_edges_live.py"],
+  "success_rate": {"backend": "98% (1 minor failure of 7 new edge-case tests; all other suites pass)", "frontend": "100%"},
+  "seed_data_creation": "None. The 5 family-pattern analyses created in the UI for genova.tester were deleted. genova.tester's role was restored to member and its usage_daily count was restored to its original value of 1. The genova.ip test user's counters are reset by the as_role helper.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Use /tmp-style helpers built on tests/live_roles.py (_db, as_role, set_daily) for role and counter changes. Run pytest with -n 0. test_error_does_not_count is expected to fail until the limit-ordering fix lands. The UI was tested with Clerk tickets from scripts/clerk_test_session.py."
+}

@@ -39,6 +39,14 @@ backend/genova/genetics (pure engine) · genova/i18n · genova/api · genova/aut
 - 2026-06: Added 17 PDF-only cases as their own entries with origin `original_pdf`: 61–68, 81–83, 85, 86 and 88–91. Their answers equal today's answers, and all 392 inputs are unchanged. Cases 84, 87 and 92 are still not applied.
 - 2026-06: Single-child scope. "First or second child" is asked only when both families have 3 children; every other combination shows one answer ("Baby" / «طفل» / "Kind"). The API makes child_number optional and requires it only for 3 + 3.
 - 2026-06: Printable family-pattern report, printed from the browser in EN/AR/DE (`FamilyPatternReport.jsx`, rendered into document.body; print CSS hides #root). It shows the report number (analysis id), date, both families, the answer, the source case or Old App Only label, the traditional note and the pending-review notes. The Print button appears on the result card and on the History detail page.
+- 2026-06: IP protection for the family-pattern method (`genova/protection.py`).
+  - Ordinary members get a public view only: GENOVA AI brand, the answer, a short ID (GN-XXXXXXXX) and the date. They also see a disclaimer, and the stated range only for 3 + 3 families (first child 70–90%, second child 50–60%, from the PDF header).
+  - Request inputs, case numbers, sources, review notes and versions are removed on the server for POST, History list and History detail. The admin role sees full details.
+  - `/api/references` hides internal entries.
+  - Daily limit of 20 family-pattern calculations per member per UTC day, kept in the `usage_daily` collection; admin is exempt and failed requests don't count.
+  - The table, algorithm and all results are unchanged.
+  - Live tests elevate their own users through `tests/live_roles.py`.
+
 
 
 

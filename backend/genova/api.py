@@ -59,15 +59,17 @@ def _view(doc: AnalysisDoc, lang: str, role: str) -> dict:
     return protect_view(view, role)
 
 
-async def _check_daily_limit(member: dict, kind: str, lang: str) -> None:
-    """Counts saved calculations per UTC day; deleting history does not reset it. Admin is not limited."""
+def _daily_key(member: dict, kind: str) -> dict | None:
+    """Saved calculations per UTC day; deleting history does not reset it. Admin is not limited."""
     if kind != PROTECTED_KIND or member["role"] == "admin":
-        return
-    key = {"user_id": member["user_id"], "kind": kind, "day": datetime.now(UTC).date().isoformat()}
-    used = await db.usage_daily.find_one(key)
+        return None
+    return {"user_id": member["user_id"], "kind": kind, "day": datetime.now(UTC).date().isoformat()}
+
+
+async def _check_daily_limit(key: dict | None, lang: str) -> None:
+    used = await db.usage_daily.find_one(key) if key else None
     if used and used["count"] >= DAILY_LIMIT:
         raise HTTPException(status_code=429, detail=t("daily_limit_reached", lang))
-    await db.usage_daily.update_one(key, {"$inc": {"count": 1}}, upsert=True)
 
 
 async def _recent_duplicate(user_id: str, kind: str, request: dict) -> AnalysisDoc | None:
@@ -125,9 +127,12 @@ async def run_analysis(kind: str, body: dict, lang: Lang = "en", member: dict = 
         duplicate = await _recent_duplicate(member["user_id"], kind, request)
         if duplicate:
             return {**_view(duplicate, lang, member["role"]), "deduplicated": True}
-        await _check_daily_limit(member, kind, lang)
+        daily = _daily_key(member, kind)
+        await _check_daily_limit(daily, lang)
         doc = AnalysisDoc(user_id=member["user_id"], analysis_type=kind, request=request, result=fn(payload))
         res = await db.analyses.insert_one(doc.to_mongo())
+        if daily:
+            await db.usage_daily.update_one(daily, {"$inc": {"count": 1}}, upsert=True)
     doc.id = str(res.inserted_id)
     return _view(doc, lang, member["role"])
 
