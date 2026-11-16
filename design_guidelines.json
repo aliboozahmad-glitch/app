@@ -1,0 +1,113 @@
+{
+  "theme_and_tone": {
+    "archetype": "Swiss & High-Contrast + Clinical Precision",
+    "emotion": "Authority, Clarity, Truth, Scientific Rigor",
+    "description": "A premium, professional scientific tool. Avoid standard SaaS gradients. The design must feel like a precision instrument. Data is the hero. Use a clinical light theme with high-contrast text and intentional color usage strictly for data status and certainty tiers."
+  },
+  "typography": {
+    "strategy": "The 'Old Money Tech' / High-End Enterprise",
+    "heading_font": "Chivo",
+    "body_font": "IBM Plex Sans",
+    "import_instruction": "Import Chivo and IBM Plex Sans from Google Fonts in index.css",
+    "scales": {
+      "h1": "text-4xl sm:text-5xl tracking-tight font-bold",
+      "h2": "text-2xl sm:text-3xl tracking-tight font-semibold",
+      "h3": "text-xl font-medium",
+      "body": "text-base leading-relaxed",
+      "small_labels": "text-xs uppercase tracking-[0.2em] font-semibold text-muted-foreground"
+    },
+    "rules": [
+      "No Inter, Roboto, or standard defaults for headings.",
+      "Use tight letter spacing for headings.",
+      "Overlines and table headers must be uppercase, tiny, with wide spacing."
+    ]
+  },
+  "colors": {
+    "primary": "#0F172A", 
+    "background": "#F8FAFC",
+    "foreground": "#020617",
+    "surface": "#FFFFFF",
+    "border": "#E2E8F0",
+    "certainty_tiers": {
+      "established": "bg-emerald-100 text-emerald-800 border-emerald-200",
+      "statistical_estimate": "bg-blue-100 text-blue-800 border-blue-200",
+      "uncertain_estimate": "bg-amber-100 text-amber-800 border-amber-200"
+    },
+    "rules": [
+      "Color is function only. The UI should be predominantly monochrome.",
+      "Never use full-screen gradients. Texture > Gloss.",
+      "Tint neutrals with blue to make them feel clinical (slate scale)."
+    ]
+  },
+  "surface_strategies": {
+    "rule": "Flat Solid (Medical/Clinical variant)",
+    "description": "Do NOT use Glassmorphism. Glass on health/science apps feels cold and obscures data. Use warm solid backgrounds with subtle 1px borders.",
+    "cards": "bg-white border border-slate-200 rounded-md shadow-sm",
+    "hover_state": "hover:border-slate-300 hover:shadow-md transition-all duration-200"
+  },
+  "layouts_and_spacing": {
+    "spacing_scale": "Generous. Use p-6 or p-8 for cards to prevent data collision.",
+    "grid_mode": "High Density Grid (For Dashboards / Analytics). Use gap-6. grid-cols-1 md:grid-cols-2 lg:grid-cols-3.",
+    "rtl_support_CRITICAL": [
+      "The app must support Arabic (RTL).",
+      "NEVER use pl-, pr-, ml-, mr-, border-l-, border-r-, left-, right-.",
+      "ALWAYS use logical properties: ps-, pe-, ms-, me-, border-s-, border-e-, start-, end-.",
+      "Use text-start and text-end instead of text-left and text-right.",
+      "Use rtl:space-x-reverse with space-x classes if needed."
+    ]
+  },
+  "key_components": {
+    "punnett_square": {
+      "layout": "Grid-based visual calculator. Top row (Parent 1 alleles), Start column (Parent 2 alleles). 2x2 inner grid for results.",
+      "styling": "Sharp 1px borders between cells, monospace font for alleles (e.g., 'Aa'), highlight dominant traits with a subtle background tint."
+    },
+    "certainty_badges": {
+      "usage": "MUST accompany every result card.",
+      "styling": "Inline-flex, items-center, rounded-full, px-2.5 py-0.5, text-xs font-semibold, using certainty_tiers colors."
+    },
+    "disclaimer_banner": {
+      "usage": "Required on dashboard and calculator pages.",
+      "styling": "bg-slate-100 border-l-4 border-s-4 border-slate-500 p-4 text-sm text-slate-700"
+    }
+  },
+  "image_urls": {
+    "auth_background": {
+      "url": "https://images.unsplash.com/photo-1641903202531-bfa6bf0c6419?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwyfHxkbmElMjBoZWxpeCUyMGFic3RyYWN0JTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3OTQ4Mjg1MTZ8MA&ixlib=rb-4.1.0&q=85",
+      "description": "A glowing white DNA double helix structure floating against a dark background.",
+      "placement": "Login/Register page split-screen background image. Add a dark overlay (bg-black/50) to ensure text readability if overlaid."
+    },
+    "hero_texture": {
+      "url": "https://images.unsplash.com/photo-1628595351029-c2bf17511435?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwzfHxkbmElMjBoZWxpeCUyMGFic3RyYWN0JTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3OTQ4Mjg1MTZ8MA&ixlib=rb-4.1.0&q=85",
+      "description": "DNA double helix render on blue.",
+      "placement": "Subtle header banner or Methods/Sources page hero section."
+    }
+  },
+  "motion_and_interactions": {
+    "rule": "Minimalist — use micro-interactions for feedback.",
+    "hover": "Slight lift (-translate-y-0.5) on calculator cards, border color darkens.",
+    "transitions": "Use specific properties: transition: transform 0.2s ease, opacity 0.2s ease, border-color 0.2s ease. NO transition-all."
+  },
+  "accessibility_and_testing": {
+    "data_testid": "All interactive and key informational elements MUST include a data-testid attribute in kebab-case (e.g., data-testid='login-submit-button', data-testid='punnett-result-cell').",
+    "contrast": "Ensure text meets APCA/WCAG AA standards. Large text 3:1, Normal 4.5:1. Never use transparent background under text."
+  },
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. Avoid 'AI slop' aesthetic. Make this look like a rigorous, premium scientific platform.",
+    "DO NOT apply universal transition (transition-all). It breaks transforms.",
+    "DO NOT center align the app container. Keep standard block flow.",
+    "Use modern pill-shaped or sharp buttons.",
+    "NEVER use emoji characters for icons. Use lucide-react.",
+    "Prioritize Shadcn/UI components but heavily customize them to remove the default Vercel look.",
+    "Use sonner for toasts.",
+    "Ensure RTL language switching flips the UI direction using dir='rtl' on the container and Tailwind logical properties.",
+    "Write .js files, NOT .tsx files as per instructions."
+  ],
+  "instructions_to_main_agent": [
+    "Step 1: Set up routing and basic structure with a Language switcher (AR, EN, DE) that controls document dir='ltr' or 'rtl'.",
+    "Step 2: Build the Auth pages utilizing the auth_background image.",
+    "Step 3: Build the Dashboard layout (Sidebar/Topnav) with solid surfaces, no glass.",
+    "Step 4: Implement calculators (Punnett Square, Blood Type, Disease Risk, Height, Eye Color, Sex Probability).",
+    "Step 5: Ensure every calculator result prominently features the specified certainty tier badge, methods, assumptions, and disclaimers.",
+    "Step 6: Ensure all interactive elements have data-testid."
+  ]
+}

@@ -1,56 +1,54 @@
-import { useEffect } from "react";
-import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-import { HOME } from "@/constants/testIds";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Show } from "@clerk/react";
+import ClerkAuthProvider from "@/components/auth/ClerkAuthProvider";
+import { LanguageProvider } from "@/i18n/LanguageContext";
+import { AppShell } from "@/components/genova/AppShell";
+import { Toaster } from "@/components/ui/sonner";
+import { Landing, SignInPage, SignUpPage } from "@/pages/PublicPages";
+import Dashboard from "@/pages/Dashboard";
+import MendelianPage from "@/pages/MendelianPage";
+import BloodTypePage from "@/pages/BloodTypePage";
+import CarrierPage from "@/pages/CarrierPage";
+import { HeightPage, PigmentationPage, SexRatioPage } from "@/pages/SimpleCalculators";
+import { AnalysisDetailPage, HistoryPage } from "@/pages/HistoryPages";
+import SourcesPage from "@/pages/SourcesPage";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const Protected = ({ children }) => (
+  <>
+    <Show when="signed-in">{children}</Show>
+    <Show when="signed-out"><Navigate to="/sign-in" replace /></Show>
+  </>
+);
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    // The marker attribute below lets the platform probe detect the stock splash — remove it with this page
-    <div data-emergent-splash>
-      <header className="App-header">
-        <a
-          data-testid={HOME.emergentLink}
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+const p = (el) => <Protected>{el}</Protected>;
 
 function App() {
   return (
-    <div className="App">
+    <LanguageProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
+        <ClerkAuthProvider>
+          <Routes>
+            <Route element={<AppShell />}>
+              <Route path="/" element={<Landing />} />
+              <Route path="/sign-in/*" element={<SignInPage />} />
+              <Route path="/sign-up/*" element={<SignUpPage />} />
+              <Route path="/sources" element={<SourcesPage />} />
+              <Route path="/dashboard" element={p(<Dashboard />)} />
+              <Route path="/calc/mendelian" element={p(<MendelianPage />)} />
+              <Route path="/calc/blood-type" element={p(<BloodTypePage />)} />
+              <Route path="/calc/carrier-risk" element={p(<CarrierPage />)} />
+              <Route path="/calc/height" element={p(<HeightPage />)} />
+              <Route path="/calc/pigmentation" element={p(<PigmentationPage />)} />
+              <Route path="/calc/sex-ratio" element={p(<SexRatioPage />)} />
+              <Route path="/history" element={p(<HistoryPage />)} />
+              <Route path="/history/:id" element={p(<AnalysisDetailPage />)} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
+          </Routes>
+          <Toaster position="top-center" />
+        </ClerkAuthProvider>
       </BrowserRouter>
-    </div>
+    </LanguageProvider>
   );
 }
 

@@ -1,0 +1,84 @@
+{
+  "version": "diseases-2026-06-draft",
+  "note": "Inheritance patterns are established. Regional entries are DRAFT and are never used in calculations until status=validated with reviewed_by set.",
+  "diseases": [
+    {"id": "beta_thalassemia", "gene": "HBB", "inheritance": "autosomal_recessive", "is_trait": false,
+     "names": {"en": "Beta-thalassaemia", "ar": "الثلاسيميا بيتا", "de": "Beta-Thalassämie"},
+     "limitations": ["severity_varies", "hb_coinheritance"],
+     "references": ["mlp-beta-thal", "gr-beta-thal", "modell-2008"],
+     "regional": [
+       {"region": "gulf", "status": "draft", "source": "modell-2008", "candidate": "Haemoglobin-disorder carriers common in Eastern Mediterranean region; country figures to extract"},
+       {"region": "middle_east_north_africa", "status": "draft", "source": "modell-2008", "candidate": "Country figures vary from low single digits to >10%"},
+       {"region": "europe", "status": "draft", "source": "modell-2008", "candidate": "High in Mediterranean Europe, low in Northern Europe"},
+       {"region": "south_asia", "status": "draft", "source": "modell-2008", "candidate": "To extract from Table 1"}
+     ]},
+    {"id": "sickle_cell", "gene": "HBB (HbS)", "inheritance": "autosomal_recessive", "is_trait": false,
+     "names": {"en": "Sickle cell disease", "ar": "فقر الدم المنجلي", "de": "Sichelzellkrankheit"},
+     "limitations": ["severity_varies", "hb_coinheritance"],
+     "references": ["mlp-scd", "gr-scd", "cdc-scd", "modell-2008"],
+     "regional": [
+       {"region": "sub_saharan_africa", "status": "draft", "source": "modell-2008", "candidate": "Highest HbS carrier frequencies worldwide"},
+       {"region": "gulf", "status": "draft", "source": "modell-2008", "candidate": "High in parts of the Gulf (e.g. Eastern Province, Saudi Arabia)"}
+     ]},
+    {"id": "g6pd_deficiency", "gene": "G6PD", "inheritance": "x_linked_recessive", "female_variable_expression": true, "is_trait": false,
+     "names": {"en": "G6PD deficiency", "ar": "نقص إنزيم G6PD (أنيميا الفول)", "de": "G6PD-Mangel"},
+     "limitations": ["g6pd_female_variable", "g6pd_triggers"],
+     "references": ["mlp-g6pd", "howes-2012", "saudi-g6pd-2001"],
+     "regional": [
+       {"region": "gulf", "status": "draft", "source": "saudi-g6pd-2001", "candidate": "Saudi Arabia ~9% males / ~4% females nationally; much higher in Eastern Province"},
+       {"region": "global", "status": "draft", "source": "howes-2012", "candidate": "Model-based map, malaria-endemic countries"}
+     ]},
+    {"id": "cystic_fibrosis", "gene": "CFTR", "inheritance": "autosomal_recessive", "is_trait": false,
+     "names": {"en": "Cystic fibrosis", "ar": "التليف الكيسي", "de": "Mukoviszidose (zystische Fibrose)"},
+     "limitations": ["severity_varies", "cf_panel_sensitivity"],
+     "references": ["mlp-cf", "gr-cf", "who-cf-2004"],
+     "regional": [
+       {"region": "europe", "status": "draft", "source": "who-cf-2004", "candidate": "~1/25 carriers (range ~1/20-1/32 by country)"},
+       {"region": "middle_east_north_africa", "status": "draft", "source": "who-cf-2004", "candidate": "Sparse, heterogeneous data"}
+     ]},
+    {"id": "hemophilia_a", "gene": "F8", "inheritance": "x_linked_recessive", "is_trait": false,
+     "names": {"en": "Haemophilia A", "ar": "الهيموفيليا أ (الناعور)", "de": "Hämophilie A"},
+     "limitations": ["de_novo_possible", "carrier_female_symptoms"],
+     "references": ["mlp-hemophilia", "gr-hemophilia-a"],
+     "regional": [
+       {"region": "global", "status": "draft", "source": "mlp-hemophilia", "candidate": "1 in 4,000 to 1 in 5,000 males worldwide (birth frequency, not carrier frequency)"}
+     ]},
+    {"id": "duchenne", "gene": "DMD", "inheritance": "x_linked_recessive", "is_trait": false,
+     "names": {"en": "Duchenne muscular dystrophy", "ar": "ضمور العضلات الدوشيني", "de": "Muskeldystrophie Duchenne"},
+     "limitations": ["de_novo_possible", "gonadal_mosaicism"],
+     "references": ["mlp-dmd", "gr-dmd"],
+     "regional": [
+       {"region": "global", "status": "draft", "source": "mlp-dmd", "candidate": "Duchenne and Becker together: 1 in 3,500 to 5,000 newborn males"}
+     ]},
+    {"id": "sma", "gene": "SMN1", "inheritance": "autosomal_recessive", "is_trait": false,
+     "names": {"en": "Spinal muscular atrophy (5q)", "ar": "ضمور العضلات الشوكي", "de": "Spinale Muskelatrophie (5q)"},
+     "limitations": ["sma_silent_carrier", "severity_varies"],
+     "references": ["mlp-sma", "gr-sma", "sugarman-2012"],
+     "regional": [
+       {"region": "global", "status": "draft", "source": "sugarman-2012", "candidate": "Pan-ethnic ~1/54 (US cohort); 1/47-1/72 by ancestry"}
+     ]},
+    {"id": "pku", "gene": "PAH", "inheritance": "autosomal_recessive", "is_trait": false,
+     "names": {"en": "Phenylketonuria (PKU)", "ar": "بيلة الفينيل كيتون", "de": "Phenylketonurie (PKU)"},
+     "limitations": ["newborn_screening_pku", "severity_varies"],
+     "references": ["mlp-pku", "gr-pku", "hillert-2020"],
+     "regional": [
+       {"region": "global", "status": "draft", "source": "hillert-2020", "candidate": "Birth prevalence ~1:23,930; carrier frequency would be derived (Hardy-Weinberg)"},
+       {"region": "europe", "status": "draft", "source": "hillert-2020", "candidate": "~1:10,000 births"}
+     ]},
+    {"id": "tay_sachs", "gene": "HEXA", "inheritance": "autosomal_recessive", "is_trait": false,
+     "names": {"en": "Tay-Sachs disease", "ar": "مرض تاي-ساكس", "de": "Tay-Sachs-Krankheit"},
+     "limitations": ["ancestry_specific"],
+     "references": ["mlp-tay-sachs", "gr-tay-sachs", "nhgri-tay-sachs"],
+     "regional": [
+       {"region": "global", "status": "draft", "source": "nhgri-tay-sachs", "candidate": "~1/250-1/300 general population; ~1/27-1/30 Ashkenazi Jewish ancestry"}
+     ]},
+    {"id": "color_vision_deficiency", "gene": "OPN1LW / OPN1MW", "inheritance": "x_linked_recessive", "is_trait": true,
+     "names": {"en": "Red-green colour vision deficiency", "ar": "عمى الألوان الأحمر-الأخضر", "de": "Rot-Grün-Sehschwäche"},
+     "limitations": ["trait_not_disease"],
+     "references": ["mlp-cvd"],
+     "regional": [
+       {"region": "europe", "status": "draft", "source": "mlp-cvd", "candidate": "Northern European ancestry: ~1 in 12 men, 1 in 200 women"}
+     ]}
+  ],
+  "regions": ["gulf", "middle_east_north_africa", "europe", "sub_saharan_africa", "south_asia", "east_asia", "americas", "global"]
+}
