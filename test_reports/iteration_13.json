@@ -1,0 +1,34 @@
+{
+  "summary": "Security hardening verified end-to-end. Backend: existing test_security.py + test_security_live.py (22 passed) plus new test_security_extra_live.py (17 passed): alg=none / HS256-forged / payload-swapped (sub changed) / tampered cookie / expired (30s token, waited past exp) tokens -> 401 on /api/me, /api/analyses, /api/admin/stats; X-Frame-Options DENY, HSTS, CSP default-src 'none', Permissions-Policy, nosniff present on 200/401/404 responses; /api/openapi.json, /api/docs, /api/redoc, /api/docs/oauth2-redirect -> 404; network limit not bypassed by multi-value X-Forwarded-For or X-Real-IP, and no new counter docs created by spoofing. Unit (non-live) suite 136 passed. Frontend: Clerk ticket sign-in works, refresh keeps session, Dashboard + all 7 calculators + History load with 200 API calls; member family-pattern public result correct (Boy, 'Stated range: 70-90%' for 3+3, GN-648038FB id, rating + confirmations shown). With this connection's counter set to 60: family-pattern shows localized connection-limit message in data-testid=calculator-error (EN/AR RTL/DE), no result card, 429s; blood-type still 200 with result; admin still gets a result and admin calc does not increment the counter. /admin/stats 'Possible copying attempts' section shows note '20 per account and 60 per internet connection', network blocked = 3 (matches 3 blocked attempts), translated AR (rtl) and DE. Member -> /api/admin/stats 403. Counter restored (count 1, blocked 0), roles restored to member, 3 UI-created analyses deleted (verified 404).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/analyses/family-pattern", "issue": "Network limit check-then-increment is not atomic across accounts (_save_locks is per user+kind); concurrent requests from many accounts on one connection can slightly exceed 60. Could use a conditional find_one_and_update({count:{$lt:60}}, $inc) instead."},
+      {"endpoint": "clerk_auth._app_origins", "issue": "azp is checked against X-Forwarded-Host/Host header values (every comma-separated entry). Works on preview (browser tokens accepted), but trusting a request header for the audience check is weaker than pinning to a configured app origin env var; consider an explicit allow-list for production."},
+      {"endpoint": "CORS", "issue": "Responses carry access-control-allow-origin: * (and ingress-level allow-headers *). Acceptable for bearer-token auth with allow_credentials=False, but require_user also accepts the __session cookie; consider restricting CORS_ORIGINS to the app origin in production."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_security_extra_live.py", "/app/backend/tests/test_security_live.py", "/app/backend/tests/test_security.py", "/app/backend/tests/ui_sec_helper.py", "/app/test_reports/pytest/security_extra.xml"],
+  "action_items": [
+    "Optional: make the per-connection counter atomic (conditional $inc) to prevent small overshoot under concurrency",
+    "Optional: pin azp/issuer origins to configured env value for production instead of X-Forwarded-Host",
+    "Caution: tests/live_roles.reset_daily deletes ALL of today's usage_network_daily docs (not just the test's own); fine on preview but never run live suites against production data"
+  ],
+  "critical_code_review_comments": [
+    "limits.client_ip takes parts[-3] of XFF (INFRA_HOPS=2); verified live that client-supplied XFF values (1, 2, 3, 4 entries) do not change the network id. If ingress topology changes, hop count must be revisited.",
+    "Sending a CF-Connecting-IP header from the client gets a 403 from Cloudflare (edge behaviour, not the app).",
+    "Admin calculations correctly skip both counters (limit_keys returns None)."
+  ],
+  "updated_files": ["/app/backend/tests/test_security_extra_live.py (new)", "/app/backend/tests/ui_sec_helper.py (new, test-only CLI)"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "None kept. Temporarily set network counter d1d839be... to 60 (restored to count 1, blocked 0) and genova.tester role to admin (restored to member). UI-created analyses 6afbb5b4..fd, 6afbb599..fc, 6afbb572..fb deleted.",
+  "test_credentials": "From /app/memory/test_credentials.md: genova.tester+clerk_test@example.com (member), genova.sec+clerk_test@example.com (member, used by security live tests). Sessions via python /app/scripts/clerk_test_session.py <email>.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Run live tests with: cd /app/backend && set -a && . ./.env && set +a && REACT_APP_BACKEND_URL=... python -m pytest tests/test_security_extra_live.py -n 0. pytest.ini adds -n (xdist); use -n 0 for live suites. ui_sec_helper.py: snap -> (do a UI calc) -> find -> set 60 -> ... -> restore; role <email> <role>. Browser automation and this machine may be different connections; find the counter via snap/find around a UI calculation."
+}

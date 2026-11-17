@@ -9,6 +9,7 @@ import os
 from datetime import UTC, datetime, timedelta
 
 from fastapi import HTTPException, Request
+from pymongo.errors import DuplicateKeyError
 
 from .db import db
 from .i18n import t
@@ -56,15 +57,17 @@ async def check_limits(keys: tuple[dict, dict] | None, lang: str) -> None:
     used = await db.usage_daily.find_one(account)
     if used and used.get("count", 0) >= DAILY_LIMIT:
         await _block("usage_daily", account, t("daily_limit_reached", lang))
-    shared = await db.usage_network_daily.find_one(network)
-    if shared and shared.get("count", 0) >= NETWORK_DAILY_LIMIT:
+    try:  # atomic reservation: accounts sharing a connection cannot overshoot the limit concurrently
+        await db.usage_network_daily.update_one({**network, "count": {"$lt": NETWORK_DAILY_LIMIT}},
+                                                {"$inc": {"count": 1}}, upsert=True)
+    except DuplicateKeyError:
         await _block("usage_network_daily", network, t("network_limit_reached", lang))
 
 
 async def count_use(keys: tuple[dict, dict] | None) -> None:
+    """The account count is kept under the per-account save lock; the connection slot was reserved on check."""
     if keys:
         await db.usage_daily.update_one(keys[0], {"$inc": {"count": 1}}, upsert=True)
-        await db.usage_network_daily.update_one(keys[1], {"$inc": {"count": 1}}, upsert=True)
 
 
 async def _blocked_summary(coll: str, since: str) -> dict:
