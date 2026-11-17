@@ -59,7 +59,17 @@ def test_owner_confirmed_cases():
 
 def test_every_input_matches_the_pdf_exactly():
     for w, h, c in _inputs():
-        assert _answer(w, h, c) == _pdf_answer(w, h, c), (w, h, c)
+        expected = w[0] if len(w) == len(h) == 3 and len(set(w + h)) == 1 else _pdf_answer(w, h, c)
+        assert _answer(w, h, c) == expected, (w, h, c)
+
+
+@pytest.mark.parametrize("g", ["male", "female"])
+@pytest.mark.parametrize("child,group", [(1, "first_child"), (2, "second_child")])
+def test_owner_rule_all_six_same_gender(g, child, group):
+    r = family_pattern_analysis([g] * 3, [g] * 3, child)
+    assert [(o["key"], o["group"], o["stated_range"]) for o in r["outcomes"]] == [(g, group, "90%")]
+    assert r["details"]["owner_rule"] == "all_six_same_gender" and "effective_case" not in r["details"]
+    assert len(load_table()["cases"]) == 81
 
 
 def test_no_matching_case_has_no_fallback():

@@ -57,12 +57,14 @@ const TableCase = ({ details }) => {
   const { t } = useLang();
   return (
     <div className="text-sm text-slate-500" data-testid="result-table-case">
-      <p className="font-mono-genes" data-testid="result-case-number">{t.family.caseLabel} #{details.effective_case}</p>
+      <p className="font-mono-genes" data-testid="result-case-number">
+        {details.effective_case ? `${t.family.caseLabel} #${details.effective_case}` : t.family.ownerRule}
+      </p>
     </div>
   );
 };
 
-TableCase.propTypes = { details: PropTypes.shape({ effective_case: PropTypes.number.isRequired }).isRequired };
+TableCase.propTypes = { details: PropTypes.shape({ effective_case: PropTypes.number }).isRequired };
 
 const ResultHeader = ({ result }) => {
   const { t } = useLang();
@@ -74,7 +76,7 @@ const ResultHeader = ({ result }) => {
         <div className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500">{t.c.result}{suffix}</div>
         <p className="mt-1 text-slate-900 font-medium" data-testid="result-method">{t.c.method}: {result.method_label}</p>
         {d.inheritance_label && <p className="text-sm text-slate-500" data-testid="result-inheritance">{d.inheritance_label}</p>}
-        {d.effective_case && <TableCase details={d} />}
+        {(d.effective_case || d.owner_rule) && <TableCase details={d} />}
         {d.mechanism_text && <p className="text-sm text-slate-600 mt-2 max-w-2xl" data-testid="result-mechanism">{d.mechanism_text}</p>}
       </div>
       <CertaintyBadge tier={result.certainty} label={result.certainty_label} />

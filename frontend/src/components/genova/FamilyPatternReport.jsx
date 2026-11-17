@@ -26,6 +26,7 @@ export const PrintReportButton = () => {
 
 const SourceText = ({ details }) => {
   const { t } = useLang();
+  if (details.owner_rule) return t.family.ownerRule;
   return details.effective_case ? `${t.family.caseLabel} #${details.effective_case}` : t.report.notInTable;
 };
 

@@ -35,6 +35,17 @@ def find_case(wife: list, husband: list) -> dict | None:
     return next((c for c in load_table()["cases"] if c["wife"] == wife and c["husband"] == husband), None)
 
 
+def owner_rule_gender(wife: list, husband: list) -> str | None:
+    """Owner rule (2026-06): 3 + 3 families with all 6 children the same gender predict that gender, 90%."""
+    family = wife + husband
+    return family[0] if len(wife) == len(husband) == 3 and len(set(family)) == 1 else None
+
+
+def _owner_rule_outcome(gender: str, child_number: int) -> dict:
+    return {"key": gender, "kind": "traditional", "group": "first_child" if child_number == 1 else "second_child",
+            "probability": None, "fraction": None, "stated_range": "90%"}
+
+
 def _outcome(case: dict, two_child: bool, child_number: int | None) -> dict:
     ranges = load_table()["pdf_stated_ranges"]
     if two_child:
@@ -52,6 +63,7 @@ def family_pattern_analysis(wife: list, husband: list, child_number: int | None 
     child_number = child_number if two_child else None
     table = load_table()
     case = find_case(wife, husband)
+    rule_gender = None if case else owner_rule_gender(wife, husband)
     details = {"entered_split": [len(wife), len(husband)],
                "prediction_scope": "first_and_second_child" if two_child else "single_child",
                "statistic_separate": True}
@@ -61,6 +73,9 @@ def family_pattern_analysis(wife: list, husband: list, child_number: int | None 
         details |= {"effective_case": case["case"], "pdf_page": case["page"], "case_source": case["source"],
                     "review_flags": []}
         outcomes.append(_outcome(case, two_child, child_number))
+    elif rule_gender:
+        details |= {"owner_rule": "all_six_same_gender", "review_flags": []}
+        outcomes.append(_owner_rule_outcome(rule_gender, child_number))
     else:
         details["review_flags"] = ["no_matching_case"]
         limitations.append("no_matching_case")
