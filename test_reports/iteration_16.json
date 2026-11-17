@@ -1,0 +1,22 @@
+{
+  "summary": "Frontend retest of the iteration_15 fixes for the GENOVA Smart Algorithm (Playwright, genova.tester signed in with a Clerk ticket). ADMIN (role set to admin in MongoDB for this test, then restored to member and checked): Case 84 (wife Boy,Girl,Boy / husband Girl) shows 'Table case #84' and the outcome row 'Girl | 90%'. PDF case 1 (3+3, first child) shows 'Table case #1' and 'Boy | 70–90%'. In Sources, genova-smart-pdf is a plain SPAN with no href and no GitHub URL; it is the only source. The no_confidence_score limitation now reads 'Percentages are only those stated in the original source...'. The traditional_not_scientific text now starts with 'GENOVA Smart Algorithm:'. The admin print report title is 'GENOVA Smart Algorithm report' / 'تقرير خوارزمية GENOVA الذكية' / 'Bericht GENOVA Smart-Algorithmus', with 'Baby: Girl (90%)' and 'First child: Boy (70–90%)'. The source title, limitations and outcome values are translated in AR and DE. MEMBER: Case 84 = 'Girl', 'Stated range: 90%' (AR أنثى / النسبة المذكورة: 90%; DE Mädchen / Angegebener Bereich: 90%). There is no references block and no table case, and the API references array is empty. The member print report is correct in EN/AR/DE. The no-match case (wife Boy / husband Girl) shows the no-result-message box 'No matching case found.' with the disclaimer and no result card, in EN/AR/DE. REGRESSION: Blood type and Sex ratio Sources still render real <a> links (medlineplus, ncbi, ourworldindata). There were 0 console errors in both runs.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Admin result (AR/DE)", "issues": ["Very minor: the genova-smart-pdf AR/DE titles leave out the PDF filename that the EN title includes. This is acceptable."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "From iteration_15, still open (optional): the answer_borrowed/source_case/old_app_only branches in FamilyPatternReport.jsx/ResultView.jsx (and the answer_borrowed check in stats_log.py) are dead code and can be removed."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "not tested (frontend-only request)", "frontend": "100%"},
+  "seed_data_creation": "None kept. 6 analyses were created by genova.tester (2 admin, 4 member) and deleted by id (DELETE 200, GET 404). The tester's usage_daily docs and today's usage_network_daily docs were reset. The role was restored to member (verified). The temporary helper /app/backend/tests/tmp_iter16_role.py was deleted.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "UI login: python /app/scripts/clerk_test_session.py -> ticket (single-use) -> <preview>/sign-in?__clerk_ticket=<ticket>. Set the role/reset usage with backend/tests/live_roles.py (as_role/reset_daily), with env from backend/.env sourced (do not print it). Testids: wife-/husband-add-child, -remove-child, -child-{i}-{male|female}, child-number-{1|2}, calculate-button, outcome-row-{i}, outcome-value-{i}, result-table-case, result-references, reference-link-{id}, family-pattern-report, public-result-answer, public-result-range, no-result-message, lang-{en|ar|de}-button."
+}
