@@ -50,6 +50,12 @@ backend/genova/genetics (pure engine) · genova/i18n · genova/api · genova/aut
   - Like/Dislike ratings are kept in `ratings`, one per result and changeable, for every calculator.
   - `prediction_log` is an anonymous record of family-pattern predictions, backfilled at startup and kept when history is deleted.
   - The admin-only `/admin/stats` page shows totals, confirmed distinct predictions, boy/girl counts and match/mismatch. It breaks match rates down by stated range and by method group, shows pregnancy and birth separately, and shows ratings satisfaction separately. It is labelled as voluntary observational statistics.
+- 2026-06: Code-quality fixes only, with no changes to logic, results or features.
+  - api.py: the save path no longer uses `doc` and `res` outside the lock where they could be undefined.
+  - Frontend: list keys in MendelianPage and BloodTypePage, a comment in ClerkAuthProvider's empty catch plus propTypes, the use-toast reducer split into smaller functions (effect deps now []), and craco console notices gated by `devWarn`. New types.js typedefs/shapes for Feedback, Confirmation, report_id, public and stated_range.
+  - Tests: refactored complex test functions, replaced seeded random sampling with deterministic slicing (and `secrets` in the dedupe tests), and fixed ruff style.
+  - `tests/run_live_suites.sh` runs the live suites one by one, pausing for the rate limit.
+
   - Pending: the owner will send a percentage for each case. Until then only the PDF ranges are shown, 70–90% and 50–60% for 3 + 3 families.
 
   - Live tests elevate their own users through `tests/live_roles.py`.

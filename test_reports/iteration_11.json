@@ -1,0 +1,18 @@
+{
+  "summary": "Regression test after the code-quality-only changes (api.py run_analysis lock scope, list keys in Mendelian and BloodType, ClerkAuthProvider catch comment and propTypes, use-toast reducer split with effect deps [], craco devWarn, types.js shapes, ResultFeedback propTypes). Backend: pytest test_family_pattern.py + test_dedupe_live.py + test_api.py all pass (49 passed). Unauthenticated GET /api/analyses returns 401. Member UI: sign-in with a Clerk ticket goes to /dashboard (7 calculator cards). Mendelian chips render (AA/Aa/aa, and XAXA/XAXa/XaXa after switching mode); calculating shows the result card, outcome table, Punnett grid and the saved indicator. Blood type chips render for mother and father (A/B/AB/O, Rh+/Rh-); calculating shows the possible and impossible types. There are no React key warnings and no console errors or page errors. Family pattern 3+3, second child: shows only the public result (GENOVA AI, 'Boy', 'Stated range: 50-60%', date, GN-0A6B659B, disclaimer). No method, table case or details are shown to the member. Print report calls window.print. Like shows the sonner toast 'Thank you, saved.'. Switching to Dislike works: only one button has aria-pressed. The pregnancy confirmation saves. History detail opens the same GN id, and the dislike and the confirmation are kept. Deleting a history entry (two-click confirm) shows the 'Deleted' toast, and the entry stays gone after reload. Admin (role switched temporarily, then restored to member and checked with /api/me): the Statistics nav link shows, and /admin/stats shows the label, the totals, the pregnancy and birth sections with tables by range and by method, and the ratings with the by-type table. The admin history detail shows the method and table case. AR switches to RTL and is translated; DE is translated and LTR.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": ["/app/backend/tests/test_family_pattern.py", "/app/backend/tests/test_dedupe_live.py", "/app/backend/tests/test_api.py"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "run_analysis now holds the per-user save lock while log_prediction runs. This is correct and safe, but it makes the lock last a little longer.",
+    "use-toast.js dismissToasts uses a truthy check (toastId ? ...) to pick ids but an undefined check for open:false. This matches the original behaviour. use-toast does not appear to be used by the app, which uses sonner.",
+    "types.js: stated_range and data_version are declared as nullable in the typedef. PropTypes.string allows null when the prop is not required, so this is fine."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "As genova.tester: 1 mendelian, 1 blood-type (deleted in the delete test) and 1 family-pattern analysis (id 6afba15283cf67c80a6b659b, rating dislike, pregnancy confirmation female). These count in the stats. The role was switched to admin temporarily and restored to member.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "History delete needs two clicks: the button shows 'Confirm delete' first. When window.print is overridden through page.evaluate, the Playwright harness adds one extra call, so expect 2 calls; the stack trace shows only one onClick call. The admin nav link appears after /api/me resolves, so wait about 2s. Run pytest with -n 0 and export MONGO_URL/DB_NAME."
+}
