@@ -37,6 +37,7 @@ export const useAnalysis = (kind) => {
     inFlight.current = true;
     setLoading(true);
     setError(null);
+    setAnalysis(null); // never show a previous result next to a new calculation or its error
     try {
       setAnalysis(await api("post", `/analyses/${kind}?lang=${lang}`, body));
     } catch (e) {

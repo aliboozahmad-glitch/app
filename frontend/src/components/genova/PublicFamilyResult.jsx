@@ -32,8 +32,18 @@ const PublicContent = ({ analysis, testPrefix }) => {
 
 PublicContent.propTypes = { analysis: analysisShape.isRequired, testPrefix: PropTypes.string.isRequired };
 
+const NoResult = ({ analysis }) => (
+  <div className="text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-md p-4 space-y-1 rise" data-testid="no-result-message">
+    {[...analysis.result.limitations].sort((a, b) => (b.key === "no_result_available") - (a.key === "no_result_available"))
+      .map((l, i) => <p key={l.key} className={i === 0 ? "font-semibold text-slate-900" : "text-slate-600"}>{l.text}</p>)}
+  </div>
+);
+
+NoResult.propTypes = { analysis: analysisShape.isRequired };
+
 export const PublicFamilyResult = ({ analysis }) => {
   const { lang } = useLang();
+  if (!analysis.result.outcomes.length) return <NoResult analysis={analysis} />;
   return (
     <>
       {createPortal(
