@@ -1,0 +1,29 @@
+{
+  "summary": "Backend-only retest of the atomic per-connection family-pattern slot reservation. New live suite tests/test_family_pattern_network_atomic_live.py (7 tests, 4 member accounts on one connection): 6 pass, 1 fails. Concurrency: with count set to 57, 12 concurrent requests gave 3x200 and 9x429 with the connection-limit message, final count 60, blocked 9. With 59: 1x200, 11x429, count 60, blocked 11. Account counters match saved calcs. Cold start (no doc, 8 concurrent): all 200, count 8 (run 4 times, no wrong 429s). Dedupe, 422, admin: no slot used. Account limit (20) is checked first: 429 with the account message, usage_daily.blocked +2, connection doc not changed. /api/admin/stats limits section is consistent (20/60/30 days, networks blocked_attempts 4 / hits 1). REGRESSION: a calculation error (400 child_number_required for 3+3 without child_number) now uses a connection slot (count 10 -> 11), because check_limits reserves the slot before fn(payload) runs and nothing gives it back. Requested regression suites (security_live, security_extra_live, limit_edges_live, protection_live) all pass: 42 passed, 1 failed in the combined run, and the failure is the new test.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "POST /api/analyses/family-pattern", "issue": "A calculation error (400 child_number_required, 3+3 families without child_number) uses one of the connection's 60 daily slots and never gives it back. Before this change the counter went up only after a successful save. The account counter is still correct. Reproduce: set usage_network_daily count to 10, post wife=[m,m,f], husband=[f,m,f] -> 400, count becomes 11. Repeated bad inputs can use up the shared connection limit without saving anything.", "priority": "HIGH"}
+    ],
+    "minor": [
+      {"endpoint": "genova/limits.py check_limits", "issue": "Any exception after the reservation (fn(payload) error, insert_one failure) leaks the slot. Fix: run fn(payload) before check_limits, or $inc count -1 in a try/except around compute+insert."},
+      {"endpoint": "genova/limits.py check_limits", "issue": "On a cold start, the upsert filter includes count:{$lt:60}, so MongoDB's automatic retry of duplicate-key upserts (equality-only filters) does not apply. Two first requests at the same moment could in theory produce a DuplicateKeyError and be wrongly blocked while count is near 0. I could not reproduce this in 4 runs of 8 concurrent requests. Possible fixes: when a DuplicateKeyError happens, read the doc and retry once if count < 60, or pre-create the doc with $setOnInsert first."}
+    ]
+  },
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": ["/app/backend/tests/test_family_pattern_network_atomic_live.py", "/app/test_reports/pytest/iteration_14.xml"],
+  "action_items": [
+    "In api.run_analysis, compute result = fn(payload) before check_limits (inside the lock, after dedupe), or release the reserved connection slot ($inc count -1) if compute/insert raises. Make test_calc_error_no_slot pass.",
+    "Optional: on DuplicateKeyError in check_limits, re-check the doc and retry once if count < NETWORK_DAILY_LIMIT, so that concurrent first requests are not wrongly blocked."
+  ],
+  "critical_code_review_comments": [
+    "check_limits reserves the network slot and count_use increments the account counter after insert. These two steps are not symmetric: the network slot is used up even when the save fails, but the account counter is not.",
+    "The per-user asyncio lock only works within one process (as the existing comment says). The network reservation is now safe across processes, but the account limit and dedupe are not."
+  ],
+  "updated_files": ["/app/backend/tests/test_family_pattern_network_atomic_live.py"],
+  "success_rate": {"backend": "98% (42/43 including the new suite; new suite 6/7)", "frontend": "not tested (backend only)"},
+  "seed_data_creation": "None. Test analyses deleted by id; today's usage_network_daily docs and the test users' usage_daily docs for today deleted; roles of tester/other/fb/sec/ip confirmed 'member'.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run: cd /app/backend && set -a && . ./.env && set +a && REACT_APP_BACKEND_URL=... python -m pytest -n 0 tests/test_family_pattern_network_atomic_live.py -v -s. It uses 4 member accounts (tester, other, fb, sec) on one connection. The fixture finds the network doc with one request, then presets the counts. test_calc_error_no_slot is the open regression. Cleanup resets today's usage_network_daily docs.",
+  "rca of the issue": "In api.run_analysis the order is: dedupe -> check_limits (atomic $inc of the network count) -> fn(payload) -> insert -> count_use (account). fn raises HTTPException 400 for 3+3 without child_number after the network slot was already taken. The old code incremented both counters in count_use after the insert, so errors did not count. Fix: compute before reserving, or undo the reservation on an exception."
+}

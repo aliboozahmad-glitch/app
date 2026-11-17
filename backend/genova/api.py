@@ -7,13 +7,14 @@ from bson.errors import InvalidId
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
+from pymongo.errors import PyMongoError
 
 from . import genetics as g
 from .auth import IN_ENV, RANK, ROLES, current_member, effective_role, require_role
 from .db import db
 from .genetics.data_loader import disease_list, load_diseases, load_references
 from .i18n import localize_result, t
-from .limits import check_limits, count_use, limit_keys
+from .limits import check_limits, count_use, limit_keys, release_slot
 from .models import (
     AnalysisDoc,
     BloodTypeIn,
@@ -117,10 +118,15 @@ async def run_analysis(kind: str, body: dict, http: Request, lang: Lang = "en",
         duplicate = await _recent_duplicate(member["user_id"], kind, request)
         if duplicate:
             return {**_view(duplicate, lang, member["role"]), "deduplicated": True}
+        result = fn(payload)  # calculation errors happen before any limit slot is used
         limits = limit_keys(member, kind, http)
         await check_limits(limits, lang)
-        doc = AnalysisDoc(user_id=member["user_id"], analysis_type=kind, request=request, result=fn(payload))
-        res = await db.analyses.insert_one(doc.to_mongo())
+        doc = AnalysisDoc(user_id=member["user_id"], analysis_type=kind, request=request, result=result)
+        try:
+            res = await db.analyses.insert_one(doc.to_mongo())
+        except PyMongoError:
+            await release_slot(limits)
+            raise
         await count_use(limits)
         doc.id = str(res.inserted_id)
         await log_prediction(doc.id, kind, doc.result, doc.created_at)
