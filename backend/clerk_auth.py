@@ -2,6 +2,7 @@
 are set: /api/clerk/config for the frontend, the /api/__clerk production relay
 (zero DNS per app), and the require_user dependency for protected routes."""
 
+import base64
 import os
 from functools import lru_cache
 
@@ -109,13 +110,54 @@ def _jwks_client(secret_key: str) -> jwt.PyJWKClient:
     )
 
 
-def verify_session_token(token: str) -> dict:
-    """Return the verified claims of a Clerk session token, or raise 401."""
+REQUIRED_CLAIMS = ["exp", "nbf", "iat", "iss", "sub", "sid"]
+
+
+def _instance_issuer() -> str:
+    """Clerk's Frontend API URL, encoded in the publishable key as base64("<host>$")."""
+    encoded = _publishable_key().split("_", 2)[2]
+    host = base64.b64decode(encoded + "=" * (-len(encoded) % 4)).decode().removesuffix("$").strip().rstrip("/")
+    return f"https://{host}"
+
+
+def _app_origins(request: Request) -> set[str]:
+    hosts = request.headers.get("x-forwarded-host") or request.headers.get("host", "")
+    return {f"https://{h.strip()}" for h in hosts.split(",") if h.strip()}
+
+
+def _allowed_issuers(request: Request) -> set[str]:
+    issuers = {_instance_issuer()}
+    if _is_production():  # tokens issued through this app's own Clerk relay
+        issuers |= {f"{origin}{PROXY_PATH}" for origin in _app_origins(request)}
+    return issuers
+
+
+def _check_party(claims: dict, request: Request) -> None:
+    """azp is the browser origin that obtained the token; it must be this app. Tokens without azp exist
+    only when minted with the secret key (dev test tooling) and are refused on production instances."""
+    azp = claims.get("azp")
+    if azp is None and not _is_production():
+        return
+    if not isinstance(azp, str) or azp.rstrip("/") not in _app_origins(request):
+        raise jwt.InvalidTokenError("unexpected authorized party")
+
+
+def verify_session_token(token: str, request: Request) -> dict:
+    """Return the verified claims of a Clerk session token, or raise 401.
+    Checks: RS256 signature from this instance's JWKS, exp/nbf/iat, issuer, authorized party.
+    Clerk session tokens carry no audience claim, so azp is the audience check."""
     try:
+        if jwt.get_unverified_header(token).get("alg") != "RS256":
+            raise jwt.InvalidTokenError("unexpected algorithm")
         key = _jwks_client(_secret_key()).get_signing_key_from_jwt(token).key
-        return jwt.decode(token, key=key, algorithms=["RS256"], leeway=5)
-    except jwt.PyJWTError:
-        raise HTTPException(status_code=401, detail="Invalid or expired session")
+        claims = jwt.decode(token, key=key, algorithms=["RS256"], leeway=5,
+                            options={"require": REQUIRED_CLAIMS, "verify_aud": False})
+        if claims["iss"] not in _allowed_issuers(request):
+            raise jwt.InvalidIssuerError("unexpected issuer")
+        _check_party(claims, request)
+        return claims
+    except jwt.PyJWTError as exc:
+        raise HTTPException(status_code=401, detail="Invalid or expired session") from exc
 
 
 def require_user(request: Request) -> dict:
@@ -127,5 +169,5 @@ def require_user(request: Request) -> dict:
     token = auth[7:] if auth.lower().startswith("bearer ") else request.cookies.get("__session", "")
     if not token:
         raise HTTPException(status_code=401, detail="Not signed in")
-    claims = verify_session_token(token)
+    claims = verify_session_token(token, request)
     return {"user_id": claims["sub"], "session_id": claims.get("sid"), "claims": claims}

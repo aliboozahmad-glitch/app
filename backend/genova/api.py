@@ -4,7 +4,7 @@ from datetime import UTC, datetime, timedelta
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 
@@ -13,6 +13,7 @@ from .auth import IN_ENV, RANK, ROLES, current_member, effective_role, require_r
 from .db import db
 from .genetics.data_loader import disease_list, load_diseases, load_references
 from .i18n import localize_result, t
+from .limits import check_limits, count_use, limit_keys
 from .models import (
     AnalysisDoc,
     BloodTypeIn,
@@ -25,7 +26,7 @@ from .models import (
     RoleIn,
     SexRatioIn,
 )
-from .protection import DAILY_LIMIT, PROTECTED_KIND, protect_item, protect_view
+from .protection import protect_item, protect_view
 from .ratelimit import analysis_limiter
 from .stats_log import log_prediction
 from .traditional import family_pattern_analysis
@@ -58,19 +59,6 @@ def _view(doc: AnalysisDoc, lang: str, role: str) -> dict:
     view = {"id": doc.id, "analysis_type": doc.analysis_type, "created_at": doc.created_at, "request": doc.request,
             "result": localize_result(doc.result, lang)}
     return protect_view(view, role)
-
-
-def _daily_key(member: dict, kind: str) -> dict | None:
-    """Saved calculations per UTC day; deleting history does not reset it. Admin is not limited."""
-    if kind != PROTECTED_KIND or member["role"] == "admin":
-        return None
-    return {"user_id": member["user_id"], "kind": kind, "day": datetime.now(UTC).date().isoformat()}
-
-
-async def _check_daily_limit(key: dict | None, lang: str) -> None:
-    used = await db.usage_daily.find_one(key) if key else None
-    if used and used["count"] >= DAILY_LIMIT:
-        raise HTTPException(status_code=429, detail=t("daily_limit_reached", lang))
 
 
 async def _recent_duplicate(user_id: str, kind: str, request: dict) -> AnalysisDoc | None:
@@ -114,7 +102,8 @@ async def me(member: dict = Depends(current_member)):
 
 
 @router.post("/analyses/{kind}")
-async def run_analysis(kind: str, body: dict, lang: Lang = "en", member: dict = Depends(current_member)):
+async def run_analysis(kind: str, body: dict, http: Request, lang: Lang = "en",
+                       member: dict = Depends(current_member)):
     if kind not in CALCULATORS:
         raise HTTPException(status_code=404, detail="Unknown analysis")
     schema, fn = CALCULATORS[kind]
@@ -128,12 +117,11 @@ async def run_analysis(kind: str, body: dict, lang: Lang = "en", member: dict = 
         duplicate = await _recent_duplicate(member["user_id"], kind, request)
         if duplicate:
             return {**_view(duplicate, lang, member["role"]), "deduplicated": True}
-        daily = _daily_key(member, kind)
-        await _check_daily_limit(daily, lang)
+        limits = limit_keys(member, kind, http)
+        await check_limits(limits, lang)
         doc = AnalysisDoc(user_id=member["user_id"], analysis_type=kind, request=request, result=fn(payload))
         res = await db.analyses.insert_one(doc.to_mongo())
-        if daily:
-            await db.usage_daily.update_one(daily, {"$inc": {"count": 1}}, upsert=True)
+        await count_use(limits)
         doc.id = str(res.inserted_id)
         await log_prediction(doc.id, kind, doc.result, doc.created_at)
         return _view(doc, lang, member["role"])

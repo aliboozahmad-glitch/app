@@ -91,6 +91,24 @@ const Ratings = ({ r }) => {
 
 Ratings.propTypes = { r: PropTypes.object.isRequired };
 
+const Limits = ({ l }) => {
+  const { t } = useLang();
+  return (
+    <section className="space-y-4" data-testid="stats-limits">
+      <h3 className="text-lg font-semibold">{t.stats.limitsTitle}</h3>
+      <p className="text-xs text-slate-500">{t.stats.limitsNote.replace("{days}", l.days).replace("{account}", l.account_limit).replace("{network}", l.network_limit)}</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Stat label={t.stats.accountBlocked} value={l.accounts.blocked_attempts} testId="stats-account-blocked" />
+        <Stat label={t.stats.accountHits} value={l.accounts.limit_hits} testId="stats-account-hits" />
+        <Stat label={t.stats.networkBlocked} value={l.networks.blocked_attempts} testId="stats-network-blocked" />
+        <Stat label={t.stats.networkHits} value={l.networks.limit_hits} testId="stats-network-hits" />
+      </div>
+    </section>
+  );
+};
+
+Limits.propTypes = { l: PropTypes.object.isRequired };
+
 export default function AdminStatsPage() {
   const { t } = useLang();
   const state = useAuthedGet("/admin/stats");
@@ -112,6 +130,7 @@ export default function AdminStatsPage() {
             <StageStats stage="pregnancy" s={data.stages.pregnancy} />
             <StageStats stage="birth" s={data.stages.birth} />
             <Ratings r={data.ratings} />
+            <Limits l={data.limits} />
           </>
         )}
       </LoadState>

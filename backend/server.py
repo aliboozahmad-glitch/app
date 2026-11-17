@@ -42,6 +42,8 @@ INDEXES: dict[str, list[IndexModel]] = {
     "confirmations_birth": [IndexModel([("analysis_id", ASCENDING)], name="analysis_id", unique=True)],
     "ratings": [IndexModel([("analysis_id", ASCENDING)], name="analysis_id", unique=True)],
     "prediction_log": [IndexModel([("analysis_id", ASCENDING)], name="analysis_id", unique=True)],
+    "usage_network_daily": [IndexModel([("network", ASCENDING), ("kind", ASCENDING), ("day", ASCENDING)],
+                                       name="network_kind_day", unique=True)],
     "usage_daily": [IndexModel([("user_id", ASCENDING), ("kind", ASCENDING), ("day", ASCENDING)], name="user_kind_day",
                                unique=True)],
 }
@@ -60,7 +62,8 @@ async def ensure_indexes() -> None:
         logger.error("backfill_prediction_log: %s", exc)
 
 
-app = FastAPI(title="GENOVA AI API", version="1.0.0")
+# No public route listing: interactive docs and the OpenAPI schema are disabled.
+app = FastAPI(title="GENOVA AI API", version="1.0.0", docs_url=None, redoc_url=None, openapi_url=None)
 app.include_router(genova_router)
 app.include_router(feedback_router)
 app.include_router(clerk_router)
@@ -79,6 +82,13 @@ async def security_headers(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    if not request.url.path.startswith("/api/__clerk"):  # Clerk relay keeps Clerk's own headers
+        response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+        response.headers["Cache-Control"] = response.headers.get("Cache-Control", "no-store")
     return response
 
 

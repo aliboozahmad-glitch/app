@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from .api import _oid
 from .auth import current_member, require_role
 from .db import db
+from .limits import limit_stats
 from .models import Gender, Strict
 from .protection import PROTECTED_KIND
 from .stats_log import snapshot
@@ -132,4 +133,4 @@ async def admin_stats(_: dict = Depends(require_role("admin"))):
     stages = {stage: await _stage_stats(coll) for stage, coll in STAGE_COLLECTIONS.items()}
     return {"label": "voluntary_user_reported_observational", "predictions_total": predictions,
             "confirmed_total": distinct[0]["n"] if distinct else 0, "stages": stages,
-            "ratings": await _rating_stats()}
+            "ratings": await _rating_stats(), "limits": await limit_stats()}

@@ -56,6 +56,12 @@ backend/genova/genetics (pure engine) · genova/i18n · genova/api · genova/aut
   - Tests: refactored complex test functions, replaced seeded random sampling with deterministic slicing (and `secrets` in the dedupe tests), and fixed ruff style.
   - `tests/run_live_suites.sh` runs the live suites one by one, pausing for the rate limit.
 - 2026-06: Display fix. Starting a calculation clears the previous result, so a daily-limit or other error never sits next to an old result card. When a family-pattern combination has no matching case, a plain "No result available" message is shown instead of a dash result card. Logic and limit are unchanged.
+- 2026-06: Security hardening.
+  - `genova/limits.py`: per-connection daily limit of 60 family-pattern calculations (per account stays 20; admin exempt). Connections are stored only as an HMAC hash in `usage_network_daily`, and the client address is taken from X-Forwarded-For before the 2 infrastructure hops, so forged values are ignored. Blocked attempts are counted and shown on the admin stats page ("Possible copying attempts").
+  - `server.py`: docs, redoc and openapi disabled. API responses carry CSP `default-src 'none'; frame-ancestors 'none'`, X-Frame-Options DENY, HSTS, Permissions-Policy, COOP and Cache-Control no-store.
+  - `clerk_auth.verify_session_token(token, request)`: RS256 only, required exp/nbf/iat/iss/sub/sid, issuer from the publishable key (plus the app's own relay on production), and azp equal to the app's own origin. A missing azp is allowed only on dev instances, for tokens minted with the secret key by test tooling.
+  - `tests/test_security.py` checks the route-authorization inventory; `tests/test_security_live.py` covers the live checks.
+
 
 
   - Pending: the owner will send a percentage for each case. Until then only the PDF ranges are shown, 70–90% and 50–60% for 3 + 3 families.
