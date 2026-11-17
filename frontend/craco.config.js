@@ -1,5 +1,10 @@
 // craco.config.js
 const path = require("path");
+
+// Build-tooling notices only; silent in production builds.
+const devWarn = (...args) => {
+  if (process.env.NODE_ENV !== "production") console.warn(...args);
+};
 require("dotenv").config();
 
 // Check if we're in development/preview mode (not production build)
@@ -87,7 +92,7 @@ if (isDevServer && process.env.DISABLE_EMERGENT_OVERLAY !== "true") {
     }
   } catch (err) {
     emergentOverlay = undefined;
-    console.warn(
+    devWarn(
       "[emergent-overlay] not loaded — overlay disabled:",
       err instanceof Error ? err.message : err,
     );
@@ -172,7 +177,7 @@ if (isDevServer) {
     webpackConfig = withVisualEdits(webpackConfig);
   } catch (err) {
     if (err.code === 'MODULE_NOT_FOUND' && err.message.includes('@emergentbase/visual-edits/craco')) {
-      console.warn(
+      devWarn(
         "[visual-edits] @emergentbase/visual-edits not installed — visual editing disabled."
       );
     } else {
@@ -191,7 +196,7 @@ if (emergentOverlay) {
   let overlay = emergentOverlay;
   const overlayFailed = (site, err) => {
     overlay = undefined;
-    console.warn(
+    devWarn(
       `[emergent-overlay] ${site} failed — overlay disabled:`,
       err instanceof Error ? err.message : err,
     );

@@ -23,7 +23,7 @@ export default function MendelianPage() {
   const [g1, g2] = GENOTYPES[mode];
 
   const changeMode = (m) => { setMode(m); setP1(GENOTYPES[m][0][1]); setP2(GENOTYPES[m][1][0]); };
-  const opts = (list) => list.map((g) => [g, <span className="font-mono-genes">{g}</span>]);
+  const opts = (list) => list.map((g) => [g, <span key={g} className="font-mono-genes">{g}</span>]);
   const hint = isX ? t.mendelian.hintX : mode.includes("dominance") || mode === "codominant" ? t.mendelian.hintCo : t.mendelian.hintAuto;
 
   return (

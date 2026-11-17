@@ -97,7 +97,8 @@ def test_admin_exempt(session, created):
 def test_other_calculators_unlimited(session, created):
     with as_role(session, API, "member") as uid:
         set_daily(uid, "family-pattern", DAY, 20)
-        r = session.post(f"{API}/analyses/blood-type", json={"parent1_abo": "A", "parent1_rh": "+", "parent2_abo": "B", "parent2_rh": "-"})
+        blood = {"parent1_abo": "A", "parent1_rh": "+", "parent2_abo": "B", "parent2_rh": "-"}
+        r = session.post(f"{API}/analyses/blood-type", json=blood)
         print(r.status_code, r.text[:200])
         assert r.status_code == 200
         if r.status_code == 200:

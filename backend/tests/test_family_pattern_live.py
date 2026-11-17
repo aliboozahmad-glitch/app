@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 import requests
-from live_roles import as_role
 from dotenv import dotenv_values
+from live_roles import as_role
 
 BASE_URL = (os.environ.get("REACT_APP_BACKEND_URL")
             or dotenv_values(Path("/app/frontend/.env"))["REACT_APP_BACKEND_URL"]).rstrip("/")

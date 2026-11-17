@@ -1,15 +1,14 @@
 """Live API tests: family-pattern wife/husband split (borrowed answers, old-app-only, baseline spot-check)."""
 import json
 import os
-import random
 import subprocess
 import time
 from pathlib import Path
 
 import pytest
 import requests
-from live_roles import as_role
 from dotenv import dotenv_values
+from live_roles import as_role
 
 BASE_URL = (os.environ.get("REACT_APP_BACKEND_URL")
             or dotenv_values(Path("/app/frontend/.env"))["REACT_APP_BACKEND_URL"]).rstrip("/")
@@ -95,14 +94,14 @@ def test_old_app_only_37(s, created, lang):
         txt = lim["text"]
         assert txt and txt != lim["key"] and "_" not in txt, lim
     if lang == "ar":
-        assert any("التطبيق القديم" in l["text"] for l in res["limitations"])
+        assert any("التطبيق القديم" in lim["text"] for lim in res["limitations"])
 
 
-# Random spot-check of 30 baseline pairs via API
+# Deterministic spot-check of 15 evenly spaced baseline pairs via API
 def test_baseline_spot_check(s, created):
     base = json.loads(BASELINE.read_text(encoding="utf-8"))["results"]
-    rng = random.Random(7)
-    sample = rng.sample(sorted(base), 15)
+    keys = sorted(base)
+    sample = keys[:: len(keys) // 15][:15]
     bad = []
     for k in sample:
         w, h, n = k.split("|")

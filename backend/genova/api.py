@@ -134,9 +134,9 @@ async def run_analysis(kind: str, body: dict, lang: Lang = "en", member: dict = 
         res = await db.analyses.insert_one(doc.to_mongo())
         if daily:
             await db.usage_daily.update_one(daily, {"$inc": {"count": 1}}, upsert=True)
-    doc.id = str(res.inserted_id)
-    await log_prediction(doc.id, kind, doc.result, doc.created_at)
-    return _view(doc, lang, member["role"])
+        doc.id = str(res.inserted_id)
+        await log_prediction(doc.id, kind, doc.result, doc.created_at)
+        return _view(doc, lang, member["role"])
 
 
 @router.get("/analyses")

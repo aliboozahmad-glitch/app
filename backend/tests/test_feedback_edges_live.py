@@ -70,37 +70,37 @@ def test_no_outcome_family_not_confirmable(ctx):
     assert s.put(f"{API}/analyses/{aid}/confirmations/pregnancy", json={"actual": "male"}).status_code == 400
 
 
+def _assert_stage_delta(before, after, actual, matched):
+    assert after["confirmed"] == before["confirmed"] + 1
+    assert after["matches"] == before["matches"] + int(matched)
+    assert after["actual"][actual] == before["actual"][actual] + 1
+
+
+def _assert_no_private_fields(aid):
+    for coll in COLLS:
+        doc = _db[coll].find_one({"analysis_id": aid})
+        assert doc and not {"user_id", "email", "name", "wife", "husband", "inputs", "details"} & set(doc), doc
+
+
 def test_stats_deltas_consistent(ctx):
     s = ctx["s"]
     before = _stats(s)
     aid = s.post(f"{API}/analyses/family-pattern", json={**FAM, "child_number": 2}).json()["id"]
     ctx["created"].append(aid)
-    mid = _stats(s)
-    assert mid["predictions_total"] == before["predictions_total"] + 1
+    assert _stats(s)["predictions_total"] == before["predictions_total"] + 1
     s.put(f"{API}/analyses/{aid}/confirmations/pregnancy", json={"actual": "male"})
     s.put(f"{API}/analyses/{aid}/confirmations/birth", json={"actual": "female"})
     s.put(f"{API}/analyses/{aid}/rating", json={"value": "like"})
     after = _stats(s)
-    bp, ap = before["stages"]["pregnancy"], after["stages"]["pregnancy"]
-    bb, ab = before["stages"]["birth"], after["stages"]["birth"]
     pred = _db.confirmations_pregnancy.find_one({"analysis_id": aid})["predicted"]
-    pm, bm = int(pred == "male"), int(pred == "female")
-    assert ap["confirmed"] == bp["confirmed"] + 1 and ap["matches"] == bp["matches"] + pm
-    assert ap["actual"]["male"] == bp["actual"]["male"] + 1
-    assert ab["confirmed"] == bb["confirmed"] + 1 and ab["matches"] == bb["matches"] + bm
-    assert ab["actual"]["female"] == bb["actual"]["female"] + 1
+    _assert_stage_delta(before["stages"]["pregnancy"], after["stages"]["pregnancy"], "male", pred == "male")
+    _assert_stage_delta(before["stages"]["birth"], after["stages"]["birth"], "female", pred == "female")
     assert after["confirmed_total"] == before["confirmed_total"] + 1  # distinct predictions confirmed
-    assert after["predictions_total"] == before["predictions_total"] + 1
     assert after["ratings"]["likes"] == before["ratings"]["likes"] + 1
-    # change rating -> likes -1, dislikes +1
     s.put(f"{API}/analyses/{aid}/rating", json={"value": "dislike"})
-    after2 = _stats(s)
-    assert after2["ratings"]["likes"] == before["ratings"]["likes"]
-    assert after2["ratings"]["dislikes"] == before["ratings"]["dislikes"] + 1
-    # stored docs: no private info
-    for coll in COLLS:
-        doc = _db[coll].find_one({"analysis_id": aid})
-        assert doc and not {"user_id", "email", "name", "wife", "husband", "inputs", "details"} & set(doc), doc
+    after2 = _stats(s)["ratings"]
+    assert (after2["likes"], after2["dislikes"]) == (before["ratings"]["likes"], before["ratings"]["dislikes"] + 1)
+    _assert_no_private_fields(aid)
 
 
 def test_orphans_after_delete(ctx):

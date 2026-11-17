@@ -126,7 +126,10 @@ def test_api_matches_function(token, case):
     assert api == _genova(e)[0]
 
 
-@pytest.mark.parametrize("e", [x for x in PDF if 61 <= x["case"] <= 68 or x["case"] >= 81 and x["case"] not in (84, 87, 92)],
+PDF_ONLY_ENTRIES = [x for x in PDF if 61 <= x["case"] <= 68 or (x["case"] >= 81 and x["case"] not in (84, 87, 92))]
+
+
+@pytest.mark.parametrize("e", PDF_ONLY_ENTRIES,
                          ids=lambda e: f"case{e['case']}")
 def test_pdf_only_entries_copied_exactly(e):
     c = {c["case"]: c for c in load_table()["cases"]}[e["case"]]

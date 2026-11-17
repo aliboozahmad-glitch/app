@@ -22,14 +22,22 @@ def legacy_dict():
 BASELINE = Path(__file__).parent / "fixtures" / "family_pattern_results_baseline.json"
 
 
-def test_all_72_original_entries_preserved_unchanged():
+PDF_ONLY = [*range(61, 69), 81, 82, 83, 85, 86, 88, 89, 90, 91]
+
+
+def _case_numbers(entries, origin=None):
+    return sorted(c["case"] for c in entries if origin is None or c["origin"] == origin)
+
+
+def test_case_numbers_and_origins():
     t = load_table()
-    pdf_only = [*range(61, 69), 81, 82, 83, 85, 86, 88, 89, 90, 91]
-    assert sorted(c["case"] for c in t["cases"]) == sorted([*range(1, 30), *range(41, 61), *range(69, 81), *pdf_only])
-    assert sorted(c["case"] for c in t["cases"] if c["origin"] == "original_pdf") == pdf_only
-    assert not {84, 87, 92} & {c["case"] for c in all_entries()}
-    assert sorted(c["case"] for c in t["old_app_only_cases"]) == list(range(30, 41))
-    assert all(c["origin"] == "old_app_only" for c in t["old_app_only_cases"])
+    assert _case_numbers(t["cases"]) == sorted([*range(1, 30), *range(41, 61), *range(69, 81), *PDF_ONLY])
+    assert _case_numbers(t["cases"], "original_pdf") == PDF_ONLY
+    assert not {84, 87, 92} & set(_case_numbers(all_entries()))
+    assert _case_numbers(t["old_app_only_cases"], "old_app_only") == list(range(30, 41))
+
+
+def test_all_72_original_entries_preserved_unchanged():
     cases = legacy_order()
     assert len(cases) == 72
     if LEGACY.exists():

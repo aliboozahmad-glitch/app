@@ -12,7 +12,7 @@ const ParentInput = ({ id, label, state, setState }) => {
   const { t } = useLang();
   const set = (k) => (v) => setState({ ...state, [k]: v });
   const switchMode = (m) => setState({ mode: m, abo: ABO[m][0], rh: RH[m][0] });
-  const mono = (l) => l.map((v) => [v, <span className="font-mono-genes">{v === "+" ? t.blood.rhPos : v === "-" ? t.blood.rhNeg : v}</span>]);
+  const mono = (l) => l.map((v) => [v, <span key={v} className="font-mono-genes">{v === "+" ? t.blood.rhPos : v === "-" ? t.blood.rhNeg : v}</span>]);
   return (
     <div className="border border-slate-200 rounded-md p-5 space-y-4" data-testid={`${id}-card`}>
       <div className="font-semibold">{label}</div>

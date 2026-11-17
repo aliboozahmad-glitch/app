@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClerkProvider } from "@clerk/react";
@@ -27,7 +28,9 @@ export default function ClerkAuthProvider({ children }) {
       try {
         const cfg = await (await fetch(`${BACKEND_URL}/api/clerk/config`)).json();
         if (cfg.enabled) return cancelled || setConfig(cfg);
-      } catch {}
+      } catch {
+        // Backend not reachable yet: handled by the retry below, then the "unavailable" message.
+      }
       if (cancelled) return;
       if (attempt >= 20) return setUnavailable(true);
       setTimeout(() => load(attempt + 1), 1500);
@@ -55,3 +58,5 @@ export default function ClerkAuthProvider({ children }) {
     </ClerkProvider>
   );
 }
+
+ClerkAuthProvider.propTypes = { children: PropTypes.node.isRequired };

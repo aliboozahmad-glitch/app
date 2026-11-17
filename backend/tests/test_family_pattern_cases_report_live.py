@@ -1,15 +1,14 @@
 """Live API tests: PDF cases 61-68/81-91, single-child scope, child_number rules, baseline sample (iteration 8)."""
 import json
 import os
-import random
 import subprocess
 import time
 from pathlib import Path
 
 import pytest
 import requests
-from live_roles import as_role
 from dotenv import dotenv_values
+from live_roles import as_role
 
 BASE_URL = (os.environ.get("REACT_APP_BACKEND_URL")
             or dotenv_values(Path("/app/frontend/.env"))["REACT_APP_BACKEND_URL"]).rstrip("/")
@@ -59,7 +58,8 @@ def _key(res):
 
 
 # New PDF cases 61, 81, 91 are their own entries
-@pytest.mark.parametrize("wife,husband,case,ans", [([F, F], [F], 61, F), ([F, F, F], [F], 81, F), ([F, M, M], [M], 91, M)])
+@pytest.mark.parametrize("wife,husband,case,ans",
+                         [([F, F], [F], 61, F), ([F, F, F], [F], 81, F), ([F, M, M], [M], 91, M)])
 def test_new_pdf_cases(s, created, wife, husband, case, ans):
     res = _post(s, created, wife, husband)["result"]
     d = res["details"]
@@ -113,20 +113,20 @@ def test_single_label_localized(s, created, lang, label):
     assert res["details"]["effective_case"] == 37
 
 
-# Baseline sample through the API (every non-3+3 pair, plus random 3+3)
+def _sample_mismatch(s, created, base, index, pair):
+    w, h = (part.split(",") for part in pair.split("|"))
+    n = index % 2 + 1 if len(w) == 3 and len(h) == 3 else None
+    got = _key(_post(s, created, w, h, n)["result"])
+    exp = base[f"{pair}|{n or 1}"]
+    return None if got == exp else (pair, n, exp, got)
+
+
+# Deterministic baseline sample through the API: 30 evenly spaced pairs, alternating child 1/2 for 3+3
 def test_baseline_sample(s, created):
     base = json.loads(BASELINE.read_text())["results"]
     keys = sorted({k.rsplit("|", 1)[0] for k in base})
-    rnd = random.Random(8)
-    sample = rnd.sample(keys, 30)
     bad = []
-    for k in sample:
-        w, h = k.split("|")
-        w, h = w.split(","), h.split(",")
-        n = rnd.choice([1, 2]) if len(w) == 3 and len(h) == 3 else None
-        res = _post(s, created, w, h, n)["result"]
-        exp = base[f"{k}|{n or 1}"]
-        if _key(res) != exp:
-            bad.append((k, n, exp, _key(res)))
+    for i, pair in enumerate(keys[:: len(keys) // 30][:30]):
+        bad.append(_sample_mismatch(s, created, base, i, pair))
         time.sleep(1.5)
-    assert not bad, bad
+    assert not any(bad), [b for b in bad if b]

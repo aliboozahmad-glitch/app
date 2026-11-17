@@ -4,6 +4,7 @@ import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageContext";
 import { useApi, errorMessage } from "@/lib/api";
+import { confirmationShape } from "@/types";
 
 const pill = (on) =>
   `inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-md border transition-colors ${on ? "bg-slate-900 text-white border-slate-900" : "border-slate-300 hover:border-slate-500"}`;
@@ -44,7 +45,7 @@ const StageRow = ({ stage, saved, onConfirm }) => {
 
 StageRow.propTypes = {
   stage: PropTypes.oneOf(["pregnancy", "birth"]).isRequired,
-  saved: PropTypes.shape({ actual: PropTypes.string }),
+  saved: confirmationShape,
   onConfirm: PropTypes.func.isRequired,
 };
 
@@ -62,12 +63,15 @@ const Confirmations = ({ saved, onConfirm }) => {
   );
 };
 
-Confirmations.propTypes = { saved: PropTypes.object.isRequired, onConfirm: PropTypes.func.isRequired };
+Confirmations.propTypes = {
+  saved: PropTypes.shape({ pregnancy: confirmationShape, birth: confirmationShape }).isRequired,
+  onConfirm: PropTypes.func.isRequired,
+};
 
 export const ResultFeedback = ({ analysisId }) => {
   const api = useApi();
   const { t } = useLang();
-  const [fb, setFb] = useState(null);
+  const [fb, setFb] = useState(/** @type {import("@/types").Feedback|null} */ (null));
   useEffect(() => {
     let active = true;
     api("get", `/analyses/${analysisId}/feedback`).then((d) => active && setFb(d)).catch(() => active && setFb(null));

@@ -2,7 +2,7 @@
 import concurrent.futures as cf
 import json
 import os
-import random
+import secrets
 import subprocess
 import time
 from pathlib import Path
@@ -51,7 +51,7 @@ def b(created):
 
 def _body():
     # unique heights so parallel runs never collide
-    return {"mother_cm": round(random.uniform(150, 180), 1), "father_cm": round(random.uniform(160, 200), 1)}
+    return {"mother_cm": 150 + secrets.randbelow(300) / 10, "father_cm": 160 + secrets.randbelow(400) / 10}
 
 
 def _count(s):
@@ -128,7 +128,7 @@ def test_after_window_new_entry(a, created):
 
 # Float vs int equivalence (70 vs 70.0) behaviour - informational
 def test_int_vs_float_same(a, created):
-    m = random.randint(150, 180)
+    m = 150 + secrets.randbelow(31)
     r1 = _post(a, {"mother_cm": m, "father_cm": 175}, created["a"])
     r2 = _post(a, {"mother_cm": float(m), "father_cm": 175.0}, created["a"])
     assert r1["id"] == r2["id"]

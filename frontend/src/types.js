@@ -4,15 +4,20 @@ import PropTypes from "prop-types";
  * @typedef {"established"|"population_estimate"|"statistical_estimate"|"uncertain_estimate"|"population_statistic"|"traditional_belief"} CertaintyTier
  * @typedef {{ key: string, kind: "phenotype"|"genotype"|"blood_type"|"measurement"|"qualitative", group: string,
  *   label: string, group_label: string, probability: (number|null), fraction: (string|null),
- *   range?: number[], range_fraction?: string[], value?: number, unit?: string }} Outcome
+ *   range?: number[], range_fraction?: string[], value?: number, unit?: string, stated_range?: (string|null) }} Outcome
  * @typedef {{ key: string, text: string }} Note
  * @typedef {{ id: string, title: string, publisher: string, url: string, link_check: string }} Reference
  * @typedef {{ mother_genotype: string, father_genotype: string, outcomes: Outcome[] }} Scenario
  * @typedef {{ columns: string[], rows: string[], cells: string[][] }} Grid
  * @typedef {{ certainty: CertaintyTier, certainty_label: string, method: string, method_label: string,
  *   outcomes: Outcome[], assumptions: Note[], limitations: Note[], references: Reference[],
- *   details: Object, engine_version: string, data_version: (string|null) }} LocalizedResult
- * @typedef {{ id: string, analysis_type: string, created_at: string, request: Object, result: LocalizedResult }} Analysis
+ *   details: Object, engine_version?: string, data_version?: (string|null), public?: boolean }} LocalizedResult
+ * @typedef {{ id: string, report_id?: string, analysis_type: string, created_at: string, request: Object,
+ *   result: LocalizedResult }} Analysis
+ * @typedef {"pregnancy"|"birth"} ConfirmationStage
+ * @typedef {{ actual: ("male"|"female"), updated_at?: string }} Confirmation
+ * @typedef {{ rating: ("like"|"dislike"|null), confirmable: boolean,
+ *   confirmations: Record<ConfirmationStage, (Confirmation|null)> }} Feedback
  */
 
 export const TIERS = ["established", "population_estimate", "statistical_estimate", "uncertain_estimate", "population_statistic", "traditional_belief"];
@@ -29,6 +34,7 @@ export const outcomeShape = PropTypes.shape({
   range_fraction: PropTypes.arrayOf(PropTypes.string),
   value: PropTypes.number,
   unit: PropTypes.string,
+  stated_range: PropTypes.string,
 });
 
 export const noteShape = PropTypes.shape({ key: PropTypes.string.isRequired, text: PropTypes.string.isRequired });
@@ -65,12 +71,16 @@ export const resultShape = PropTypes.shape({
   details: PropTypes.object,
   engine_version: PropTypes.string,
   data_version: PropTypes.string,
+  public: PropTypes.bool,
 });
 
 export const analysisShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
+  report_id: PropTypes.string,
   analysis_type: PropTypes.string.isRequired,
   created_at: PropTypes.string,
   request: PropTypes.object,
   result: resultShape.isRequired,
 });
+
+export const confirmationShape = PropTypes.shape({ actual: PropTypes.oneOf(["male", "female"]).isRequired, updated_at: PropTypes.string });

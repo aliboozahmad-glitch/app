@@ -58,22 +58,24 @@ def test_rating_any_calculator(ctx):
     assert fb["rating"] == "like" and fb["confirmable"] is False
 
 
+def _only_doc(coll, analysis_id):
+    docs = list(_db[coll].find({"analysis_id": analysis_id}))
+    assert len(docs) == 1, docs
+    assert not {"user_id", "email", "name", "wife", "husband"} & set(docs[0])
+    return docs[0]
+
+
 def test_confirmations_separate_and_correctable(ctx):
     s, fam = ctx["s"], ctx["fam"]
     assert s.put(f"{API}/analyses/{fam}/confirmations/pregnancy", json={"actual": "female"}).status_code == 200
     assert s.put(f"{API}/analyses/{fam}/confirmations/pregnancy", json={"actual": "male"}).status_code == 200
     assert s.put(f"{API}/analyses/{fam}/confirmations/birth", json={"actual": "female"}).status_code == 200
-    preg = list(_db.confirmations_pregnancy.find({"analysis_id": fam}))
-    birth = list(_db.confirmations_birth.find({"analysis_id": fam}))
-    assert len(preg) == 1 and len(birth) == 1
-    p, b = preg[0], birth[0]
-    assert (p["stage"], p["predicted"], p["actual"], p["match"]) == ("pregnancy", "male", "male", True)
-    assert (b["stage"], b["actual"], b["match"]) == ("birth", "female", False)
-    assert p["stated_range"] == "70\u201390%" and p["method_group"] == "two_child_table"
-    for doc in (p, b):
-        assert not {"user_id", "email", "name", "wife", "husband"} & set(doc)
-    fb = s.get(f"{API}/analyses/{fam}/feedback").json()
-    assert fb["confirmations"]["pregnancy"]["actual"] == "male" and fb["confirmations"]["birth"]["actual"] == "female"
+    p, b = _only_doc("confirmations_pregnancy", fam), _only_doc("confirmations_birth", fam)
+    fields = ("stage", "predicted", "actual", "match", "stated_range", "method_group")
+    assert tuple(p[f] for f in fields) == ("pregnancy", "male", "male", True, "70\u201390%", "two_child_table")
+    assert tuple(b[f] for f in fields[:4]) == ("birth", "male", "female", False)
+    fb = s.get(f"{API}/analyses/{fam}/feedback").json()["confirmations"]
+    assert (fb["pregnancy"]["actual"], fb["birth"]["actual"]) == ("male", "female")
 
 
 def test_confirmation_rules(ctx):
