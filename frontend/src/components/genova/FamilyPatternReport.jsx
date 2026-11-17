@@ -26,13 +26,7 @@ export const PrintReportButton = () => {
 
 const SourceText = ({ details }) => {
   const { t } = useLang();
-  const kids = (list) => familyNames(list, t);
-  if (!details.effective_case) return t.report.notInTable;
-  const src = details.source_case;
-  const base = details.answer_borrowed
-    ? `${t.family.borrowed} #${src.case} (${t.family.wifeShort}: ${kids(src.wife)} · ${t.family.husbandShort}: ${kids(src.husband)})`
-    : `${t.family.caseLabel} #${details.effective_case}`;
-  return details.origin === "old_app_only" ? `${base} · ${t.family.oldAppOnly}` : base;
+  return details.effective_case ? `${t.family.caseLabel} #${details.effective_case}` : t.report.notInTable;
 };
 
 export const FamilyPatternReport = ({ analysis }) => {

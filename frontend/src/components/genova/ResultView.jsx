@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import { ExternalLink } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
-import { familyNames } from "@/lib/format";
 import { analysisShape, noteShape, referenceShape, resultShape } from "@/types";
 import { CertaintyBadge } from "./primitives";
 import { OutcomeTable } from "./OutcomeTable";
@@ -56,33 +55,14 @@ Sources.propTypes = { refs: PropTypes.arrayOf(referenceShape).isRequired };
 
 const TableCase = ({ details }) => {
   const { t } = useLang();
-  const kids = (list) => familyNames(list, t);
-  const src = details.answer_borrowed ? details.source_case : null;
   return (
     <div className="text-sm text-slate-500" data-testid="result-table-case">
-      <p className="font-mono-genes" data-testid={src ? "result-answer-source" : undefined}>
-        {src ? t.family.borrowed : t.family.caseLabel} #{details.effective_case}
-        {src && ` (${t.family.wifeShort}: ${kids(src.wife)} · ${t.family.husbandShort}: ${kids(src.husband)})`}
-        {details.origin === "old_app_only" && (
-          <span className="ms-2 px-2 py-0.5 text-xs rounded border border-amber-300 bg-amber-50 text-amber-900" data-testid="result-old-app-only">{t.family.oldAppOnly}</span>
-        )}
-      </p>
+      <p className="font-mono-genes" data-testid="result-case-number">{t.family.caseLabel} #{details.effective_case}</p>
     </div>
   );
 };
 
-TableCase.propTypes = {
-  details: PropTypes.shape({
-    effective_case: PropTypes.number.isRequired,
-    origin: PropTypes.string,
-    answer_borrowed: PropTypes.bool,
-    source_case: PropTypes.shape({
-      case: PropTypes.number,
-      wife: PropTypes.arrayOf(PropTypes.string),
-      husband: PropTypes.arrayOf(PropTypes.string),
-    }),
-  }).isRequired,
-};
+TableCase.propTypes = { details: PropTypes.shape({ effective_case: PropTypes.number.isRequired }).isRequired };
 
 const ResultHeader = ({ result }) => {
   const { t } = useLang();

@@ -4,8 +4,6 @@ from .protection import PROTECTED_KIND, stated_range
 
 
 def method_group(result: dict) -> str:
-    if result.get("details", {}).get("answer_borrowed"):
-        return "other_case_answer"
     inp = result.get("inputs", {})
     two = len(inp.get("wife", [])) == 3 and len(inp.get("husband", [])) == 3
     return "two_child_table" if two else "one_child_table"

@@ -12,8 +12,6 @@ from genova.traditional.family_pattern import DATA, load_table
 
 ROOT = Path(__file__).resolve().parents[2]
 PDF = json.loads((ROOT / "docs/source/pdf_transcription.json").read_text(encoding="utf-8"))
-ARCHIVE = DATA.parent / "archive" / "legacy_family_pattern_table.json"
-BASELINE = Path(__file__).parent / "fixtures" / "family_pattern_results_baseline.json"
 G = {"M": "male", "F": "female"}
 FAMILIES = [list(p) for n in (1, 2, 3) for p in itertools.product(("male", "female"), repeat=n)]
 OWNER = {84: "female", 87: "male", 92: "male"}
@@ -64,15 +62,6 @@ def test_every_input_matches_the_pdf_exactly():
         assert _answer(w, h, c) == _pdf_answer(w, h, c), (w, h, c)
 
 
-def test_only_approved_answers_changed_versus_old_app():
-    base = json.loads(BASELINE.read_text(encoding="utf-8"))["results"]
-    changed = {(tuple(w), tuple(h)) for w, h, c in _inputs()
-               if _answer(w, h, c) != base[f"{','.join(w)}|{','.join(h)}|{c or 1}"]}
-    assert len(changed) == 21
-    by_split = {(tuple(c["wife"]), tuple(c["husband"])): c["case"] for c in load_table()["cases"]}
-    assert sorted(by_split[k] for k in changed if k in by_split) == [84, 87, 92]  # the rest now have no match
-
-
 def test_no_matching_case_has_no_fallback():
     r = family_pattern_analysis(["male"], ["female"])  # old-app case 37, not in the PDF
     assert r["outcomes"] == [] and r["details"]["review_flags"] == ["no_matching_case"]
@@ -98,11 +87,11 @@ def test_invalid_inputs(wife, husband, n):
         family_pattern_analysis(wife, husband, n)
 
 
-def test_legacy_data_archived_and_disconnected():
-    archived = json.loads(ARCHIVE.read_text(encoding="utf-8"))
-    assert [c["case"] for c in archived["old_app_only_cases"]] == list(range(30, 41))
+def test_legacy_data_deleted():
+    assert [p.name for p in DATA.parent.iterdir()] == ["genova_smart_cases.json"]
+    assert not (Path(__file__).parent / "fixtures").exists()
     engine = (Path(__file__).parents[1] / "genova/traditional/family_pattern.py").read_text(encoding="utf-8")
-    assert "archive" not in engine and DATA.name == "genova_smart_cases.json"
+    assert "archive" not in engine and "legacy" not in engine and DATA.name == "genova_smart_cases.json"
 
 
 def test_deterministic():
