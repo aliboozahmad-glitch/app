@@ -56,7 +56,7 @@ def _no_secrets(payload):
     for k in SECRET_KEYS:
         cleaned = text.replace('"family-pattern"', "").replace("family_pattern", "")
         assert f'"{k}"' not in cleaned and f"{k}:" not in cleaned, k
-    for name in ("legacy-family-pattern-table", "gender_prediction_logic", "case_source", "pdf_page"):
+    for name in ("genova-smart-pdf", "legacy-family-pattern-table", "gender_prediction_logic", "case_source", "pdf_page"):
         assert name not in text, name
 
 

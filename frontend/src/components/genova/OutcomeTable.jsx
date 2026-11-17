@@ -21,6 +21,7 @@ const OutcomeValue = ({ o }) => {
   }
   if (o.fraction) return <span className="font-semibold">{o.fraction} <span className="text-slate-500">· {pct(o.probability)}</span></span>;
   if (o.range_fraction) return <span>{o.range_fraction[0]} – {o.range_fraction[1]}</span>;
+  if (o.stated_range) return <bdi dir="ltr" className="font-semibold">{o.stated_range}</bdi>;
   return null;
 };
 

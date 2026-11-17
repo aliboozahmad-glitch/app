@@ -38,10 +38,12 @@ export const Sources = ({ refs }) => {
           <li key={r.id} className="flex gap-2">
             <span className="font-mono-genes text-slate-400">[{i + 1}]</span>
             <span>
-              <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-slate-900 underline underline-offset-2 hover:text-slate-600" data-testid={`reference-link-${r.id}`}>
-                {r.title}<ExternalLink size={12} className="inline ms-1" />
-              </a>
-              <span className="text-slate-500"> · {r.publisher} · {r.link_check === "verified_2026_06" ? t.c.verified : t.c.manual}</span>
+              {r.url ? (
+                <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-slate-900 underline underline-offset-2 hover:text-slate-600" data-testid={`reference-link-${r.id}`}>
+                  {r.title}<ExternalLink size={12} className="inline ms-1" />
+                </a>
+              ) : <span className="text-slate-900" data-testid={`reference-link-${r.id}`}>{r.title}</span>}
+              {r.url && <span className="text-slate-500"> · {r.publisher} · {r.link_check === "verified_2026_06" ? t.c.verified : t.c.manual}</span>}
             </span>
           </li>
         ))}

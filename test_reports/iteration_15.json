@@ -1,0 +1,39 @@
+{
+  "summary": "Frontend test of the GENOVA Smart Algorithm homepage update (Playwright, signed in as genova.tester via Clerk ticket). Everything requested for members passes. Dashboard: the first card in EN/AR(RTL)/DE is GENOVA Smart Algorithm / خوارزمية GENOVA الذكية / GENOVA Smart-Algorithmus, with its description and matching badge. The other cards keep their previous order (mendelian, blood-type, carrier-risk, height, pigmentation, sex-ratio). No 'traditional'/'traditionell'/'تقليدي' text appears on the dashboard. Mobile 390px: no horizontal overflow. The /calc/family-pattern title and notice are correct in all 3 languages. Member results: case 84 = Girl, 'Stated range: 90%'. Case 87 = Boy 90%. Case 92 = Boy 90%. PDF case 1 (3+3): child 1 = Boy 70–90%, child 2 = Boy 50–60%. Case 54 (wife Girl / husband Boy,Boy) = Boy with no percentage. No match (wife Boy / husband Girl, and wife Boy / husband Boy,Boy,Girl) shows the no-result-message box 'No matching case found.' plus the disclaimer, with no result card. The member print report portal shows the new disclaimer and the percentage. The member API response hides inputs and details. History list and detail work in EN/AR/DE, including the no-match detail in DE. Admin (role set temporarily, then restored to member) shows 'Table case #84/#87/#92/#1'. There is no 'Answer taken from' line and no 'Old App Only' badge. The print report shows 'Baby: Girl (90%)' and 'Second child: Boy (50–60%)'. Regression: Mendelian, Blood type and Sex ratio calculators all return results. Some admin-view issues remain (see below).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "genova/i18n.py limitation 'no_confidence_score' (admin result + admin print report)", "issue": "For cases 84/87/92 and 3+3 it still says 'No confidence percentage is shown; the original random percentages were removed.' while a 90% / 70–90% / 50–60% stated range is shown. The text contradicts the result. Drop this limitation when stated_range is set, or reword it."},
+      {"endpoint": "genetics/data/references.json 'legacy-family-pattern-table' (admin Sources)", "issue": "The admin result cites 'Original family-pattern table (gender_prediction_logic.py, owner's legacy app). Traditional belief…' with the old GitHub repo. The algorithm now uses only the original PDF (genova_smart_cases.json), so this source is outdated."},
+      {"endpoint": "genova/i18n.py 'traditional_not_scientific', 'daily_limit_reached', 'network_limit_reached'", "issue": "The 'Traditional' labels were not fully replaced. The admin limitation still reads 'Traditional method: …'. The member 429 messages say '20 traditional predictions' and 'traditional predictions for this internet connection' (also in AR/DE)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "ResultView/OutcomeTable (admin family-pattern result)", "issue": "The admin result card outcome row shows only 'Baby / Girl' with an empty value cell. OutcomeTable never renders outcome.stated_range, so the 90% / 70–90% / 50–60% does not appear on screen for admins. It appears only in the hidden print report.", "selector": "[data-testid=result-card] outcome table", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Admin print report", "issues": ["The title still reads 'Family-pattern report' (t.report.title) and not the GENOVA Smart Algorithm name. Optional wording change for consistency."]},
+      {"screen": "Admin no-match result", "issues": ["Admins get no visible 'No matching case found.' heading. It appears only as the last limitation bullet ('No matching case found among the original PDF cases.'). Acceptable, but less clear than the member box."]}
+    ]
+  },
+  "test_report_links": ["/app/tests/reset_tester_usage.py"],
+  "action_items": [
+    "Render outcome.stated_range in the admin OutcomeTable for family-pattern outcomes (traditional kind).",
+    "Do not add the 'no_confidence_score' limitation (or reword it) when the outcome has a stated_range.",
+    "Update the 'legacy-family-pattern-table' reference to cite the original PDF (genova_smart_cases.json), or remove the old-app link.",
+    "Optional: replace the remaining 'traditional' wording in i18n (traditional_not_scientific, daily_limit_reached, network_limit_reached) and in report.title with GENOVA Smart Algorithm wording in EN/AR/DE."
+  ],
+  "critical_code_review_comments": [
+    "family_pattern.py: the result still has certainty 'traditional_belief', and the backend api maps method to 'genova_traditional'. These are internal keys only. The labels are correct.",
+    "family_pattern.py _outcome: when a case percentage is set it overrides the group range. Only single-child cases have a percentage today, so 3+3 always uses 70–90%/50–60%. That is correct per the owner.",
+    "FamilyPatternReport.jsx / ResultView.jsx still contain answer_borrowed/source_case/old_app_only branches. They no longer run with the new data and can be removed (dead code). stats_log.py also still checks answer_borrowed."
+  ],
+  "updated_files": ["/app/tests/reset_tester_usage.py (new test helper: resets today's usage for the tester and optionally sets the role)"],
+  "success_rate": {"backend": "not tested (frontend-only request)", "frontend": "95% (all requested member, dashboard, i18n, history, admin and regression checks pass; 1 low-priority admin display issue plus wording inconsistencies)"},
+  "seed_data_creation": "None kept. 16 analyses were created by genova.tester (13 family-pattern, 3 regression) and deleted by id (DELETE 200, GET 404). The tester's usage_daily docs and today's usage_network_daily docs were reset. The tester role was set to admin temporarily and restored to 'member' (verified).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "UI login: python /app/scripts/clerk_test_session.py -> ticket -> <preview>/sign-in?__clerk_ticket=<ticket>. The ticket is single-use, so generate one per browser run. To set the role or reset usage: cd /app/backend && set -a && . ./.env && set +a && python /app/tests/reset_tester_usage.py [admin|member]. Family inputs use testids wife-/husband-add-child, -remove-child, -child-{i}-{male|female}, and child-number-{1|2}. Member result testids: public-result-answer, public-result-range, no-result-message. Admin testids: result-table-case."
+}

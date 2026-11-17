@@ -96,6 +96,9 @@ def test_disease_data_integrity():
 
 def test_references_have_url_and_link_status():
     for r in load_references().values():
+        if r.get("internal"):  # owner's private source: never linked publicly
+            assert r["url"] is None and r["link_check"] == "internal_source" and r["source_file"]
+            continue
         assert r["url"].startswith("https://") and r["link_check"] in ("verified_2026_06", "manual_check_required")
 
 

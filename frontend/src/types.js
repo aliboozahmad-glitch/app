@@ -43,7 +43,7 @@ export const referenceShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   publisher: PropTypes.string,
-  url: PropTypes.string.isRequired,
+  url: PropTypes.string,
   link_check: PropTypes.string,
 });
 

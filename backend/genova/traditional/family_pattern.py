@@ -72,7 +72,7 @@ def family_pattern_analysis(wife: list, husband: list, child_number: int | None 
         "outcomes": outcomes,
         "assumptions": ["traditional_table_as_provided"],
         "limitations": ["not_diagnosis", *limitations],
-        "references": ["legacy-family-pattern-table"],
+        "references": ["genova-smart-pdf"],
         "details": details,
         "engine_version": "genova-smart 2.0.0",
         "data_version": table["version"],
