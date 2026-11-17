@@ -19,7 +19,7 @@ from .stats_log import snapshot
 router = APIRouter(prefix="/api")
 Stage = Literal["pregnancy", "birth"]
 STAGE_COLLECTIONS = {"pregnancy": "confirmations_pregnancy", "birth": "confirmations_birth"}
-METHODS = ("two_child_table", "one_child_table", "other_case_answer")
+METHODS = ("two_child_table", "one_child_table")
 DISTINCT_CONFIRMED = [{"$project": {"analysis_id": 1}},
                       {"$unionWith": {"coll": "confirmations_birth", "pipeline": [{"$project": {"analysis_id": 1}}]}},
                       {"$group": {"_id": "$analysis_id"}}, {"$count": "n"}]

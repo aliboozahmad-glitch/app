@@ -64,7 +64,7 @@ backend/genova/genetics (pure engine) · genova/i18n · genova/api · genova/aut
 - 2026-06: GENOVA Smart Algorithm (owner approved).
   - The family-pattern method now uses only `genova/traditional/data/genova_smart_cases.json`, built from the original PDF (MD5 0501b004…, 81 numbered entries 1–29 and 41–92; 30–40 are absent in the PDF). Matching is exact on wife + husband, with no borrowing or fallback; otherwise it returns "No matching case found."
   - Cases 84, 87 and 92 are owner-confirmed: Girl, Boy and Boy, each 90%. Section 1 (3 + 3) shows 70–90% for the first child and 50–60% for the second.
-  - Old-app data (cases 30–40, the borrowing rule, the "male" default, legacy fields) is archived, unread, at `data/archive/legacy_family_pattern_table.json`; deletion awaits owner approval.
+  - Old-app data (cases 30–40, the borrowing rule, the "male" default, legacy fields) was PERMANENTLY DELETED on owner approval (backup zip downloaded by the owner, then removed from the project): `data/archive/*`, `tests/fixtures/*`, borrowed/old-app display code and texts, and the "other_case_answer" stats group. User history and historic stats logs were kept. Admin sees the matching case number (`result-case-number`); members see only Boy/Girl + percentage or "No matching case found." (iteration_17: 100%).
   - The homepage card is renamed "GENOVA Smart Algorithm" (AR/DE) and moved to the top; the short disclaimer is kept.
   - 21 input combinations changed versus the old app: 84, 87 and 92 per the PDF, and 18 old-app-only or borrowed combinations now have no match.
   - Obsolete legacy-lookup live tests were removed and replaced by `tests/test_genova_smart_live.py`.

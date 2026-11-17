@@ -95,7 +95,7 @@ def test_admin_stats_admin_only(ctx):
     assert st["label"] == "voluntary_user_reported_observational"
     preg, birth = st["stages"]["pregnancy"], st["stages"]["birth"]
     assert preg["confirmed"] >= 1 and birth["confirmed"] >= 1
-    assert [m["method"] for m in preg["by_method"]] == ["two_child_table", "one_child_table", "other_case_answer"]
+    assert [m["method"] for m in preg["by_method"]] == ["two_child_table", "one_child_table"]
     assert any(r["range"] == "70\u201390%" for r in preg["by_range"])
     assert preg["matches"] + preg["mismatches"] == preg["confirmed"]
     assert set(st["ratings"]) >= {"likes", "dislikes", "total", "satisfaction", "by_type"}

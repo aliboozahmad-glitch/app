@@ -1,0 +1,32 @@
+{
+  "summary": "Tested the GENOVA Smart Algorithm cleanup (PDF cases only), both backend and frontend. DATA: genova_smart_cases.json has 81 cases (1-29 and 41-92; 30-40 are missing). There are no duplicate inputs. All 81 match docs/source/pdf_transcription.json for inputs and results; only 84/87/92 add the owner-confirmed 90%. archive/ and tests/fixtures/ are gone. BACKEND: offline test_family_pattern.py 14/14, test_genova_smart_live.py 16/16, test_family_pattern_protection_live.py 9/9, test_feedback_live.py 6/6, and a new test_iter17_member_public_live.py 7/7. All pass. MEMBER UI (EN): case 84 = Girl / 'Stated range: 90%'; cases 87 and 92 = Boy / 90%; wife B-B-G with husband G-B-G gives child 1 = Boy 70–90% and child 2 = Girl 50–60%. No case number or internal text appears, and the API response has no effective_case/pdf_page/case_source and details={}. Non-matches (BBB/BBB child 1; B/G = old case 37; B/BBG = old borrowed answer) show only no-result-message 'No matching case found.', with no gender and no percentage. AR 'لم يتم العثور على حالة مطابقة.' and DE 'Kein passender Fall gefunden.' are correct. ADMIN UI: case 84 result-case-number shows 'Table case #84' and report-source shows 'Table case #84'. The non-match shows no case number, no outcome rows, and report-source 'No matching case found.' (correct in AR/DE too). The pages contain no 'Old App', 'Answer taken' or 'borrow' text. /admin/stats loads with historic data (493 predictions). Homepage first card is calculator-card-family-pattern 'GENOVA Smart Algorithm'. Mendelian, blood-type, carrier-risk, height, pigmentation and sex-ratio all calculate and render result-card with no errors. Console errors: 0.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "backend/genova/i18n.py lines 30-31", "issue": "Legacy text keys 'answer_from_other_case' ('As in the old app, the answer is taken from the table case shown...') and 'old_app_only' ('Old App Only: this answer comes from case 30-40...') are still defined. No code uses them, but they are legacy borrowing/30-40 text the owner asked to remove."},
+      {"endpoint": "backend/genova/feedback.py METHODS", "issue": "METHODS still includes 'other_case_answer' (the borrowing group). stats_log.method_group can no longer produce it."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/admin/stats 'Match rate by calculation method'", "issues": ["The table still shows a row 'Answer from another case' (AR 'إجابة من حالة أخرى', DE 'Antwort aus anderem Fall'), currently with 0 confirmed. This is leftover borrowing display. Remove it from translations.js stats.methods, the stats table, and feedback.py METHODS, unless historic rows with other_case_answer exist and the owner wants to keep them."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_iter17_member_public_live.py", "/app/backend/tests/test_genova_smart_live.py", "/app/backend/tests/test_family_pattern_protection_live.py", "/app/backend/tests/test_feedback_live.py", "/app/backend/tests/test_family_pattern.py", "/app/test_reports/pytest/iter17_member.xml", "/app/test_reports/pytest/iter17_protection.xml"],
+  "action_items": [
+    "Remove the 'Answer from another case' / other_case_answer method row from the admin stats page (translations.js EN/AR/DE stats.methods, AdminStatsPage, feedback.py METHODS). Keep it only if you deliberately want to show historic borrowed-answer stats.",
+    "Remove the unused legacy i18n keys 'answer_from_other_case' and 'old_app_only' from backend/genova/i18n.py."
+  ],
+  "critical_code_review_comments": [
+    "family_pattern.py is clean: it matches exactly on wife+husband, uses one data file, has no fallback, and returns empty outcomes plus the no_matching_case flag when nothing matches.",
+    "The 3+3 percentage comes from pdf_stated_ranges ('70–90%' / '50–60%') when the case has no percentage of its own. This matches the owner decision recorded in the json 'applies_to'."
+  ],
+  "updated_files": ["/app/backend/tests/test_iter17_member_public_live.py (new)"],
+  "success_rate": {"backend": "100% (52/52)", "frontend": "100% of requested flows; 1 minor leftover legacy label on admin stats"},
+  "seed_data_creation": "None kept. genova.tester analyses created during this run were deleted by id (17, each checked as 404). Its usage_daily docs and today's usage_network_daily docs were reset. The role was temporarily set to admin and restored to member (verified). The temporary helpers tmp_iter17_role.py and tmp_iter17_cleanup.py were deleted.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "UI login: python /app/scripts/clerk_test_session.py -> ticket (single-use, one per browser run) -> <preview>/sign-in?__clerk_ticket=<ticket>. Family-pattern testids are 0-based: wife-child-0-male. Member result: public-result-answer / public-result-range / no-result-message. Admin result: result-case-number, report-source (print-only, hidden on screen), outcome-value-{i}. Live tests need backend/.env sourced (do not print it) and about 60s between suites for the rate limit."
+}
