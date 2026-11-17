@@ -12,12 +12,16 @@ from .api import _oid
 from .auth import current_member, require_role
 from .db import db
 from .models import Gender, Strict
-from .protection import PROTECTED_KIND, stated_range
+from .protection import PROTECTED_KIND
+from .stats_log import snapshot
 
 router = APIRouter(prefix="/api")
 Stage = Literal["pregnancy", "birth"]
 STAGE_COLLECTIONS = {"pregnancy": "confirmations_pregnancy", "birth": "confirmations_birth"}
 METHODS = ("two_child_table", "one_child_table", "other_case_answer")
+DISTINCT_CONFIRMED = [{"$project": {"analysis_id": 1}},
+                      {"$unionWith": {"coll": "confirmations_birth", "pipeline": [{"$project": {"analysis_id": 1}}]}},
+                      {"$group": {"_id": "$analysis_id"}}, {"$count": "n"}]
 
 
 class RatingIn(Strict):
@@ -35,22 +39,10 @@ async def _owned(analysis_id: str, member: dict) -> dict:
     return raw
 
 
-def method_group(result: dict) -> str:
-    d = result.get("details", {})
-    if d.get("answer_borrowed"):
-        return "other_case_answer"
-    inp = result.get("inputs", {})
-    two = len(inp.get("wife", [])) == 3 and len(inp.get("husband", [])) == 3
-    return "two_child_table" if two else "one_child_table"
-
-
 def _snapshot(raw: dict) -> dict:
-    result = raw["result"]
-    if raw["analysis_type"] != PROTECTED_KIND or not result.get("outcomes"):
+    if raw["analysis_type"] != PROTECTED_KIND or not raw["result"].get("outcomes"):
         raise HTTPException(status_code=400, detail="Nothing to confirm for this result")
-    outcome = result["outcomes"][0]
-    return {"predicted": outcome["key"], "stated_range": stated_range(outcome["group"]),
-            "method_group": method_group(result), "data_version": result.get("data_version")}
+    return snapshot(raw["result"])
 
 
 def _now() -> str:
@@ -135,9 +127,9 @@ async def _rating_stats() -> dict:
 
 @router.get("/admin/stats")
 async def admin_stats(_: dict = Depends(require_role("admin"))):
-    predictions = await db.analyses.count_documents({"analysis_type": PROTECTED_KIND,
-                                                     "result.outcomes.0": {"$exists": True}})
+    predictions = await db.prediction_log.count_documents({})
+    distinct = await db.confirmations_pregnancy.aggregate(DISTINCT_CONFIRMED).to_list(None)
     stages = {stage: await _stage_stats(coll) for stage, coll in STAGE_COLLECTIONS.items()}
     return {"label": "voluntary_user_reported_observational", "predictions_total": predictions,
-            "confirmed_total": sum(s["confirmed"] for s in stages.values()), "stages": stages,
+            "confirmed_total": distinct[0]["n"] if distinct else 0, "stages": stages,
             "ratings": await _rating_stats()}

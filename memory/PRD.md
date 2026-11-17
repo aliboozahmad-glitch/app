@@ -45,6 +45,13 @@ backend/genova/genetics (pure engine) · genova/i18n · genova/api · genova/aut
   - `/api/references` hides internal entries.
   - Daily limit of 20 family-pattern calculations per member per UTC day, kept in the `usage_daily` collection; admin is exempt and failed requests don't count.
   - The table, algorithm and all results are unchanged.
+- 2026-06: Real-world statistics and feedback (`genova/feedback.py`, `genova/stats_log.py`).
+  - Voluntary confirmations of the actual result are kept in separate collections, `confirmations_pregnancy` and `confirmations_birth`: one per prediction per stage, unique on analysis_id, correctable. Each record holds a snapshot of predicted, stated_range, method_group, actual, match and dates, with no user ids or names.
+  - Like/Dislike ratings are kept in `ratings`, one per result and changeable, for every calculator.
+  - `prediction_log` is an anonymous record of family-pattern predictions, backfilled at startup and kept when history is deleted.
+  - The admin-only `/admin/stats` page shows totals, confirmed distinct predictions, boy/girl counts and match/mismatch. It breaks match rates down by stated range and by method group, shows pregnancy and birth separately, and shows ratings satisfaction separately. It is labelled as voluntary observational statistics.
+  - Pending: the owner will send a percentage for each case. Until then only the PDF ranges are shown, 70–90% and 50–60% for 3 + 3 families.
+
   - Live tests elevate their own users through `tests/live_roles.py`.
 
 

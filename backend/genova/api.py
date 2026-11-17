@@ -27,6 +27,7 @@ from .models import (
 )
 from .protection import DAILY_LIMIT, PROTECTED_KIND, protect_item, protect_view
 from .ratelimit import analysis_limiter
+from .stats_log import log_prediction
 from .traditional import family_pattern_analysis
 
 router = APIRouter(prefix="/api")
@@ -134,6 +135,7 @@ async def run_analysis(kind: str, body: dict, lang: Lang = "en", member: dict = 
         if daily:
             await db.usage_daily.update_one(daily, {"$inc": {"count": 1}}, upsert=True)
     doc.id = str(res.inserted_id)
+    await log_prediction(doc.id, kind, doc.result, doc.created_at)
     return _view(doc, lang, member["role"])
 
 

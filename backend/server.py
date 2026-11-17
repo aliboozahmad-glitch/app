@@ -28,6 +28,7 @@ from genova.db import client, db
 from genova.feedback import router as feedback_router
 from genova.genetics import GeneticsInputError
 from genova.i18n import LANGS, t
+from genova.stats_log import backfill_prediction_log
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("genova")
@@ -40,6 +41,7 @@ INDEXES: dict[str, list[IndexModel]] = {
     "confirmations_pregnancy": [IndexModel([("analysis_id", ASCENDING)], name="analysis_id", unique=True)],
     "confirmations_birth": [IndexModel([("analysis_id", ASCENDING)], name="analysis_id", unique=True)],
     "ratings": [IndexModel([("analysis_id", ASCENDING)], name="analysis_id", unique=True)],
+    "prediction_log": [IndexModel([("analysis_id", ASCENDING)], name="analysis_id", unique=True)],
     "usage_daily": [IndexModel([("user_id", ASCENDING), ("kind", ASCENDING), ("day", ASCENDING)], name="user_kind_day",
                                unique=True)],
 }
@@ -52,6 +54,10 @@ async def ensure_indexes() -> None:
                 await db[collection].create_indexes([model])
             except PyMongoError as exc:
                 logger.error("ensure_indexes(%s.%s): %s", collection, model.document["name"], exc)
+    try:
+        await backfill_prediction_log()
+    except PyMongoError as exc:
+        logger.error("backfill_prediction_log: %s", exc)
 
 
 app = FastAPI(title="GENOVA AI API", version="1.0.0")

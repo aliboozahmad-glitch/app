@@ -21,7 +21,7 @@ const PublicContent = ({ analysis, testPrefix }) => {
       <div>
         <div className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500">{o ? o.group_label : t.c.result}</div>
         <div className="text-4xl font-bold mt-1" data-testid={`${testPrefix}-answer`}>{o ? o.label : "—"}</div>
-        {o?.stated_range && <p className="mt-2 text-slate-700" data-testid={`${testPrefix}-range`}>{t.report.range}: {o.stated_range}</p>}
+        {o?.stated_range && <p className="mt-2 text-slate-700" data-testid={`${testPrefix}-range`}>{t.report.range}: <bdi dir="ltr">{o.stated_range}</bdi></p>}
       </div>
       <div className="text-sm text-slate-600 space-y-1" data-testid={`${testPrefix}-disclaimer`}>
         {r.limitations.map((l) => <p key={l.key}>{l.text}</p>)}

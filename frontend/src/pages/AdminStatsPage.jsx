@@ -25,7 +25,7 @@ const RateTable = ({ title, rows, nameOf, testId }) => {
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={nameOf(r)} className="border-t border-slate-200">
+            <tr key={r.range ?? r.method ?? "none"} className="border-t border-slate-200">
               <td className="p-2">{nameOf(r)}</td><td className="p-2">{r.confirmed}</td><td className="p-2">{r.matches}</td>
               <td className="p-2">{r.mismatches}</td><td className="p-2">{pct(r.match_rate)}</td>
             </tr>
@@ -43,15 +43,16 @@ const StageStats = ({ stage, s }) => {
   return (
     <section className="space-y-4" data-testid={`stats-stage-${stage}`}>
       <h3 className="text-lg font-semibold">{t.feedback.stages[stage]}</h3>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
         <Stat label={t.stats.confirmed} value={s.confirmed} testId={`stats-${stage}-confirmed`} />
         <Stat label={t.family.boy} value={s.actual.male} testId={`stats-${stage}-boys`} />
         <Stat label={t.family.girl} value={s.actual.female} testId={`stats-${stage}-girls`} />
-        <Stat label={t.stats.matches} value={`${s.matches} / ${s.mismatches}`} testId={`stats-${stage}-matches`} />
+        <Stat label={t.stats.matches} value={s.matches} testId={`stats-${stage}-matches`} />
+        <Stat label={t.stats.mismatches} value={s.mismatches} testId={`stats-${stage}-mismatches`} />
         <Stat label={t.stats.matchRate} value={pct(s.match_rate)} testId={`stats-${stage}-rate`} />
       </div>
       <div className="grid md:grid-cols-2 gap-6">
-        <RateTable title={t.stats.byRange} rows={s.by_range} nameOf={(r) => r.range || t.stats.noRange} testId={`stats-${stage}-by-range`} />
+        <RateTable title={t.stats.byRange} rows={s.by_range} nameOf={(r) => (r.range ? <bdi dir="ltr">{r.range}</bdi> : t.stats.noRange)} testId={`stats-${stage}-by-range`} />
         <RateTable title={t.stats.byMethod} rows={s.by_method} nameOf={(r) => t.stats.methods[r.method]} testId={`stats-${stage}-by-method`} />
       </div>
     </section>
@@ -95,11 +96,12 @@ export default function AdminStatsPage() {
   const state = useAuthedGet("/admin/stats");
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10 space-y-10" data-testid="admin-stats-page">
+      {state.forbidden ? <p className="text-sm text-slate-600" data-testid="stats-forbidden">{t.stats.forbidden}</p> : (
+      <>
       <header>
         <h1 className="text-4xl sm:text-5xl font-display font-extrabold tracking-tight">{t.stats.title}</h1>
         <p className="mt-3 text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-md p-3" data-testid="stats-observational-label">{t.stats.label}</p>
       </header>
-      {state.forbidden ? <p className="text-sm text-slate-600" data-testid="stats-forbidden">{t.stats.forbidden}</p> : (
       <LoadState state={state} testId="admin-stats">
         {(data) => (
           <>
@@ -113,6 +115,7 @@ export default function AdminStatsPage() {
           </>
         )}
       </LoadState>
+      </>
       )}
     </div>
   );

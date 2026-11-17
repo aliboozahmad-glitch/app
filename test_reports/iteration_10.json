@@ -1,0 +1,37 @@
+{
+  "summary": "Tested the voluntary confirmations, Like/Dislike ratings and the admin statistics, in the backend and the UI. Backend: test_feedback_live 5/5 pass. The family-pattern regression test_every_answer_unchanged_by_split passes. test_family_pattern_protection_live passes (15/15 in total). The new test_feedback_edges_live passes 5/5. It covers: 401 without a token; 422 for a bad gender value or an extra field; 400 for a family result with no outcome, which also returns confirmable=false; stats change correctly after a confirmation and after switching a rating; stored docs have no user_id, email, name, wife, husband, inputs or details. Member UI: the family-pattern card shows Like/Dislike and the confirmation panel with During pregnancy / After birth. Toast 'Thank you, saved.' appears and confirm-<stage>-saved shows. Like and Dislike switch correctly and only one is active (aria-pressed). The selection is kept in History detail and after reload. Correcting the pregnancy answer from Girl to Boy works. Blood type and Mendelian show Like/Dislike but no confirmation panel. Print media: result-feedback has display:none and the printed report has no feedback. Members have no Statistics link, and /admin/stats shows stats-forbidden in EN, AR and DE. Admin (role switched temporarily, then restored): nav-admin-stats shows on desktop and mobile. The page shows the label, the totals, the pregnancy and birth sections with tables by range and by method, and the ratings with the by-type table. The numbers match the database (pregnancy 3 = 1 mine + 2 already there; birth 1; ratings 4 likes / 1 dislike = 80%). AR is RTL and fully translated; DE is translated. No page errors. The mobile layout has no horizontal overflow.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "DELETE /api/analyses/{id}", "issue": "Deleting an analysis leaves its ratings and confirmation docs in place (checked: ratings 1, confirmations_birth 1 left after delete). They still count in the admin stats while predictions_total goes down, so confirmed counts can end up higher than the predictions. The owner should decide whether deleting should remove these docs, or keep them on purpose."},
+      {"endpoint": "GET /api/admin/stats", "issue": "confirmed_total = pregnancy confirmations + birth confirmations. A prediction confirmed at both stages counts twice. This may be fine, but the 'Total confirmed results' label could be read as the number of distinct predictions."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "AdminStatsPage (AR/RTL)", "issues": ["Ranges in the by-range table display reversed, e.g. '50–60%' shows as '60%–50' and '70–90%' as '90%–70'. Wrap the range in <bdi dir=\"ltr\"> or <span dir=\"ltr\">.", "The 'matches / mismatches' stat ('0 / 1') shows as '1 / 0' in RTL. Its label only says 'Match' (مطابقة), so it is unclear which number is which."]},
+      {"screen": "AdminStatsPage (all languages)", "issues": ["The stat labelled 'Match' shows 'matches / mismatches'. Label it 'Match / Mismatch' or split it into two stats.", "Members on the forbidden page still see the 'Real-world statistics' title and the observational label above the 'admin only' message. Consider showing only the forbidden message."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_feedback_live.py", "/app/backend/tests/test_feedback_edges_live.py", "/app/test_reports/pytest/iter10_feedback.xml", "/app/test_reports/pytest/iter10_edges.xml"],
+  "action_items": [
+    "AR stats page: wrap range values and the 'x / y' match value in dir=ltr / <bdi> so they don't display reversed.",
+    "Rename the 'Match' stat to 'Match / Mismatch' (EN/AR/DE).",
+    "Decide what happens to ratings and confirmations when an analysis is deleted: cascade-delete them, or keep them on purpose and document it.",
+    "Optional: on the forbidden page, hide the stats title and label for members."
+  ],
+  "critical_code_review_comments": [
+    "feedback.py: get_feedback queries 3 collections one after another; this is fine at the current scale.",
+    "The api.py delete endpoint has no cascade to ratings, confirmations_pregnancy or confirmations_birth.",
+    "ResultFeedback hides itself silently (returns null) if the feedback GET fails. There is no retry or error state; acceptable for an optional panel."
+  ],
+  "updated_files": ["/app/backend/tests/test_feedback_edges_live.py"],
+  "success_rate": {"backend": "100% (20/20 pytest)", "frontend": "100% of the requested flows; minor RTL/label design issues"},
+  "test_credentials": "genova.fb+clerk_test@example.com (member, user_3MD7bJNIL5DyqgyyODFCBC9Fgw6) and genova.other+clerk_test@example.com (member), sessions via scripts/clerk_test_session.py. genova.fb was switched to admin temporarily and is restored to member.",
+  "seed_data_creation": "None kept. The UI-created analyses 6afb98ec..625, 6afb990f..626 and 6afb9913..627 and their ratings and confirmations were deleted, and usage_daily was reset. Analysis 6afb981000bda6d5e91625e3 (family-pattern, genova.fb) was there before my UI runs and was left untouched. 2 ratings and 2 pregnancy confirmations from other runs are still in the DB.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run pytest with -n 0, with MONGO_URL/DB_NAME exported for live_roles. Family-pattern POSTs are deduplicated: the same inputs return the same id, so use different child_number values or inputs when you need a fresh analysis. To test admin in the UI, set role=admin on the users doc first, then sign in with a ticket, then restore the role."
+}

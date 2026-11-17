@@ -37,7 +37,7 @@ def ctx():
         yield {"s": s, "other": other, "fam": fam, "blood": blood}
     for i in (fam, blood):
         s.delete(f"{API}/analyses/{i}")
-    for coll in ("ratings", "confirmations_pregnancy", "confirmations_birth"):
+    for coll in ("ratings", "confirmations_pregnancy", "confirmations_birth", "prediction_log"):
         _db[coll].delete_many({"analysis_id": {"$in": [fam, blood]}})
 
 
@@ -97,3 +97,18 @@ def test_admin_stats_admin_only(ctx):
     assert any(r["range"] == "70\u201390%" for r in preg["by_range"])
     assert preg["matches"] + preg["mismatches"] == preg["confirmed"]
     assert set(st["ratings"]) >= {"likes", "dislikes", "total", "satisfaction", "by_type"}
+
+
+def test_deleting_history_keeps_anonymous_statistics(ctx):
+    s = ctx["s"]
+    aid = s.post(f"{API}/analyses/family-pattern", json={"wife": ["female"], "husband": ["male", "male"]}).json()["id"]
+    s.put(f"{API}/analyses/{aid}/confirmations/birth", json={"actual": "male"})
+    with as_role(s, API, "admin"):
+        before = s.get(f"{API}/admin/stats").json()
+        assert s.delete(f"{API}/analyses/{aid}").status_code == 200
+        after = s.get(f"{API}/admin/stats").json()
+    assert after["predictions_total"] == before["predictions_total"]
+    assert after["stages"]["birth"]["confirmed"] == before["stages"]["birth"]["confirmed"]
+    assert _db.prediction_log.find_one({"analysis_id": aid}, {"_id": 0, "predicted": 1}) == {"predicted": "male"}
+    for coll in ("confirmations_birth", "prediction_log"):
+        _db[coll].delete_many({"analysis_id": aid})
