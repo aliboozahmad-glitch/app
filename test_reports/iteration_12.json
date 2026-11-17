@@ -1,0 +1,21 @@
+{
+  "summary": "Tested the family-pattern display bug fix in the frontend, signed in as the member genova.tester+clerk_test via a Clerk ticket. All 6 requested items pass. (1) Not-in-table combination (wife Boy,Girl,Girl / husband Boy): only data-testid=no-result-message shows. The bold line 'No result is available for this combination.' (font-weight 600) comes first, then the traditional disclaimer. There is no result-card, no public-result-answer '—', no print-report-button and no family-pattern-report print portal. (2) Daily limit in EN, AR and DE: a valid result was shown first, then usage_daily was set to 20 and a different combination was calculated. The translated calculator-error shows ('You have reached today's limit of 20 traditional predictions...', plus the AR and DE versions). result-card, no-result-message and saved-indicator are all gone. This was also checked right after a different previous result. (3) AR is RTL and translated ('لا تتوفر نتيجة لهذه التركيبة.'). DE is LTR and translated ('Für diese Kombination ist kein Ergebnis verfügbar.'). (4) A valid 3+3 default, first child, gives Boy / Junge / ذكر with 'Stated range: 70–90%', print and feedback. (5) Mendelian, blood-type and height: with the POST delayed by 2s, the previous result-card is hidden while loading and the new result appears afterwards. (6) History detail of a no-result entry shows the no-result message with no dash card. No page errors.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Expected behaviour, not a bug: re-submitting identical inputs within DEDUPE_WINDOW_S=10s returns the earlier saved analysis (deduplicated) even when the daily counter is at 20, because the dedupe check runs before the limit check. The user does not get a new result, so this is fine. Testers need to know it when they test the limit.",
+    "The saved-indicator ('Saved to your history') also shows for a no-result calculation. The entry really is saved to history, so this is consistent. Optional: hide it if no-result entries should not count as results."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (not requested)", "frontend": "100%"},
+  "seed_data_creation": "None. I created 12 analyses for genova.tester (including one through a direct curl) and deleted all of them by _id afterwards; the user is back to the baseline of 12 analyses. usage_daily for the user was reset (deleted). The 4 anonymous prediction_log entries written by the valid calculations were left in place on purpose: by design this log is kept when history is deleted.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Helper /tmp/setdaily.py <count|reset> sets usage_daily for genova.tester (not saved in the repo; live_roles.set_daily does the same). The Clerk ticket works only once, so create a new one per browser run. The dedupe window is 10s: use different inputs, or wait more than 10s, when you test the limit. Wife m,f,f with husband m (or with husband m,m) is not in the table. Wife f,f,m with husband f gives a result. Choice test ids: {wife|husband}-child-{i}-{male|female}, {wife|husband}-add-child / -remove-child, child-number-{1|2} (only for 3+3)."
+}

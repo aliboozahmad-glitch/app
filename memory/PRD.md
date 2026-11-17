@@ -55,6 +55,8 @@ backend/genova/genetics (pure engine) · genova/i18n · genova/api · genova/aut
   - Frontend: list keys in MendelianPage and BloodTypePage, a comment in ClerkAuthProvider's empty catch plus propTypes, the use-toast reducer split into smaller functions (effect deps now []), and craco console notices gated by `devWarn`. New types.js typedefs/shapes for Feedback, Confirmation, report_id, public and stated_range.
   - Tests: refactored complex test functions, replaced seeded random sampling with deterministic slicing (and `secrets` in the dedupe tests), and fixed ruff style.
   - `tests/run_live_suites.sh` runs the live suites one by one, pausing for the rate limit.
+- 2026-06: Display fix. Starting a calculation clears the previous result, so a daily-limit or other error never sits next to an old result card. When a family-pattern combination has no matching case, a plain "No result available" message is shown instead of a dash result card. Logic and limit are unchanged.
+
 
   - Pending: the owner will send a percentage for each case. Until then only the PDF ranges are shown, 70–90% and 50–60% for 3 + 3 families.
 
