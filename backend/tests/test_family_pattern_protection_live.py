@@ -55,12 +55,14 @@ def _no_secrets(payload):
     text = json.dumps(payload, ensure_ascii=False)
     for k in SECRET_KEYS:
         cleaned = text.replace('"family-pattern"', "").replace("family_pattern", "")
-        assert k not in cleaned, k
+        assert f'"{k}"' not in cleaned and f"{k}:" not in cleaned, k
+    for name in ("legacy-family-pattern-table", "gender_prediction_logic", "case_source", "pdf_page"):
+        assert name not in text, name
 
 
 @pytest.mark.parametrize("lang", ["en", "ar", "de"])
 def test_single_child_public_shape(member, created, lang):
-    r = _post(member, created, {"wife": ["male", "male", "female"], "husband": ["male"]}, lang)
+    r = _post(member, created, {"wife": ["male", "male", "female"], "husband": ["female"]}, lang)  # PDF 86
     assert r.status_code == 200, r.text
     d = r.json()
     _no_secrets(d)
@@ -80,7 +82,7 @@ def test_three_plus_three_shows_stated_range(member, created):
 
 
 def test_not_in_table_public(member, created):
-    d = _post(member, created, {"wife": ["male", "female", "female"], "husband": ["male"]}).json()
+    d = _post(member, created, {"wife": ["male"], "husband": ["female"]}).json()  # old-app case 37, not in PDF
     _no_secrets(d)
     assert d["result"]["outcomes"] == []
     assert [n["key"] for n in d["result"]["limitations"]] == ["traditional_public_disclaimer", "no_result_available"]
@@ -103,7 +105,7 @@ def test_public_references_hide_internal_table():
 def test_admin_still_sees_details(session, created):
     with as_role(session, API, "admin"):
         d = _post(session, created, {"wife": ["male", "female", "male"], "husband": ["female"]}).json()
-    assert d["result"].get("public") is None and d["result"]["details"]["effective_case"] == 75
+    assert d["result"].get("public") is None and d["result"]["details"]["effective_case"] == 84
 
 
 def test_daily_limit_20(member, created):

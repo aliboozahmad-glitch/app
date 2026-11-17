@@ -14,7 +14,7 @@ BASE_URL = (os.environ.get("REACT_APP_BACKEND_URL")
 API = f"{BASE_URL}/api"
 COLLS = ("ratings", "confirmations_pregnancy", "confirmations_birth")
 FAM = {"wife": ["male", "male", "female"], "husband": ["female", "male", "female"], "child_number": 1}
-NO_RESULT = {"wife": ["male", "female", "female"], "husband": ["male"]}
+NO_RESULT = {"wife": ["male"], "husband": ["female"]}
 
 
 def _session(email):

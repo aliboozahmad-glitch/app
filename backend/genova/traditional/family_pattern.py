@@ -1,9 +1,8 @@
-"""Owner's traditional family-pattern table (from the legacy app and the original PDF), reproduced exactly.
+"""GENOVA Smart Algorithm: the owner's original PDF cases, matched exactly. Not part of genova.genetics.
 
-Not a scientific method and not part of genova.genetics. No randomness, no confidence scores.
-Wife's and husband's families are stored separately. An exact wife/husband entry is used first; otherwise
-the old app's joined-list lookup (later entry wins) over old-app entries, with the source case shown.
-Only Section 1 (3 + 3 children) predicts a first and second child; all other combinations predict one child.
+Sole data source: data/genova_smart_cases.json (the 81 numbered entries of the original PDF, numbers 1-92 with
+30-40 absent in the PDF). Exact wife's family + husband's family match only; no fallback, no borrowing,
+no randomness. Only 3 + 3 families predict a first and second child; all others predict one child.
 """
 import json
 from functools import lru_cache
@@ -12,21 +11,12 @@ from pathlib import Path
 from ..genetics.core import GeneticsInputError
 
 GENDERS = ("male", "female")
-DATA = Path(__file__).parent / "data" / "family_pattern_table.json"
+DATA = Path(__file__).parent / "data" / "genova_smart_cases.json"
 
 
 @lru_cache(maxsize=1)
 def load_table() -> dict:
     return json.loads(DATA.read_text(encoding="utf-8"))
-
-
-def all_entries() -> list:
-    t = load_table()
-    return [*t["cases"], *t["old_app_only_cases"]]
-
-
-def legacy_order() -> list:
-    return sorted([c for c in all_entries() if "source_line" in c], key=lambda c: c["source_line"])
 
 
 def is_two_child_section(wife: list, husband: list) -> bool:
@@ -41,30 +31,19 @@ def _validate(wife: list, husband: list, child_number: int | None) -> None:
         raise GeneticsInputError("child_number_required")
 
 
-def _pick(wife: list, husband: list) -> tuple:
-    key = [*wife, *husband]
-    joined = [c for c in all_entries() if c["pattern"] == key]
-    exact = [c for c in joined if c["wife"] == wife and c["husband"] == husband]
-    if exact:
-        return joined, exact[-1], False
-    legacy = [c for c in legacy_order() if c["pattern"] == key]
-    return joined, (legacy[-1] if legacy else None), bool(legacy)
+def find_case(wife: list, husband: list) -> dict | None:
+    return next((c for c in load_table()["cases"] if c["wife"] == wife and c["husband"] == husband), None)
 
 
-def _flags(joined: list, effective: dict, borrowed: bool) -> list:
-    flags = ["duplicate_pattern"] if len(joined) > 1 else []
-    if borrowed:
-        flags.append("answer_from_other_case")
-    if effective["origin"] == "old_app_only":
-        flags.append("old_app_only")
-    return flags
-
-
-def _outcome(effective: dict, two_child: bool, child_number: int | None) -> dict:
-    slot = "second" if two_child and child_number == 2 else "first"
-    group = ("first_child" if slot == "first" else "second_child") if two_child else "single_child"
-    return {"key": effective["result"][slot], "kind": "traditional", "group": group, "probability": None,
-            "fraction": None}
+def _outcome(case: dict, two_child: bool, child_number: int | None) -> dict:
+    ranges = load_table()["pdf_stated_ranges"]
+    if two_child:
+        group = "first_child" if child_number == 1 else "second_child"
+        key = case["result"]["first" if child_number == 1 else "second"]
+    else:
+        group, key = "single_child", case["result"]["single"]
+    return {"key": key, "kind": "traditional", "group": group, "probability": None, "fraction": None,
+            "stated_range": case["percentage"] or (ranges[group] if two_child else None)}
 
 
 def family_pattern_analysis(wife: list, husband: list, child_number: int | None = None) -> dict:
@@ -72,33 +51,29 @@ def family_pattern_analysis(wife: list, husband: list, child_number: int | None 
     two_child = is_two_child_section(wife, husband)
     child_number = child_number if two_child else None
     table = load_table()
-    joined, effective, borrowed = _pick(wife, husband)
-    details = {"matched_cases": [c["case"] for c in joined], "entered_split": [len(wife), len(husband)],
+    case = find_case(wife, husband)
+    details = {"entered_split": [len(wife), len(husband)],
                "prediction_scope": "first_and_second_child" if two_child else "single_child",
-               "review_status": table["review_status"], "statistic_separate": True}
+               "statistic_separate": True}
     limitations = ["traditional_not_scientific", "no_confidence_score"]
     outcomes = []
-    if effective:
-        flags = _flags(joined, effective, borrowed)
-        details |= {"effective_case": effective["case"], "section": effective["section"],
-                    "origin": effective["origin"], "answer_borrowed": borrowed, "review_flags": flags,
-                    "source_case": {"case": effective["case"], "wife": effective["wife"],
-                                    "husband": effective["husband"]}}
-        limitations += flags
-        outcomes.append(_outcome(effective, two_child, child_number))
+    if case:
+        details |= {"effective_case": case["case"], "pdf_page": case["page"], "case_source": case["source"],
+                    "review_flags": []}
+        outcomes.append(_outcome(case, two_child, child_number))
     else:
-        details |= {"review_flags": ["not_in_table"], "original_fallback": "male"}
-        limitations.append("not_in_table")
+        details["review_flags"] = ["no_matching_case"]
+        limitations.append("no_matching_case")
     return {
         "analysis_type": "family_pattern",
         "certainty": "traditional_belief",
-        "method": "family_pattern_table",
+        "method": "genova_smart_algorithm",
         "inputs": {"wife": wife, "husband": husband, "child_number": child_number},
         "outcomes": outcomes,
         "assumptions": ["traditional_table_as_provided"],
         "limitations": ["not_diagnosis", *limitations],
         "references": ["legacy-family-pattern-table"],
         "details": details,
-        "engine_version": "genova-traditional 1.2.0",
+        "engine_version": "genova-smart 2.0.0",
         "data_version": table["version"],
     }

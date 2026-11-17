@@ -63,16 +63,14 @@ async def check_limits(keys: tuple[dict, dict] | None, lang: str) -> None:
 
 async def _reserve(network: dict) -> bool:
     """Atomic slot reservation: accounts sharing a connection cannot overshoot the limit concurrently."""
-    for _ in range(2):  # a second try covers two first requests of the day racing to create the counter
-        try:
-            await db.usage_network_daily.update_one({**network, "count": {"$lt": NETWORK_DAILY_LIMIT}},
-                                                    {"$inc": {"count": 1}}, upsert=True)
-            return True
-        except DuplicateKeyError:
-            doc = await db.usage_network_daily.find_one(network)
-            if doc and doc.get("count", 0) >= NETWORK_DAILY_LIMIT:
-                return False
-    return False
+    try:
+        await db.usage_network_daily.update_one({**network, "count": {"$lt": NETWORK_DAILY_LIMIT}},
+                                                {"$inc": {"count": 1}}, upsert=True)
+        return True
+    except DuplicateKeyError:  # counter exists: either full, or created a moment ago by a racing request
+        res = await db.usage_network_daily.update_one({**network, "count": {"$lt": NETWORK_DAILY_LIMIT}},
+                                                      {"$inc": {"count": 1}})
+        return res.modified_count == 1
 
 
 async def release_slot(keys: tuple[dict, dict] | None) -> None:

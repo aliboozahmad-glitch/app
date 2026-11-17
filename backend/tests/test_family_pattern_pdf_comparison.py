@@ -1,4 +1,4 @@
-# Read-only verification: PDF transcription vs current GENOVA family-pattern table/lookup
+# GENOVA Smart Algorithm vs the PDF transcription: every PDF case answered exactly
 import json
 import os
 import subprocess
@@ -49,50 +49,18 @@ def test_case_71_correction():
     assert e["wife"] == ["F"] and e["husband"] == ["F", "M", "F"] and e["result"] == {"single": "F"}
 
 
-def test_genova_table_count_and_extras():
+@pytest.mark.parametrize("e", PDF, ids=lambda e: f"case{e['case']}")
+def test_every_pdf_case_answered_exactly(e):
+    children = (1, 2) if len(e["wife"]) == 3 and len(e["husband"]) == 3 else (1,)
+    for child in children:
+        answer, details = _genova(e, child)
+        assert answer == _pdf(e, child) and details["effective_case"] == e["case"]
+
+
+def test_table_is_the_pdf():
     t = load_table()
-    cases = [c["case"] for c in t["cases"]]
-    assert len(cases) == 78 and not set(cases) - {e["case"] for e in PDF}
-    assert {e["case"] for e in PDF} - set(cases) == {84, 87, 92}
-    assert [c["case"] for c in t["old_app_only_cases"]] == list(range(30, 41))
-
-
-# Section 1: exact match on families and both results
-@pytest.mark.parametrize("e", [x for x in PDF if x["case"] <= 29], ids=lambda e: f"case{e['case']}")
-def test_section1_matches(e):
-    table = {c["case"]: c for c in load_table()["cases"]}
-    c = table[e["case"]]
-    assert c["wife"] == [G[x] for x in e["wife"]] and c["husband"] == [G[x] for x in e["husband"]]
-    for child in (1, 2):
-        assert _genova(e, child)[0] == _pdf(e, child)
-
-
-# Section 2: 41-60, 69-80 match by case number + families + result
-@pytest.mark.parametrize("e", [x for x in PDF if 41 <= x["case"] <= 60 or 69 <= x["case"] <= 80],
-                         ids=lambda e: f"case{e['case']}")
-def test_section2_listed_match(e):
-    table = {c["case"]: c for c in load_table()["cases"]}
-    c = table[e["case"]]
-    assert c["wife"] == [G[x] for x in e["wife"]] and c["husband"] == [G[x] for x in e["husband"]]
-    assert c["result"]["first"] == c["result"]["second"] == _pdf(e)
-    assert _genova(e)[0] == _pdf(e)
-
-
-EXPECTED_DIFF = {84: "male", 87: "female", 92: None}
-
-
-@pytest.mark.parametrize("e", [x for x in PDF if 61 <= x["case"] <= 68 or x["case"] >= 81],
-                         ids=lambda e: f"case{e['case']}")
-def test_missing_ranges_current_behaviour(e):
-    got, _ = _genova(e)
-    if e["case"] in EXPECTED_DIFF:
-        assert got == EXPECTED_DIFF[e["case"]] and got != _pdf(e)
-    else:
-        assert got == _pdf(e)
-
-
-def test_results_table_flagged_unchanged():
-    assert load_table()["results_changed"] is False
+    assert [c["case"] for c in t["cases"]] == [e["case"] for e in PDF]
+    assert t["numbers_absent_in_pdf"] == list(range(30, 41))
 
 
 # API: same answers via POST /api/analyses/family-pattern
@@ -123,15 +91,5 @@ def test_api_matches_function(token, case):
     res = data.get("result", data)
     outs = res["outcomes"]
     api = outs[0]["key"] if outs else None
-    assert api == _genova(e)[0]
-
-
-PDF_ONLY_ENTRIES = [x for x in PDF if 61 <= x["case"] <= 68 or (x["case"] >= 81 and x["case"] not in (84, 87, 92))]
-
-
-@pytest.mark.parametrize("e", PDF_ONLY_ENTRIES,
-                         ids=lambda e: f"case{e['case']}")
-def test_pdf_only_entries_copied_exactly(e):
-    c = {c["case"]: c for c in load_table()["cases"]}[e["case"]]
-    assert c["wife"] == [G[x] for x in e["wife"]] and c["husband"] == [G[x] for x in e["husband"]]
-    assert c["pdf_result"]["single"] == _pdf(e) and c["origin"] == "original_pdf"
+    assert api == _pdf(e) == _genova(e)[0]
+    assert outs[0]["stated_range"] == "90%" and res["details"]["effective_case"] == case

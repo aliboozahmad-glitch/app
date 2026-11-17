@@ -1,4 +1,4 @@
-"""Extra live security checks (iteration 13): forged JWTs (alg none/HS256/payload edit), expired token, XFF spoofing variants,
+"""Extra live security checks: forged JWTs (alg none/HS256/payload edit), expired token, XFF spoofing variants,
 headers on error responses, sensitive routes require auth."""
 import base64
 import json
@@ -53,7 +53,8 @@ def test_alg_none_rejected(member):
     claims = _claims(member.headers["Authorization"].split()[1])
     forged = f"{_b64({'alg': 'none', 'typ': 'JWT'})}.{_b64(claims)}."
     for path in ("/me", "/analyses", "/admin/stats"):
-        assert requests.get(f"{API}{path}", headers={"Authorization": f"Bearer {forged}"}, timeout=30).status_code == 401
+        r = requests.get(f"{API}{path}", headers={"Authorization": f"Bearer {forged}"}, timeout=30)
+        assert r.status_code == 401
 
 
 def test_hs256_forged_rejected(member):
@@ -64,7 +65,7 @@ def test_hs256_forged_rejected(member):
 
 def test_payload_swap_rejected(member):
     token = member.headers["Authorization"].split()[1]
-    h, p, s = token.split(".")
+    h, _p, s = token.split(".")
     claims = _claims(token)
     claims["sub"] = "user_3MBgrYYadc1xm0gZ41oWWQszUIY"
     forged = f"{h}.{_b64(claims)}.{s}"
@@ -138,8 +139,10 @@ def test_network_limit_multi_xff_spoof(member):
     original = _db.usage_network_daily.find_one(key)
     try:
         _db.usage_network_daily.update_one(key, {"$set": {"count": 60}})
-        for i, xff in enumerate(["1.2.3.4, 5.6.7.8", "1.2.3.4, 5.6.7.8, 9.9.9.9", "10.0.0.1,10.0.0.2,10.0.0.3,10.0.0.4"]):
-            r = member.post(f"{API}/analyses/family-pattern?lang=ar", json={**BODY, "wife": ["male"] * (i + 1)},
+        forged = ["1.2.3.4, 5.6.7.8", "1.2.3.4, 5.6.7.8, 9.9.9.9", "10.0.0.1,10.0.0.2,10.0.0.3,10.0.0.4"]
+        for i, xff in enumerate(forged):
+            body = {**BODY, "wife": ["male"] * (i + 1), "child_number": 1}
+            r = member.post(f"{API}/analyses/family-pattern?lang=ar", json=body,
                             headers={"X-Forwarded-For": xff, "X-Real-IP": "8.8.8.8"})
             assert r.status_code == 429, (xff, r.status_code)
             assert "بالإنترنت" in r.json()["detail"]

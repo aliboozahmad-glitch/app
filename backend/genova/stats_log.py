@@ -13,7 +13,7 @@ def method_group(result: dict) -> str:
 
 def snapshot(result: dict) -> dict:
     outcome = result["outcomes"][0]
-    return {"predicted": outcome["key"], "stated_range": stated_range(outcome["group"]),
+    return {"predicted": outcome["key"], "stated_range": stated_range(outcome),
             "method_group": method_group(result), "data_version": result.get("data_version")}
 
 

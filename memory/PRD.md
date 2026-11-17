@@ -61,6 +61,14 @@ backend/genova/genetics (pure engine) · genova/i18n · genova/api · genova/aut
   - `server.py`: docs, redoc and openapi disabled. API responses carry CSP `default-src 'none'; frame-ancestors 'none'`, X-Frame-Options DENY, HSTS, Permissions-Policy, COOP and Cache-Control no-store.
   - `clerk_auth.verify_session_token(token, request)`: RS256 only, required exp/nbf/iat/iss/sub/sid, issuer from the publishable key (plus the app's own relay on production), and azp equal to the app's own origin. A missing azp is allowed only on dev instances, for tokens minted with the secret key by test tooling.
   - `tests/test_security.py` checks the route-authorization inventory; `tests/test_security_live.py` covers the live checks.
+- 2026-06: GENOVA Smart Algorithm (owner approved).
+  - The family-pattern method now uses only `genova/traditional/data/genova_smart_cases.json`, built from the original PDF (MD5 0501b004…, 81 numbered entries 1–29 and 41–92; 30–40 are absent in the PDF). Matching is exact on wife + husband, with no borrowing or fallback; otherwise it returns "No matching case found."
+  - Cases 84, 87 and 92 are owner-confirmed: Girl, Boy and Boy, each 90%. Section 1 (3 + 3) shows 70–90% for the first child and 50–60% for the second.
+  - Old-app data (cases 30–40, the borrowing rule, the "male" default, legacy fields) is archived, unread, at `data/archive/legacy_family_pattern_table.json`; deletion awaits owner approval.
+  - The homepage card is renamed "GENOVA Smart Algorithm" (AR/DE) and moved to the top; the short disclaimer is kept.
+  - 21 input combinations changed versus the old app: 84, 87 and 92 per the PDF, and 18 old-app-only or borrowed combinations now have no match.
+  - Obsolete legacy-lookup live tests were removed and replaced by `tests/test_genova_smart_live.py`.
+
 
 
 

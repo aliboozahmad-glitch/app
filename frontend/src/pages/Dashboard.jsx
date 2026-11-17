@@ -4,14 +4,15 @@ import { useLang } from "@/i18n/LanguageContext";
 import { CertaintyBadge, Disclaimer } from "@/components/genova/primitives";
 
 const CALCS = [
+  ["family-pattern", Users, "traditional_belief"],
   ["mendelian", Grid3x3, "established"], ["blood-type", Droplet, "established"], ["carrier-risk", ShieldAlert, "established"],
-  ["height", Ruler, "statistical_estimate"], ["pigmentation", Eye, "uncertain_estimate"], ["sex-ratio", Baby, "population_statistic"], ["family-pattern", Users, "traditional_belief"],
+  ["height", Ruler, "statistical_estimate"], ["pigmentation", Eye, "uncertain_estimate"], ["sex-ratio", Baby, "population_statistic"],
 ];
 const TIER_KEYS = ["established", "population_estimate", "statistical_estimate", "uncertain_estimate", "population_statistic", "traditional_belief"];
 const TIER_NAMES = {
-  en: ["Established", "Population estimate", "Statistical estimate", "Uncertain estimate", "Population statistic", "Traditional belief"],
-  ar: ["مُثبت", "تقدير سكاني", "تقدير إحصائي", "تقدير غير مؤكد", "إحصاء سكاني", "اعتقاد تقليدي"],
-  de: ["Gesichert", "Bevölkerungsschätzung", "Statistische Schätzung", "Unsichere Schätzung", "Bevölkerungsstatistik", "Traditioneller Glaube"],
+  en: ["Established", "Population estimate", "Statistical estimate", "Uncertain estimate", "Population statistic", "GENOVA Smart Algorithm"],
+  ar: ["مُثبت", "تقدير سكاني", "تقدير إحصائي", "تقدير غير مؤكد", "إحصاء سكاني", "خوارزمية GENOVA الذكية"],
+  de: ["Gesichert", "Bevölkerungsschätzung", "Statistische Schätzung", "Unsichere Schätzung", "Bevölkerungsstatistik", "GENOVA Smart-Algorithmus"],
 };
 
 export const TierLegend = () => {

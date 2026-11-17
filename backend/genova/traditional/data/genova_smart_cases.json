@@ -1,0 +1,1485 @@
+{
+ "name": "GENOVA Smart Algorithm",
+ "version": "genova-smart-pdf-2026-06",
+ "source_pdf": "docs/source/family_pattern_rules.pdf",
+ "source_pdf_md5": "0501b0041e1ad4d4fb5cc57d5def5308",
+ "numbered_entries": 81,
+ "numbers_absent_in_pdf": [
+  30,
+  31,
+  32,
+  33,
+  34,
+  35,
+  36,
+  37,
+  38,
+  39,
+  40
+ ],
+ "absent_note": "PDF: الأرقام من 30 إلى 40 غير موجودة في النص المرسل.",
+ "matching": "exact wife family + exact husband family only; no fallback, no borrowing",
+ "pdf_stated_ranges": {
+  "first_child": "70–90%",
+  "second_child": "50–60%",
+  "applies_to": "3 + 3 families (owner decision)"
+ },
+ "owner_confirmed": {
+  "cases": [
+   84,
+   87,
+   92
+  ],
+  "note": "Results as in the PDF; 90% confirmed by the owner (2026-06)."
+ },
+ "cases": [
+  {
+   "case": 1,
+   "page": 1,
+   "wife": [
+    "male",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 2,
+   "page": 1,
+   "wife": [
+    "male",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 3,
+   "page": 1,
+   "wife": [
+    "male",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 4,
+   "page": 1,
+   "wife": [
+    "male",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 5,
+   "page": 1,
+   "wife": [
+    "male",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 6,
+   "page": 1,
+   "wife": [
+    "male",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 7,
+   "page": 1,
+   "wife": [
+    "male",
+    "female",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 8,
+   "page": 1,
+   "wife": [
+    "male",
+    "female",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 9,
+   "page": 1,
+   "wife": [
+    "male",
+    "female",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 10,
+   "page": 1,
+   "wife": [
+    "male",
+    "female",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 11,
+   "page": 1,
+   "wife": [
+    "male",
+    "female",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 12,
+   "page": 1,
+   "wife": [
+    "male",
+    "female",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 13,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 14,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 15,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 16,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 17,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 18,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 19,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 20,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 21,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 22,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 23,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 24,
+   "page": 1,
+   "wife": [
+    "female",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 25,
+   "page": 1,
+   "wife": [
+    "female",
+    "female",
+    "male"
+   ],
+   "husband": [
+    "male",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "male",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 26,
+   "page": 1,
+   "wife": [
+    "female",
+    "female",
+    "male"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 27,
+   "page": 1,
+   "wife": [
+    "female",
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "first": "female",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 28,
+   "page": 1,
+   "wife": [
+    "female",
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 29,
+   "page": 1,
+   "wife": [
+    "female",
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "female",
+    "male"
+   ],
+   "result": {
+    "first": "female",
+    "second": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 41,
+   "page": 2,
+   "wife": [
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male",
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 42,
+   "page": 2,
+   "wife": [
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 43,
+   "page": 2,
+   "wife": [
+    "female",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 44,
+   "page": 2,
+   "wife": [
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 45,
+   "page": 2,
+   "wife": [
+    "female",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 46,
+   "page": 2,
+   "wife": [
+    "male",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 47,
+   "page": 2,
+   "wife": [
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male",
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 48,
+   "page": 2,
+   "wife": [
+    "female",
+    "male"
+   ],
+   "husband": [
+    "male",
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 49,
+   "page": 2,
+   "wife": [
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 50,
+   "page": 2,
+   "wife": [
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female",
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 51,
+   "page": 2,
+   "wife": [
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male",
+    "female"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 52,
+   "page": 2,
+   "wife": [
+    "female",
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 53,
+   "page": 2,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 54,
+   "page": 2,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "male",
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 55,
+   "page": 2,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 56,
+   "page": 2,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 57,
+   "page": 2,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "female",
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 58,
+   "page": 2,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "male",
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 59,
+   "page": 2,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 60,
+   "page": 2,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "male",
+    "female"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 61,
+   "page": 2,
+   "wife": [
+    "female",
+    "female"
+   ],
+   "husband": [
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 62,
+   "page": 2,
+   "wife": [
+    "male",
+    "male"
+   ],
+   "husband": [
+    "female"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 63,
+   "page": 2,
+   "wife": [
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 64,
+   "page": 2,
+   "wife": [
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 65,
+   "page": 2,
+   "wife": [
+    "female",
+    "female"
+   ],
+   "husband": [
+    "male"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 66,
+   "page": 2,
+   "wife": [
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 67,
+   "page": 2,
+   "wife": [
+    "female",
+    "male"
+   ],
+   "husband": [
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 68,
+   "page": 3,
+   "wife": [
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 69,
+   "page": 3,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female",
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 70,
+   "page": 3,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "male",
+    "male",
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 71,
+   "page": 3,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 72,
+   "page": 3,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 73,
+   "page": 3,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "female",
+    "female",
+    "male"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 74,
+   "page": 3,
+   "wife": [
+    "female"
+   ],
+   "husband": [
+    "male",
+    "male",
+    "female"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 75,
+   "page": 3,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "female"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 76,
+   "page": 3,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 77,
+   "page": 3,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "female",
+    "female",
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 78,
+   "page": 3,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "male",
+    "male",
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 79,
+   "page": 3,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "female",
+    "male",
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 80,
+   "page": 3,
+   "wife": [
+    "male"
+   ],
+   "husband": [
+    "male",
+    "female",
+    "female"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 81,
+   "page": 3,
+   "wife": [
+    "female",
+    "female",
+    "female"
+   ],
+   "husband": [
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 82,
+   "page": 3,
+   "wife": [
+    "male",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "female"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 83,
+   "page": 3,
+   "wife": [
+    "female",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 84,
+   "page": 3,
+   "wife": [
+    "male",
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": "90%",
+   "source": "original_pdf_owner_confirmed"
+  },
+  {
+   "case": 85,
+   "page": 3,
+   "wife": [
+    "female",
+    "female",
+    "male"
+   ],
+   "husband": [
+    "female"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 86,
+   "page": 3,
+   "wife": [
+    "male",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "female"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 87,
+   "page": 3,
+   "wife": [
+    "female",
+    "male",
+    "female"
+   ],
+   "husband": [
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": "90%",
+   "source": "original_pdf_owner_confirmed"
+  },
+  {
+   "case": 88,
+   "page": 3,
+   "wife": [
+    "male",
+    "female",
+    "male"
+   ],
+   "husband": [
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 89,
+   "page": 3,
+   "wife": [
+    "female",
+    "female",
+    "female"
+   ],
+   "husband": [
+    "male"
+   ],
+   "result": {
+    "single": "female"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 90,
+   "page": 3,
+   "wife": [
+    "male",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 91,
+   "page": 3,
+   "wife": [
+    "female",
+    "male",
+    "male"
+   ],
+   "husband": [
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": null,
+   "source": "original_pdf"
+  },
+  {
+   "case": 92,
+   "page": 3,
+   "wife": [
+    "male",
+    "female",
+    "female"
+   ],
+   "husband": [
+    "male"
+   ],
+   "result": {
+    "single": "male"
+   },
+   "percentage": "90%",
+   "source": "original_pdf_owner_confirmed"
+  }
+ ]
+}
