@@ -84,9 +84,25 @@ const ResultHeader = ({ result }) => {
 
 ResultHeader.propTypes = { result: resultShape.isRequired };
 
+const FamilyAnswer = ({ result }) => {
+  const { t } = useLang();
+  const o = result.outcomes[0];
+  if (!o) return <p className="text-2xl font-bold" data-testid="family-no-match">{t.report.notInTable}</p>;
+  return (
+    <div>
+      <div className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500">{o.group_label}</div>
+      <div className="text-4xl font-bold mt-1" data-testid="family-answer">{o.label}</div>
+      {o.stated_range && <p className="mt-2 text-slate-700" data-testid="family-range">{t.report.range}: <bdi dir="ltr">{o.stated_range}</bdi></p>}
+    </div>
+  );
+};
+
+FamilyAnswer.propTypes = { result: resultShape.isRequired };
+
 const ResultData = ({ result }) => {
   const d = result.details || {};
   const showScenarios = Boolean(d.scenarios) && result.method !== "carrier_exact";
+  if (result.analysis_type === "family_pattern") return <FamilyAnswer result={result} />;
   return (
     <>
       {result.outcomes.length > 0 && <OutcomeTable result={result} />}
