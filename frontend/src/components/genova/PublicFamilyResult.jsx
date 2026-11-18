@@ -5,6 +5,29 @@ import { analysisShape } from "@/types";
 import { PrintReportButton } from "./FamilyPatternReport";
 import { ResultFeedback } from "./ResultFeedback";
 
+const FamilyPercentageBar = ({ outcome, t }) => {
+  if (outcome?.probability == null || !["male", "female"].includes(outcome.key)) return null;
+  const expected = Math.round(outcome.probability * 100);
+  const male = outcome.key === "male" ? expected : 100 - expected;
+  const female = 100 - male;
+  return (
+    <div className="mt-4 space-y-2" data-testid="family-percentage-bar">
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100" role="img"
+        aria-label={t.family.boy + " " + male + "%, " + t.family.girl + " " + female + "%"}>
+        <div className="h-full bg-blue-500" style={{ width: male + "%" }} />
+        <div className="h-full bg-pink-400" style={{ width: female + "%" }} />
+      </div>
+      <div className="flex flex-wrap justify-between gap-2 text-sm">
+        <span className="text-blue-700">{t.family.boy}: <bdi dir="ltr">{male}%</bdi></span>
+        <span className="text-pink-700">{t.family.girl}: <bdi dir="ltr">{female}%</bdi></span>
+      </div>
+      <p className="text-xs text-slate-500">{t.family.percentageNote}</p>
+    </div>
+  );
+};
+
+FamilyPercentageBar.propTypes = { outcome: PropTypes.object, t: PropTypes.object.isRequired };
+
 const PublicContent = ({ analysis, testPrefix }) => {
   const { t, lang } = useLang();
   const r = analysis.result;
@@ -21,7 +44,8 @@ const PublicContent = ({ analysis, testPrefix }) => {
       <div>
         <div className="text-xs uppercase tracking-[0.18em] font-semibold text-slate-500">{o ? o.group_label : t.c.result}</div>
         <div className="text-4xl font-bold mt-1" data-testid={`${testPrefix}-answer`}>{o ? o.label : "—"}</div>
-        {o?.stated_range && <p className="mt-2 text-slate-700" data-testid={`${testPrefix}-range`}>{t.report.range}: <bdi dir="ltr">{o.stated_range}</bdi></p>}
+        <FamilyPercentageBar outcome={o} t={t} />
+        {o?.stated_range && o?.probability == null && <p className="mt-2 text-slate-700" data-testid={`${testPrefix}-range`}>{t.report.range}: <bdi dir="ltr">{o.stated_range}</bdi></p>}
       </div>
       <div className="text-sm text-slate-600 space-y-1" data-testid={`${testPrefix}-disclaimer`}>
         {r.limitations.map((l) => <p key={l.key}>{l.text}</p>)}
