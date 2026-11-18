@@ -24,11 +24,30 @@ export const PrintReportButton = () => {
   );
 };
 
+const FamilyPercentageBar = ({ outcome, t }) => {
+  if (outcome?.probability == null || !["male", "female"].includes(outcome.key)) return null;
+  const expected = Math.round(outcome.probability * 100);
+  const male = outcome.key === "male" ? expected : 100 - expected;
+  const female = 100 - male;
+  return (
+    <div className="my-4 space-y-2" data-testid="family-percentage-bar">
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100" role="img"
+        aria-label={t.family.boy + " " + male + "%, " + t.family.girl + " " + female + "%"}>
+        <div className="h-full bg-blue-500" style={{ width: male + "%" }} />
+        <div className="h-full bg-pink-400" style={{ width: female + "%" }} />
+      </div>
+      <div className="flex justify-between gap-2 text-sm">
+        <span className="text-blue-700">{t.family.boy}: <bdi dir="ltr">{male}%</bdi></span>
+        <span className="text-pink-700">{t.family.girl}: <bdi dir="ltr">{female}%</bdi></span>
+      </div>
+      <p className="text-xs text-slate-500">{t.family.percentageNote}</p>
+    </div>
+  );
+};
 export const FamilyPatternReport = ({ analysis }) => {
   const { t, lang } = useLang();
   const r = analysis.result;
   const req = analysis.request || r.inputs;
-  const d = r.details || {};
   const kids = (list) => familyNames(list, t);
   const answer = r.outcomes[0];
   const date = analysis.created_at ? new Date(analysis.created_at).toLocaleString(lang) : "";
@@ -45,6 +64,7 @@ export const FamilyPatternReport = ({ analysis }) => {
         <Row label={t.family.wife} testId="report-wife">{kids(req.wife)}</Row>
         <Row label={t.family.husband} testId="report-husband">{kids(req.husband)}</Row>
         <Row label={t.report.answer} testId="report-answer">{answer ? `${answer.group_label}: ${answer.label}${answer.stated_range ? ` (${answer.stated_range})` : ""}` : "—"}</Row>
+        {answer?.probability != null && <Row label={t.family.percentageNote} testId="report-percentage"><FamilyPercentageBar outcome={answer} t={t} /></Row>}
       </dl>
       <p className="mb-4">{t.family.notice}</p>
       <h2 className="font-semibold mb-2">{t.c.limitations}</h2>
@@ -59,4 +79,3 @@ export const FamilyPatternReport = ({ analysis }) => {
 };
 
 FamilyPatternReport.propTypes = { analysis: analysisShape.isRequired };
-SourceText.propTypes = { details: PropTypes.object.isRequired };
