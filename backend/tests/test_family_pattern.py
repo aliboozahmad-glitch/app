@@ -2,6 +2,7 @@
 import hashlib
 import itertools
 import json
+from unittest.mock import patch
 from pathlib import Path
 
 import pytest
@@ -14,8 +15,6 @@ ROOT = Path(__file__).resolve().parents[2]
 PDF = json.loads((ROOT / "docs/source/pdf_transcription.json").read_text(encoding="utf-8"))
 G = {"M": "male", "F": "female"}
 FAMILIES = [list(p) for n in (1, 2, 3) for p in itertools.product(("male", "female"), repeat=n)]
-OWNER = {84: "female", 87: "male", 92: "male"}
-
 
 def _pdf_answer(wife, husband, child):
     for e in PDF:
@@ -49,27 +48,10 @@ def test_dataset_is_exactly_the_pdf():
         assert c["result"] == {k: G[v] for k, v in e["result"].items()}
 
 
-def test_owner_confirmed_cases():
-    by_case = {c["case"]: c for c in load_table()["cases"]}
-    for n, answer in OWNER.items():
-        c = by_case[n]
-        assert (c["result"]["single"], c["percentage"], c["source"]) == (answer, "90%", "original_pdf_owner_confirmed")
-    assert all(c["percentage"] is None for n, c in by_case.items() if n not in OWNER)
-
-
 def test_every_input_matches_the_pdf_exactly():
     for w, h, c in _inputs():
-        expected = w[0] if len(w) == len(h) == 3 and len(set(w + h)) == 1 else _pdf_answer(w, h, c)
+        expected = _pdf_answer(w, h, c)
         assert _answer(w, h, c) == expected, (w, h, c)
-
-
-@pytest.mark.parametrize("g", ["male", "female"])
-@pytest.mark.parametrize("child,group", [(1, "first_child"), (2, "second_child")])
-def test_owner_rule_all_six_same_gender(g, child, group):
-    r = family_pattern_analysis([g] * 3, [g] * 3, child)
-    assert [(o["key"], o["group"], o["stated_range"]) for o in r["outcomes"]] == [(g, group, "90%")]
-    assert r["details"]["owner_rule"] == "all_six_same_gender" and "effective_case" not in r["details"]
-    assert len(load_table()["cases"]) == 81
 
 
 def test_no_matching_case_has_no_fallback():
@@ -78,12 +60,26 @@ def test_no_matching_case_has_no_fallback():
     assert "original_fallback" not in r["details"] and "no_matching_case" in r["limitations"]
 
 
-@pytest.mark.parametrize("child,answer,rng", [(1, "male", "70\u201390%"), (2, "female", "50\u201360%")])
-def test_three_plus_three_first_and_second(child, answer, rng):
-    o = family_pattern_analysis(["male", "male", "female"], ["female", "male", "female"], child)["outcomes"][0]
-    assert (o["key"], o["group"], o["stated_range"]) == (answer, ("first_child", "second_child")[child - 1], rng)
+@pytest.mark.parametrize("child,answer,percentage", [(1, "male", 70), (2, "female", 60)])
+def test_three_plus_three_gender_is_preserved_and_percentage_is_randomized(child, answer, percentage):
+    with patch("genova.traditional.family_pattern.random.choice", return_value=percentage):
+        r = family_pattern_analysis(["male", "male", "female"], ["female", "male", "female"], child)
+    o = r["outcomes"][0]
+    assert (o["key"], o["group"], o["stated_range"], o["probability"]) == (
+        answer, ("first_child" if child == 1 else "second_child"), f"{percentage}%", percentage / 100
+    )
+    assert "effective_case" not in r["details"] and "owner_rule" not in r["details"]
+    assert "randomized_family_percentage" in r["limitations"]
 
 
+def test_percentage_choices_have_requested_weighting():
+    from genova.traditional.family_pattern import _random_percentage
+    with patch("genova.traditional.family_pattern.random.choice", side_effect=lambda values: values[0]) as choose:
+        assert _random_percentage(1) == 90
+        assert choose.call_args.args[0] == (90, 70, 70)
+    with patch("genova.traditional.family_pattern.random.choice", side_effect=lambda values: values[0]) as choose:
+        assert _random_percentage(2) == 50
+        assert choose.call_args.args[0] == (50, 60, 60)
 def test_single_child_scope_ignores_child_number():
     a, b = (family_pattern_analysis(["female"], ["male", "male"], n) for n in (1, 2))
     assert a == b and a["inputs"]["child_number"] is None
@@ -104,6 +100,6 @@ def test_legacy_data_deleted():
     assert "archive" not in engine and "legacy" not in engine and DATA.name == "genova_smart_cases.json"
 
 
-def test_deterministic():
+def test_single_child_without_percentage_remains_deterministic():
     runs = [family_pattern_analysis(["male", "female"], ["male"]) for _ in range(5)]
     assert all(r == runs[0] for r in runs)
