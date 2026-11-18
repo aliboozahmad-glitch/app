@@ -1,10 +1,9 @@
 """GENOVA Smart Algorithm: the owner's original PDF cases, matched exactly. Not part of genova.genetics.
 
-Sole data source: data/genova_smart_cases.json (the 81 numbered entries of the original PDF, numbers 1-92 with
-30-40 absent in the PDF). Exact wife's family + husband's family match only; no fallback, no borrowing,
-no randomness. Only 3 + 3 families predict a first and second child; all others predict one child.
+Sole gender source: data/genova_smart_cases.json (the 81 entries transcribed from the original PDF). Exact wife's family + husband's family match only. For 3 + 3 families, display-only percentages are randomized independently per request and are not biological probabilities.
 """
 import json
+import random
 from functools import lru_cache
 from pathlib import Path
 
@@ -35,26 +34,33 @@ def find_case(wife: list, husband: list) -> dict | None:
     return next((c for c in load_table()["cases"] if c["wife"] == wife and c["husband"] == husband), None)
 
 
-def owner_rule_gender(wife: list, husband: list) -> str | None:
-    """Owner rule (2026-06): 3 + 3 families with all 6 children the same gender predict that gender, 90%."""
-    family = wife + husband
-    return family[0] if len(wife) == len(husband) == 3 and len(set(family)) == 1 else None
-
-
-def _owner_rule_outcome(gender: str, child_number: int) -> dict:
-    return {"key": gender, "kind": "traditional", "group": "first_child" if child_number == 1 else "second_child",
-            "probability": None, "fraction": None, "stated_range": "90%"}
+def _random_percentage(child_number: int) -> int:
+    """Display-only randomized percentage; not a biological probability."""
+    choices = (90, 70, 70) if child_number == 1 else (50, 60, 60)
+    return random.choice(choices)
 
 
 def _outcome(case: dict, two_child: bool, child_number: int | None) -> dict:
-    ranges = load_table()["pdf_stated_ranges"]
     if two_child:
         group = "first_child" if child_number == 1 else "second_child"
         key = case["result"]["first" if child_number == 1 else "second"]
-    else:
-        group, key = "single_child", case["result"]["single"]
-    return {"key": key, "kind": "traditional", "group": group, "probability": None, "fraction": None,
-            "stated_range": case["percentage"] or (ranges[group] if two_child else None)}
+        percentage = _random_percentage(child_number)
+        return {
+            "key": key,
+            "kind": "traditional",
+            "group": group,
+            "probability": percentage / 100,
+            "fraction": None,
+            "stated_range": f"{percentage}%",
+        }
+    return {
+        "key": case["result"]["single"],
+        "kind": "traditional",
+        "group": "single_child",
+        "probability": None,
+        "fraction": None,
+        "stated_range": None,
+    }
 
 
 def family_pattern_analysis(wife: list, husband: list, child_number: int | None = None) -> dict:
@@ -63,32 +69,32 @@ def family_pattern_analysis(wife: list, husband: list, child_number: int | None 
     child_number = child_number if two_child else None
     table = load_table()
     case = find_case(wife, husband)
-    rule_gender = None if case else owner_rule_gender(wife, husband)
-    details = {"entered_split": [len(wife), len(husband)],
-               "prediction_scope": "first_and_second_child" if two_child else "single_child",
-               "statistic_separate": True}
-    limitations = ["traditional_not_scientific", "no_confidence_score"]
+    details = {
+        "entered_split": [len(wife), len(husband)],
+        "prediction_scope": "first_and_second_child" if two_child else "single_child",
+        "statistic_separate": True,
+        "review_flags": [],
+    }
+    limitations = ["traditional_not_scientific"]
     outcomes = []
     if case:
-        details |= {"effective_case": case["case"], "pdf_page": case["page"], "case_source": case["source"],
-                    "review_flags": []}
+        # Keep the original PDF gender result, but do not expose case numbers or source metadata.
         outcomes.append(_outcome(case, two_child, child_number))
-    elif rule_gender:
-        details |= {"owner_rule": "all_six_same_gender", "review_flags": []}
-        outcomes.append(_owner_rule_outcome(rule_gender, child_number))
     else:
         details["review_flags"] = ["no_matching_case"]
         limitations.append("no_matching_case")
+    if two_child and outcomes:
+        limitations.append("randomized_family_percentage")
     return {
         "analysis_type": "family_pattern",
         "certainty": "traditional_belief",
         "method": "genova_smart_algorithm",
         "inputs": {"wife": wife, "husband": husband, "child_number": child_number},
         "outcomes": outcomes,
-        "assumptions": ["traditional_table_as_provided"],
+        "assumptions": ["traditional_table_gender_only"],
         "limitations": ["not_diagnosis", *limitations],
         "references": ["genova-smart-pdf"],
         "details": details,
-        "engine_version": "genova-smart 2.0.0",
+        "engine_version": "genova-smart 2.1.0",
         "data_version": table["version"],
     }
