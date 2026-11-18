@@ -24,12 +24,6 @@ export const PrintReportButton = () => {
   );
 };
 
-const SourceText = ({ details }) => {
-  const { t } = useLang();
-  if (details.owner_rule) return t.family.ownerRule;
-  return details.effective_case ? `${t.family.caseLabel} #${details.effective_case}` : t.report.notInTable;
-};
-
 export const FamilyPatternReport = ({ analysis }) => {
   const { t, lang } = useLang();
   const r = analysis.result;
@@ -51,7 +45,6 @@ export const FamilyPatternReport = ({ analysis }) => {
         <Row label={t.family.wife} testId="report-wife">{kids(req.wife)}</Row>
         <Row label={t.family.husband} testId="report-husband">{kids(req.husband)}</Row>
         <Row label={t.report.answer} testId="report-answer">{answer ? `${answer.group_label}: ${answer.label}${answer.stated_range ? ` (${answer.stated_range})` : ""}` : "—"}</Row>
-        <Row label={t.report.source} testId="report-source"><SourceText details={d} /></Row>
       </dl>
       <p className="mb-4">{t.family.notice}</p>
       <h2 className="font-semibold mb-2">{t.c.limitations}</h2>
